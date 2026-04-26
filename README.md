@@ -51,3 +51,14 @@ mock call db et sous fonctions
 websockets with socket.io
 
 verification des types : dur (config react)
+
+
+## TODO
+Pages :
+- welcome (button play solo and multi)
+- dev (OUR credits, background of a random falling tetriminos)
+- room (see name, people inside, button start game)
+- game (modal for win/loose)
+- spectator
+
+Modal for username (save in cookie)
