@@ -6,20 +6,19 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/26 22:21:17 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/27 08:49:41 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom'
 import { useMemo, useState } from 'react'
+import { TetrisRain } from './components/TetrisRain'
 
 function sanitizeSegment(value: string) {
   return value.trim().replaceAll('/', '').replaceAll(' ', '-')
 }
 
 
-/* Fonction qui va servire de Router pour l'url. Elle va recupérer 
-l'id de la room et le playerName pour les setups pour la Game */
 function Welcome() {
   const navigate = useNavigate()
   const [playerName, setPlayerName] = useState('')
@@ -39,6 +38,7 @@ function Welcome() {
 
   return (
     <main className="page">
+      <TetrisRain />
       <h1>Red Tetris</h1>
 
       <section className="card">
@@ -47,17 +47,17 @@ function Welcome() {
           <input
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
-            placeholder="lumugot"
+            placeholder="PlayerName"
             autoComplete="nickname"
           />
         </label>
 
         <label className="field">
-          <span>Room (multi)</span>
+          <span>Room</span>
           <input
             value={room}
             onChange={(e) => setRoom(e.target.value)}
-            placeholder="room42"
+            placeholder="42"
           />
         </label>
 
@@ -78,10 +78,6 @@ function Welcome() {
             Play multi
           </button>
         </div>
-
-        <p className="hint">
-          URL format: <code>/{'{room}'}/{'{player}'}</code>
-        </p>
       </section>
     </main>
   )
