@@ -6,11 +6,12 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 22:40:15 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/28 11:27:11 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/28 16:59:56 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import type { CSSProperties } from "react";
+import { useMemo, memo } from "react";
 
 type TetriminoType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L'
 type Cell = readonly [number, number]
@@ -61,8 +62,8 @@ function makePieces(count: number) {
   })
 }
 
-export function TetrisRain() {
-	const pieces = makePieces(18)
+export const TetrisRain = memo(function TetrisRain() {
+	const pieces = useMemo(() => makePieces(12), [])
 
 	return (
     <div className="tetrisRain" aria-hidden="true">
@@ -104,4 +105,4 @@ export function TetrisRain() {
       ))}
     </div>
   )
-}
+})
