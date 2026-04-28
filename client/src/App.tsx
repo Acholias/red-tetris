@@ -6,13 +6,15 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/27 08:49:41 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/28 08:39:28 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import { TetrisRain } from './components/TetrisRain'
+import DevCredits from './DevCredits'
+import Profile from './Profile'
 
 function sanitizeSegment(value: string) {
   return value.trim().replaceAll('/', '').replaceAll(' ', '-')
@@ -38,8 +40,10 @@ function Welcome() {
 
   return (
     <main className="page">
+      <button className="floating-btn dev-button" onClick={() => navigate('/profile')}>Profile</button>
+      <button className="floating-btn profile-button" onClick={() => navigate('/dev')}>Devs</button>
       <TetrisRain />
-      <h1>Red Tetris</h1>
+      <h1>Blue Tetris</h1>
 
       <section className="card">
         <label className="field">
@@ -100,6 +104,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Welcome />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/dev" element={<DevCredits />} />
       <Route path="/:room/:playerName" element={<Room />} />
     </Routes>
   )

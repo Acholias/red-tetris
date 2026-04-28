@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 22:23:27 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/27 08:49:35 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/28 08:42:27 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -387,4 +387,63 @@ code {
     display: none;
     animation: none;
   }
+}
+
+.floating-btn {
+  position: fixed;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  border: 0;
+  background: radial-gradient(circle, var(--c-mid), var(--c-mid), var(--c-dark));
+  color: var(--text);
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(65, 105, 225, 0.18);
+  cursor: pointer;
+  z-index: 3;
+}
+
+.dev-button {
+  left: 1180px;
+  bottom: 160px;
+}
+
+.profile-button {
+  left: 1180px;
+  top: 590px;
+}
+
+.dev-page .card {
+  position: relative;
+  max-width: 900px;
+}
+
+.dev-avatars {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dev-person {
+  display: grid;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  display: grid;
+  place-content: center;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.muted {
+  color: var(--muted);
 }
