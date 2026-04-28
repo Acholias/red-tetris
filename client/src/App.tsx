@@ -6,11 +6,11 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/28 10:29:33 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/28 12:27:12 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom'
+import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import { TetrisRain } from './components/TetrisRain'
 import DevCredits from './DevCredits'
@@ -23,6 +23,7 @@ function sanitizeSegment(value: string) {
 
 function Welcome() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [playerName, setPlayerName] = useState('')
   const [room, setRoom] = useState('')
 
@@ -40,7 +41,9 @@ function Welcome() {
 
   return (
     <main className="page">
-      <button className="floating-btn dev-button" onClick={() => navigate('/profile')}>Profile</button>
+<button
+  className="floating-btn dev-button"
+    onClick={() => navigate('/profile', { state: { backgroundLocation: location , playerName} })}>Profile</button>
       <button className="floating-btn profile-button" onClick={() => navigate('/dev')}>Devs</button>
       <TetrisRain />
       <h1>Blue Tetris</h1>
@@ -81,6 +84,14 @@ function Welcome() {
           > 
             Play multi
           </button>
+
+            <button
+              type="button"
+              disabled={!cleanPlayer}
+              onClick={() => go('spectator')}
+              className="spectator-btn">
+              Spectator
+          </button>
         </div>
       </section>
     </main>
@@ -101,12 +112,24 @@ function Room() {
 }
 
 export default function App() {
+  const location = useLocation()
+  const state = (location.state as { backgroundLocation?: Location }) || undefined
+  const background = state?.backgroundLocation
+
   return (
-    <Routes>
-      <Route path="/" element={<Welcome />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/dev" element={<DevCredits />} />
-      <Route path="/:room/:playerName" element={<Room />} />
-    </Routes>
+    <>
+      <Routes location={background || location}>
+        <Route path="/" element={<Welcome />} />
+        <Route path="/dev" element={<DevCredits />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/:room/:playerName" element={<Room />} />
+      </Routes>
+
+      {background && (
+        <Routes>
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      )}
+    </>
   )
 }
