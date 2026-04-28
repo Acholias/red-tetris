@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/28 08:39:28 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/28 10:29:33 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ function Welcome() {
             type="button"
             disabled={!cleanPlayer || !cleanRoom}
             onClick={() => go(room)}
-          >
+          > 
             Play multi
           </button>
         </div>

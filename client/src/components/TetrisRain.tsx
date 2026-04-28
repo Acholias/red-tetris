@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 22:40:15 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/27 08:49:56 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/28 10:19:40 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ function rotateCells(cells: Cell[], turns: number): Cell[] {
 	const t = ((turns % 4) + 4) % 4
 	let out = cells
 
-	for (let i = 0; i < t; i++) out = out.map(rotate90)
+	for (let i = 0; i < t; i++) 
+    out = out.map(rotate90)
 		
 	return out
 }
