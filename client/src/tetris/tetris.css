@@ -1,0 +1,55 @@
+.game-grid,.game-piece {
+    display: grid;
+    grid-template-columns: repeat(var(--width), var(--cell-size));
+    grid-template-rows: repeat(var(--height), var(--cell-size));
+    width: fit-content;
+}
+
+.game-piece {
+    transform: translate(var(--x), var(--y));
+}
+
+.game-cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+}
+
+.cell-U {
+    background-color: var(--color-U);
+}
+
+.cell-E {
+    background-color: var(--color-E);
+}
+
+.cell-I {
+    background-color: var(--color-I);
+}
+
+.cell-J {
+    background-color: var(--color-J);
+}
+
+.cell-L {
+    background-color: var(--color-L);
+}
+
+.cell-O {
+    background-color: var(--color-O);
+}
+
+.cell-S {
+    background-color: var(--color-S);
+}
+
+.cell-T {
+    background-color: var(--color-T);
+}
+
+.cell-V {
+    background-color: var(--color-V);
+}
+
+.cell-Z {
+    background-color: var(--color-Z);
+}
