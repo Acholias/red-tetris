@@ -1,11 +1,10 @@
 import './App.css'
-import { ButtonLog } from './ui/button'
+import Tetris from './tetris/tetris'
 
 function App() {
   return (
     <>
-      <h1>UwU</h1>
-      <ButtonLog/>
+      <Tetris/>
     </>
   )
 }

@@ -98,13 +98,13 @@ Modal for username (save in cookie)
 | 5x5  | yes      | no    | F_I     | 5  | I5   |
 
 ## Piece families
-| familly | basic color |
-|---------|-------------|
-| F_I     | light blue  |
-| F_J     | dark blue   |
-| F_L     | orange      |
-| F_O     | yellow      |
-| F_S     | light green |
-| F_T     | red         |
-| F_V     | dark green  |
-| F_Z     | magenta     |
+| familly | basic color           |
+|---------|-----------------------|
+| F_I     | light blue  #01EDFA |
+| F_J     | dark blue   #485DC5 |
+| F_L     | orange      #FFC82E |
+| F_O     | yellow      #FEFB34 |
+| F_S     | light green #53DA3F |
+| F_T     | red         #EA141C |
+| F_V     | dark green  #39892F |
+| F_Z     | magenta     #DD0AB2 |
