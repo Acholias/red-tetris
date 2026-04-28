@@ -1,20 +1,60 @@
 import './tetris.css'
 
+function renderCells(
+          cells: Array<string>,
+          x: number, y: number,
+          w: number, h: number) {
+  const gridStyle = {
+    '--x': `${x}vh`,
+    '--y': `${y}vh`,
+    '--width': w,
+    '--height': h,
+  } as React.CSSProperties;
+
+  return (
+    <div className='game-grid' style={gridStyle}>
+      {cells.map((cell, index) => (
+        <div key={index} className={`game-cell cell-${cell}`}/>
+      ))}
+    </div>
+  )
+}
+
+
 function Tetris() {
+  // Grid get from back
   const grid = Array(200).fill('E');
+  const gridSize = [10, 20];
+
+  // Piece get from back
   const piece = [
     ' ', 'T', ' ',
     'T', 'T', 'T',
     ' ', ' ', ' ',
   ];
-
-  const gridSize = [10, 20];
   const piecePos = [5, 3];
   const pieceSize = [3, 3];
-  const cellSize = 2;
 
+  // Preview get from back
+  const previewPiece = [
+    ' ', 'Z', 'Z',
+    'Z', 'Z', ' ',
+    ' ', ' ', ' ',
+  ];
+  const previewPieceSize = [3, 3];
+
+  // Variables computes
+  const cellSize = 3;
+
+  const pieceX = piecePos[0] * cellSize;
+  const pieceY = piecePos[1] * cellSize;
+
+  const previewX = (gridSize[0] + 1) * cellSize;
+  const previewGrid = Array(previewPieceSize[0] * previewPieceSize[1]).fill('E');
+
+  // Style define
   const gameStyle = {
-    '--cell-size': `${cellSize}em`,
+    '--cell-size': `${cellSize}vh`,
     '--color-U' : '#323232',
     '--color-E' : '#646464',
     '--color-I' : '#01EDFA',
@@ -25,34 +65,26 @@ function Tetris() {
     '--color-T' : '#EA141C',
     '--color-V' : '#39892F',
     '--color-Z' : '#DD0AB2',
-  } as React.CSSProperties;
-
-  const gridStyle = {
-    '--width': gridSize[0],
-    '--height': gridSize[1],
-  } as React.CSSProperties;
-
-  const pieceStyle = {
-    '--x': `${piecePos[0] * cellSize}em`,
-    '--y': `-${(gridSize[1] - piecePos[1]) * cellSize}em`,
-    '--width': pieceSize[0],
-    '--height': pieceSize[1],
+    '--texture-U' : "url('/styles/basic/cell.png')",
+    '--texture-E' : "url('/styles/basic/empty.png')",
+    '--texture-I' : "url('/styles/basic/cell.png')",
+    '--texture-J' : "url('/styles/basic/cell.png')",
+    '--texture-L' : "url('/styles/basic/cell.png')",
+    '--texture-O' : "url('/styles/basic/cell.png')",
+    '--texture-S' : "url('/styles/basic/cell.png')",
+    '--texture-T' : "url('/styles/basic/cell.png')",
+    '--texture-V' : "url('/styles/basic/cell.png')",
+    '--texture-Z' : "url('/styles/basic/cell.png')",
   } as React.CSSProperties;
 
   return (
     <>
       <h1>Tetris</h1>
       <div className='game-board' style={gameStyle}>
-        <div className='game-grid' style={gridStyle}>
-          {grid.map((cell, index) => (
-            <div key={index} className={`game-cell cell-${cell}`}/>
-          ))}
-        </div>
-        <div className='game-piece' style={pieceStyle}>
-          {piece.map((cell, index) => (
-            <div key={index} className={`game-cell cell-${cell}`}/>
-          ))}
-        </div>
+        {renderCells(grid, 0, 0, gridSize[0], gridSize[1])}
+        {renderCells(piece, pieceX, pieceY, pieceSize[0], pieceSize[1])}
+        {renderCells(previewGrid, previewX, 0, pieceSize[0], pieceSize[1])}
+        {renderCells(previewPiece, previewX, 0, pieceSize[0], pieceSize[1])}
       </div>
     </>
   )

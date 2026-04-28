@@ -1,11 +1,13 @@
-.game-grid,.game-piece {
+.game-board {
+    position: relative;
+}
+
+.game-grid {
+    position: absolute;
     display: grid;
     grid-template-columns: repeat(var(--width), var(--cell-size));
     grid-template-rows: repeat(var(--height), var(--cell-size));
     width: fit-content;
-}
-
-.game-piece {
     transform: translate(var(--x), var(--y));
 }
 
@@ -16,40 +18,60 @@
 
 .cell-U {
     background-color: var(--color-U);
+    background-image: var(--texture-U);
+    background-size: cover;
 }
 
 .cell-E {
     background-color: var(--color-E);
+    background-image: var(--texture-E);
+    background-size: cover;
 }
 
 .cell-I {
     background-color: var(--color-I);
+    background-image: var(--texture-I);
+    background-size: cover;
 }
 
 .cell-J {
     background-color: var(--color-J);
+    background-image: var(--texture-J);
+    background-size: cover;
 }
 
 .cell-L {
     background-color: var(--color-L);
+    background-image: var(--texture-L);
+    background-size: cover;
 }
 
 .cell-O {
     background-color: var(--color-O);
+    background-image: var(--texture-O);
+    background-size: cover;
 }
 
 .cell-S {
     background-color: var(--color-S);
+    background-image: var(--texture-S);
+    background-size: cover;
 }
 
 .cell-T {
     background-color: var(--color-T);
+    background-image: var(--texture-T);
+    background-size: cover;
 }
 
 .cell-V {
     background-color: var(--color-V);
+    background-image: var(--texture-V);
+    background-size: cover;
 }
 
 .cell-Z {
     background-color: var(--color-Z);
+    background-image: var(--texture-Z);
+    background-size: cover;
 }
