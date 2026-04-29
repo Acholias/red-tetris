@@ -1,7 +1,7 @@
 import './tetris.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../store/store';
-import { movePiece } from './gameEngine/gameSlice';
+import { initGame, movePiece, rotatePiece } from './gameEngine/gameSlice';
 import { useEffect } from 'react';
 
 function renderCells(
@@ -32,6 +32,16 @@ function Tetris() {
 
   // Keyboard mapping
   useEffect(() => {
+    // Init game at page start
+    dispatch(initGame({
+      speed: 0.5,
+      allPieces: false,
+      width: 10,
+      height: 20,
+      pieceId: 'l',
+      nextPieceId: 'j',
+    }));
+
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
         case 'ArrowLeft':
@@ -39,6 +49,9 @@ function Tetris() {
           break
         case 'ArrowRight':
           dispatch(movePiece({right: true}));
+          break
+        case 'ArrowUp':
+          dispatch(rotatePiece());
           break
       }
     };
