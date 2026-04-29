@@ -1,6 +1,8 @@
 import './tetris.css'
-import { type GameData, initGame } from './gameEngine/gameData.tsx'
-import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { type RootState } from '../store/store';
+import { movePiece } from './gameEngine/gameSlice';
+import { useEffect } from 'react';
 
 function renderCells(
           cells: Array<string>,
@@ -24,42 +26,45 @@ function renderCells(
 
 
 function Tetris() {
-  const [gameData, setGame] = useState<GameData | null>(null);
+  // Get game from store
+  const game = useSelector((state: RootState) => state.game);
+  const dispatch = useDispatch();
 
-  const startGame = () => {
-    const game = initGame([10, 20], 0.5, true, 0, 0);
-    setGame(game);
-  };
+  // Keyboard mapping
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.key) {
+        case 'ArrowLeft':
+          dispatch(movePiece({right: false}));
+          break
+        case 'ArrowRight':
+          dispatch(movePiece({right: true}));
+          break
+      }
+    };
 
-  // Grid get from back
-  const grid = Array(200).fill('E');
-  const gridSize = [10, 20];
+    // Add event listener
+    window.addEventListener('keydown', handleKeyDown);
 
-  // Piece get from back
-  const piece = [
-    ' ', 'T', ' ',
-    'T', 'T', 'T',
-    ' ', ' ', ' ',
-  ];
-  const piecePos = [5, 3];
-  const pieceSize = [3, 3];
+    // Remove event listener on page quit
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dispatch]);
 
-  // Preview get from back
-  const previewPiece = [
-    ' ', 'Z', 'Z',
-    'Z', 'Z', ' ',
-    ' ', ' ', ' ',
-  ];
-  const previewPieceSize = [3, 3];
+  // Get grid, piece and next piece from game
+  const grid = game.grid;
+  const piece = game.piece;
+  const nextPiece = game.nextPiece;
 
   // Variables computes
   const cellSize = 3;
 
-  const pieceX = piecePos[0] * cellSize;
-  const pieceY = piecePos[1] * cellSize;
+  const pieceX = piece.x * cellSize;
+  const pieceY = piece.y * cellSize;
 
-  const previewX = (gridSize[0] + 1) * cellSize;
-  const previewGrid = Array(previewPieceSize[0] * previewPieceSize[1]).fill('E');
+  const previewX = (game.grid.width + 1) * cellSize;
+  const previewGrid = Array(nextPiece.width * nextPiece.height).fill('E');
 
   // Style define
   const gameStyle = {
@@ -92,10 +97,10 @@ function Tetris() {
     <>
       <h1>Tetris</h1>
       <div className='game-board' style={gameStyle}>
-        {renderCells(grid, 0, 0, gridSize[0], gridSize[1])}
-        {renderCells(piece, pieceX, pieceY, pieceSize[0], pieceSize[1])}
-        {renderCells(previewGrid, previewX, 0, pieceSize[0], pieceSize[1])}
-        {renderCells(previewPiece, previewX, 0, pieceSize[0], pieceSize[1])}
+        {renderCells(grid.cells, 0, 0, grid.width, grid.height)}
+        {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
+        {renderCells(previewGrid, previewX, 0, nextPiece.width, nextPiece.height)}
+        {renderCells(nextPiece.cells, previewX, 0, nextPiece.width, nextPiece.height)}
       </div>
     </>
   )
