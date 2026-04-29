@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/28 17:00:20 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/29 08:14:49 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { TetrisRain } from './components/TetrisRain'
 import DevCredits from './DevCredits'
 import Profile from './Profile'
 import Spectator from './Spectator'
+import { isDevPlayerName, resolveAvatarForPlayer } from './profileIdentity'
 
 function sanitizeSegment(value: string) {
   return value.trim().replaceAll('/', '').replaceAll(' ', '-')
@@ -27,9 +28,11 @@ type ThemeName = 'default' | 'ice' | 'neon'
 type WelcomeProps = {
   playerName: string
   setPlayerName: React.Dispatch<React.SetStateAction<string>>
+  avatar: string | null
+  isDevProfile: boolean
 }
 
-function Welcome({ playerName, setPlayerName }: WelcomeProps) {
+function Welcome({ playerName, setPlayerName, avatar, isDevProfile }: WelcomeProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [room, setRoom] = useState('')
@@ -48,17 +51,23 @@ function Welcome({ playerName, setPlayerName }: WelcomeProps) {
 
   return (
     <main className="page">
-<button
-  className="floating-btn profile-button"
-    onClick={() => navigate('/profile', { state: { backgroundLocation: location } })}>Profile</button>
+      <button
+        type="button"
+        className={`floating-btn profile-button ${avatar ? 'profile-avatar-button' : ''} ${isDevProfile ? 'is-dev-profile' : ''}`}
+        onClick={() => navigate('/profile', { state: { backgroundLocation: location } })}
+        aria-label="Open profile"
+      >
+        {avatar ? <img className="profile-avatar-image" src={avatar} alt="Current avatar" /> : 'Profile'}
+      </button>
       <button className="floating-btn dev-button" onClick={() => navigate('/dev')}>Devs</button>
-      {/* <TetrisRain /> */}
+      <TetrisRain />
       <h1>Blue Tetris</h1>
 
       <section className="card">
         <label className="field">
           <span>Player name</span>
           <input
+            className={isDevProfile ? 'dev-name-input dev-name-input--gold' : ''}
             value={playerName}
             onChange={(e) => {
               console.log('Welcome: player input', e.target.value)
@@ -113,13 +122,15 @@ function Welcome({ playerName, setPlayerName }: WelcomeProps) {
 
 function Room() {
   const { room, playerName } = useParams()
+  const isDevProfile = isDevPlayerName(playerName || '')
 
   return (
     <main className="page">
       <h1>Room</h1>
       <p className="hint">
-        room: <code>{room}</code> — player: <code>{playerName}</code>
+        room: <code>{room}</code> — player: <span className={isDevProfile ? 'dev-name-text' : ''}>{playerName}</span>
       </p>
+      {isDevProfile && <p className="hint dev-hint">Dev profile detected</p>}
     </main>
   )
 }
@@ -129,6 +140,7 @@ export default function App() {
   const state = (location.state as { backgroundLocation?: RouterLocation } | undefined) || undefined
   const background = state?.backgroundLocation
   const [playerName, setPlayerName] = useState(() => localStorage.getItem('playerName') || '')
+  const [avatar, setAvatar] = useState<string | null>(() => localStorage.getItem('avatar'))
   const [theme, setTheme] = useState<ThemeName>(() => {
     const saved = localStorage.getItem('theme')
     if (saved === 'ice' || saved === 'neon' || saved === 'default') return saved
@@ -145,10 +157,21 @@ export default function App() {
     localStorage.setItem('theme', theme)
   }, [theme])
 
+  const isDevProfile = isDevPlayerName(playerName)
+  const displayedAvatar = resolveAvatarForPlayer(playerName, avatar)
+
+  useEffect(() => {
+    if (avatar) {
+      try { localStorage.setItem('avatar', avatar) } catch {}
+    } else {
+      try { localStorage.removeItem('avatar') } catch {}
+    }
+  }, [avatar])
+
   return (
     <>
       <Routes location={background || location}>
-        <Route path="/" element={<Welcome playerName={playerName} setPlayerName={setPlayerName} />} />
+        <Route path="/" element={<Welcome playerName={playerName} setPlayerName={setPlayerName} avatar={displayedAvatar} isDevProfile={isDevProfile} />} />
         <Route path="/dev" element={<DevCredits />} />
         <Route path="/spectator" element={<Spectator />} />
         <Route
@@ -157,6 +180,8 @@ export default function App() {
             <Profile
               playerName={playerName}
               setPlayerName={setPlayerName}
+              avatar={avatar}
+              setAvatar={setAvatar}
               theme={theme}
               setTheme={setTheme}
             />
@@ -173,6 +198,8 @@ export default function App() {
               <Profile
                 playerName={playerName}
                 setPlayerName={setPlayerName}
+                avatar={avatar}
+                setAvatar={setAvatar}
                 theme={theme}
                 setTheme={setTheme}
               />
