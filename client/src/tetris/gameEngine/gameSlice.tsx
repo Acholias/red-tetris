@@ -73,11 +73,11 @@ export const gameSlice = createSlice({
             state.grid.cells = Array(state.grid.width * state.grid.height).fill('E');
 
             const piece = pieces[action.payload.pieceId];
-            const px = Math.floor(state.grid.width / 2) - Math.floor(piece.width / 2);
-            state.piece = {...piece, x: px, y:0};
+            const px = Math.floor(state.grid.width / 2) - Math.ceil(piece.size / 2);
+            state.piece = {...piece, x: px, y:0, width: piece.size, height: piece.size};
 
             const nextPiece = pieces[action.payload.nextPieceId];
-            state.nextPiece = {...nextPiece};
+            state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
         },
         updateGrid: (state, action: PayloadAction<string[]>) => {
             state.grid.cells = [...action.payload];

@@ -74,8 +74,8 @@ Modal for username (save in cookie)
 | 3x3  | yes      | no    | F_V     | V  | V5   |
 | 3x3  | yes      | yes   | F_L     | l  | L4   |
 | 3x3  | yes      | yes   | F_J     | j  | J4   | ~L4
-| 3x3  | yes      | no    | F_T     | t  | T4   |
-| 3x3  | yes      | yes   | F_T     | T  | T5   |
+| 3x3  | yes      | yes   | F_T     | t  | T4   |
+| 3x3  | yes      | no    | F_T     | T  | T5   |
 | 3x3  | yes      | yes   | F_S     | s  | S4   | ~Z4
 | 3x3  | yes      | yes   | F_Z     | z  | Z4   |
 | 3x3  | yes      | no    | F_O     | U  | U    |
@@ -90,7 +90,7 @@ Modal for username (save in cookie)
 | 4x2  | no       | yes   | F_O     | O  | O    |
 | 4x4  | yes      | yes   | F_I     | 4  | I4   |
 | 4x4  | yes      | no    | F_L     | L  | L5   |
-| 4x4  | yes      | no    | F_J     | J  | J5   | ~J5
+| 4x4  | yes      | no    | F_J     | J  | J5   | ~L5
 | 4x4  | yes      | no    | F_S     | N  | N    |
 | 4x4  | yes      | no    | F_Z     | n  | ~N   |
 | 4x4  | yes      | no    | F_T     | Y  | Y    |

@@ -38,8 +38,8 @@ function Tetris() {
       allPieces: false,
       width: 10,
       height: 20,
-      pieceId: 'l',
-      nextPieceId: 'j',
+      pieceId: '1',
+      nextPieceId: 'F',
     }));
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -77,7 +77,19 @@ function Tetris() {
   const pieceY = piece.y * cellSize;
 
   const previewX = (game.grid.width + 1) * cellSize;
-  const previewGrid = Array(nextPiece.width * nextPiece.height).fill('E');
+  const previewGrid = Array(25).fill('E');
+  let previewOffset = 0;
+  switch (nextPiece.width) {
+    case 1:
+      previewOffset = 2 * cellSize;
+      break;
+    case 2:
+      previewOffset = 1 * cellSize;
+      break;
+    case 3:
+      previewOffset = 1 * cellSize;
+      break;
+  }
 
   // Style define
   const gameStyle = {
@@ -112,8 +124,8 @@ function Tetris() {
       <div className='game-board' style={gameStyle}>
         {renderCells(grid.cells, 0, 0, grid.width, grid.height)}
         {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
-        {renderCells(previewGrid, previewX, 0, nextPiece.width, nextPiece.height)}
-        {renderCells(nextPiece.cells, previewX, 0, nextPiece.width, nextPiece.height)}
+        {renderCells(previewGrid, previewX, 0, 5, 5)}
+        {renderCells(nextPiece.cells, previewX + previewOffset, previewOffset, nextPiece.width, nextPiece.height)}
       </div>
     </>
   )
