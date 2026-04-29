@@ -109,6 +109,7 @@ Modal for username (save in cookie)
 | F_V     | dark green  #39892F |
 | F_Z     | magenta     #DD0AB2 |
 |---------|-----------------------|
-| F_E     | light blue  #646464 | Empty cells !
-| F_U     | light blue  #323232 | Unbreakable cells !
+| F_E     | gray        #646464 | Empty cells !
+| F_M     | light gray  #969696 | Spectrum !
+| F_U     | dark gray   #323232 | Unbreakable cells !
 |---------|-----------------------|

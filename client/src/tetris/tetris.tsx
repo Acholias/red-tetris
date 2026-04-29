@@ -1,4 +1,6 @@
 import './tetris.css'
+import { type GameData, initGame } from './gameEngine/gameData.tsx'
+import { useState } from 'react';
 
 function renderCells(
           cells: Array<string>,
@@ -22,6 +24,13 @@ function renderCells(
 
 
 function Tetris() {
+  const [gameData, setGame] = useState<GameData | null>(null);
+
+  const startGame = () => {
+    const game = initGame([10, 20], 0.5, true, 0, 0);
+    setGame(game);
+  };
+
   // Grid get from back
   const grid = Array(200).fill('E');
   const gridSize = [10, 20];
@@ -55,24 +64,26 @@ function Tetris() {
   // Style define
   const gameStyle = {
     '--cell-size': `${cellSize}vh`,
-    '--color-U' : '#323232',
     '--color-E' : '#646464',
     '--color-I' : '#01EDFA',
     '--color-J' : '#485DC5',
     '--color-L' : '#FFC82E',
+    '--color-M' : '#969696',
     '--color-O' : '#FEFB34',
     '--color-S' : '#53DA3F',
     '--color-T' : '#EA141C',
+    '--color-U' : '#323232',
     '--color-V' : '#39892F',
     '--color-Z' : '#DD0AB2',
-    '--texture-U' : "url('/styles/basic/cell.png')",
     '--texture-E' : "url('/styles/basic/empty.png')",
     '--texture-I' : "url('/styles/basic/cell.png')",
     '--texture-J' : "url('/styles/basic/cell.png')",
     '--texture-L' : "url('/styles/basic/cell.png')",
+    '--texture-M' : "url('/styles/basic/cell.png')",
     '--texture-O' : "url('/styles/basic/cell.png')",
     '--texture-S' : "url('/styles/basic/cell.png')",
     '--texture-T' : "url('/styles/basic/cell.png')",
+    '--texture-U' : "url('/styles/basic/cell.png')",
     '--texture-V' : "url('/styles/basic/cell.png')",
     '--texture-Z' : "url('/styles/basic/cell.png')",
   } as React.CSSProperties;

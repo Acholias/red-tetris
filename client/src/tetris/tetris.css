@@ -1,5 +1,6 @@
 .game-board {
     position: relative;
+    margin-left: 10em;
 }
 
 .game-grid {
@@ -14,12 +15,6 @@
 .game-cell {
     width: var(--cell-size);
     height: var(--cell-size);
-}
-
-.cell-U {
-    background-color: var(--color-U);
-    background-image: var(--texture-U);
-    background-size: cover;
 }
 
 .cell-E {
@@ -46,6 +41,12 @@
     background-size: cover;
 }
 
+.cell-M {
+    background-color: var(--color-M);
+    background-image: var(--texture-M);
+    background-size: cover;
+}
+
 .cell-O {
     background-color: var(--color-O);
     background-image: var(--texture-O);
@@ -61,6 +62,12 @@
 .cell-T {
     background-color: var(--color-T);
     background-image: var(--texture-T);
+    background-size: cover;
+}
+
+.cell-U {
+    background-color: var(--color-U);
+    background-image: var(--texture-U);
     background-size: cover;
 }
 
