@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/29 08:14:49 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/29 11:41:49 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,15 @@ import { TetrisRain } from './components/TetrisRain'
 import DevCredits from './DevCredits'
 import Profile from './Profile'
 import Spectator from './Spectator'
+import Lobby from './Lobby'
+import Game from './Game'
 import { isDevPlayerName, resolveAvatarForPlayer } from './profileIdentity'
 
 function sanitizeSegment(value: string) {
   return value.trim().replaceAll('/', '').replaceAll(' ', '-')
 }
 
-type ThemeName = 'default' | 'ice' | 'neon'
+type ThemeName = 'default' | '1' | '2' | '3' | '4' | '5'
 
 type WelcomeProps = {
   playerName: string
@@ -94,7 +96,7 @@ function Welcome({ playerName, setPlayerName, avatar, isDevProfile }: WelcomePro
           <button
             type="button"
             disabled={!cleanPlayer}
-            onClick={() => go('solo')}
+            onClick={() => navigate('/game', { state: { mode: 'solo', playerName } })}
           >
             Play solo
           </button>
@@ -102,14 +104,14 @@ function Welcome({ playerName, setPlayerName, avatar, isDevProfile }: WelcomePro
           <button
             type="button"
             disabled={!cleanPlayer || !cleanRoom}
-            onClick={() => go(room)}
+            onClick={() => navigate('/lobby', { state: { mode: 'multi', playerName, room } })}
           > 
             Play multi
           </button>
 
             <button
               type="button"
-              disabled={!cleanPlayer}
+              disabled={!cleanPlayer || !cleanRoom}
               onClick={() => navigate('/spectator')}
               className="spectator-btn">
               Spectator
@@ -143,7 +145,7 @@ export default function App() {
   const [avatar, setAvatar] = useState<string | null>(() => localStorage.getItem('avatar'))
   const [theme, setTheme] = useState<ThemeName>(() => {
     const saved = localStorage.getItem('theme')
-    if (saved === 'ice' || saved === 'neon' || saved === 'default') return saved
+    if (saved === '1' || saved === '2' || saved === '3' || saved === '4' || saved === '5' || saved === 'default') return saved
     return 'default'
   })
 
@@ -174,6 +176,8 @@ export default function App() {
         <Route path="/" element={<Welcome playerName={playerName} setPlayerName={setPlayerName} avatar={displayedAvatar} isDevProfile={isDevProfile} />} />
         <Route path="/dev" element={<DevCredits />} />
         <Route path="/spectator" element={<Spectator />} />
+        <Route path="/lobby" element={<Lobby />} />
+        <Route path="/game" element={<Game />} />
         <Route
           path="/profile"
           element={

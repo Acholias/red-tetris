@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   profileIdentity.ts                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/29 09:56:26 by lumugot           #+#    #+#             */
+/*   Updated: 2026/04/29 09:58:38 by lumugot          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 const devAvatars: Record<string, string> = {
   lumugot: '/avatarsdevs/lumugot.png',
   acholias: '/avatarsdevs/Acholias.png',

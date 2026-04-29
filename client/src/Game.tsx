@@ -6,16 +6,26 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:25:02 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/28 10:25:17 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/29 11:39:06 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import React from 'react'
+import { useLocation } from 'react-router-dom'
 
-export default function DevCredits() {
+type GameState = {
+  mode?: 'solo' | 'multi'
+  playerName?: string
+  room?: string
+}
+
+export default function Game() {
+  const location = useLocation()
+  const state = (location.state as GameState | undefined) || undefined
+
   return (
     <main className="page dev-page">
-      <h1> Game </h1>
+      <h1>Game</h1>
+      <p>{state?.mode === 'multi' ? 'Multi player game' : 'Solo game'}</p>
     </main>
   )
 }
