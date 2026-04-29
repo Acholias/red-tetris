@@ -1,5 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type PieceId, type RotateFunction, pieces } from './pieces';
+import { type PieceId, pieces } from './pieces';
+import { rotations, type RotationId } from './rotations';
+import { isPieceOverlap, kickTests } from './overlaps';
 
 export interface GameState {
     speed: number;
@@ -15,18 +17,18 @@ export interface GameState {
         y: number;
         width: number;
         height: number;
-        rotate: RotateFunction | null;
+        rotationId: RotationId | null,
     };
     nextPiece: {
         cells: string[];
         width: number;
         height: number;
-        rotate: RotateFunction | null;
+        rotationId: RotationId | null,
     };
 }
 
 const initialState: GameState = {
-    speed: 0.5,
+    speed: 0,
     allPieces: false,
     grid: {
         cells: [],
@@ -39,13 +41,13 @@ const initialState: GameState = {
         y: 0,
         width: 0,
         height: 0,
-        rotate: null,
+        rotationId: null,
     },
     nextPiece: {
         cells: [],
         width: 0,
         height: 0,
-        rotate: null,
+        rotationId: null,
     }
 };
 
@@ -71,42 +73,39 @@ export const gameSlice = createSlice({
             state.grid.cells = Array(state.grid.width * state.grid.height).fill('E');
 
             const piece = pieces[action.payload.pieceId];
-            state.piece.cells = [...piece.cells];
-            state.piece.x = Math.floor(state.grid.width / 2) - Math.floor(piece.width / 2);
-            state.piece.y = 0;
-            state.piece.width = piece.width;
-            state.piece.height = piece.height;
-            state.piece.rotate = piece.rotate;
+            const px = Math.floor(state.grid.width / 2) - Math.floor(piece.width / 2);
+            state.piece = {...piece, x: px, y:0};
 
             const nextPiece = pieces[action.payload.nextPieceId];
-            state.nextPiece.cells = [...nextPiece.cells];
-            state.nextPiece.width = nextPiece.width;
-            state.nextPiece.height = nextPiece.height;
-            state.nextPiece.rotate = nextPiece.rotate;
+            state.nextPiece = {...nextPiece};
         },
         updateGrid: (state, action: PayloadAction<string[]>) => {
-            state.grid.cells = action.payload;
+            state.grid.cells = [...action.payload];
         },
         movePiece: (state, action: PayloadAction<{right: boolean}>) => {
-            const piece = state.piece;
+            const newX = state.piece.x + (action.payload.right? 1 : -1);
+            const newPiece = {...state.piece, x: newX};
 
-            if (action.payload.right) {
-                piece.x += 1;
-            } else {
-                piece.x -= 1;
-            }
-
-            // TODO: Check overlap
-            state.piece = piece;
+            if (isPieceOverlap(state.grid, newPiece)) return;
+            state.piece = newPiece;
         },
         rotatePiece: (state) => {
-            let piece = state.piece;
-            if (piece.rotate == null) return;
+            if (state.piece.rotationId == null) return;
+            const rotate = rotations[state.piece.rotationId];
+            const rotatedCells = rotate(state.piece.cells);
 
-            piece.cells = piece.rotate(piece.cells);
-
-            // TODO: Check overlap
-            state.piece = piece;
+            for (const test of kickTests) {
+                const testPiece = {
+                    ...state.piece,
+                    cells: rotatedCells,
+                    x: state.piece.x + test.dx,
+                    y: state.piece.y + test.dy,
+                };
+                if (!isPieceOverlap(state.grid, testPiece)) {
+                    state.piece = testPiece;
+                    return;
+                }
+            }
         }
     }
 });

@@ -44,14 +44,14 @@ function Tetris() {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
+        case 'ArrowUp':
+          dispatch(rotatePiece());
+          break
         case 'ArrowLeft':
           dispatch(movePiece({right: false}));
           break
         case 'ArrowRight':
           dispatch(movePiece({right: true}));
-          break
-        case 'ArrowUp':
-          dispatch(rotatePiece());
           break
       }
     };

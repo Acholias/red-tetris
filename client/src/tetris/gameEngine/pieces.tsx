@@ -1,39 +1,32 @@
-export type PieceId = 'l' | 'j';
-export type RotateFunction = (cells: string[]) => string[];
+import type { RotationId } from "./rotations";
 
-function rotate3x3(cells: string[]) {
-    return [
-        cells[6], cells[3], cells[0],
-        cells[7], cells[4], cells[1],
-        cells[8], cells[5], cells[2],
-    ];
-}
+export type PieceId = 'l' | 'j';
 
 export const pieces: Record<PieceId, {
     cells: string[],
     width: number,
     height: number,
-    rotate: RotateFunction | null,
+    rotationId: RotationId | null,
 }> = {
     'j': {
         'cells': [
-            'L', ' ',  ' ',
-            'L', 'L',  'L',
-            ' ', ' ',  ' ',
+            'J', ' ', ' ',
+            'J', 'J', 'J',
+            ' ', ' ', ' ',
         ],
         'width': 3,
         'height': 3,
-        'rotate': rotate3x3,
+        'rotationId': '3x3',
     },
     'l': {
         'cells': [
-            ' ', ' ',  'J',
-            'J', 'J',  'J',
-            ' ', ' ',  ' ',
+            ' ', ' ', 'L',
+            'L', 'L', 'L',
+            ' ', ' ', ' ',
         ],
         'width': 3,
         'height': 3,
-        'rotate': rotate3x3,
+        'rotationId': '3x3',
     }
 };
 
