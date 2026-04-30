@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import gameReducer from '../tetris/gameEngine/gameSlice';
+import gameReducer from '../gameEngine/logic/gameSlice';
 
 export const store = configureStore({
     reducer: {

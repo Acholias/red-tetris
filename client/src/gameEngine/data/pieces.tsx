@@ -1,4 +1,4 @@
-import type { RotationId } from "./rotations";
+import type { RotationId } from "../logic/rotations";
 
 export interface Piece {
     cells: string[];

@@ -1,13 +1,13 @@
-import './tetris.css'
+import './gameBoard.css'
 import { useSelector, useDispatch } from 'react-redux';
-import { type RootState } from '../store/store';
-import { initGame, movePiece, rotatePiece, softDrop, hardDrop, tick } from './gameEngine/gameSlice';
+import { type RootState } from '../../store/store';
+import { initGame, movePiece, rotatePiece, softDrop, hardDrop, tick } from '../logic/gameSlice';
 import { useEffect } from 'react';
 import { io, type Socket } from "socket.io-client";
-import { createInterval } from './gameEngine/intervals';
-import { renderCells } from './gameEngine/render';
+import { createInterval } from '../utils/intervals';
+import { renderCells } from './render';
 
-function Tetris() {
+export default function GameBoard() {
   // Get game from store
   const game = useSelector((state: RootState) => state.game);
   const dispatch = useDispatch();
@@ -126,7 +126,6 @@ function Tetris() {
 
   return (
     <>
-      <h1>Tetris</h1>
       <div className='game-board' style={gameStyle}>
         {renderCells(grid.cells, 0, 0, grid.width, grid.height)}
         {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
@@ -136,5 +135,3 @@ function Tetris() {
     </>
   )
 }
-
-export default Tetris

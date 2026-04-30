@@ -1,20 +1,10 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { allPieceIds, basicPieceIds, type Piece, type PieceId, pieces } from './pieces';
-import { rotations, type RotationId } from './rotations';
+import type { GameData } from '../data/gameData';
+import { allPieceIds, basicPieceIds, pieces, type PieceId } from '../data/pieces';
 import { isPieceOverlap, kickTests } from './overlaps';
-import type { Grid } from './grid';
+import { rotations } from './rotations';
 
-export interface GameState {
-    speed: number;
-    allPieces: boolean;
-    waitNextPiece: boolean;
-    isEnd: boolean;
-    grid: Grid;
-    piece: Piece;
-    nextPiece: Piece;
-}
-
-const initialState: GameState = {
+const initialState: GameData = {
     speed: 0,
     allPieces: false,
     waitNextPiece: false,

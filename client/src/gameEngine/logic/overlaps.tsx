@@ -1,5 +1,5 @@
-import type { Grid } from "./grid";
-import type { Piece } from "./pieces";
+import type { Grid } from "../data/grid";
+import type { Piece } from "../data/pieces";
 
 export const kickTests = [
     { dx:  0, dy:  0 },
