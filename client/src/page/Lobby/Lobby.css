@@ -1,0 +1,17 @@
+.room-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.player-list {
+    width: 45%;
+    text-align: center;
+}
+
+.player-item {
+    background-color: var(--player-background);
+    color: var(--player-color);
+    padding: 1px;
+    margin-bottom: 1vh;
+    border-radius: 10px;
+}

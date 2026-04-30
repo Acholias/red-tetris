@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Welcome.tsx                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 13:05:38 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/30 15:30:44 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/30 21:59:42 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ export default function Welcome({ playerName, setPlayerName, avatar, isDevProfil
 					<button
 						type="button"
 						disabled={!cleanPlayer || !cleanRoom}
-						onClick={() => navigate('/lobby', { state: { mode: 'multi', playerName, room } })}
+						onClick={() => navigate(`/${room}/${playerName}`, { state: { mode: 'multi', playerName, room } })}
 					>
 						Play multi
 					</button>

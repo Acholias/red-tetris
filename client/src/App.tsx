@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   App.tsx                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/30 13:27:56 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/30 22:49:28 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,12 @@ import { useEffect, useState } from 'react'
 import DevCredits from './page/DevCredits'
 import Profile from './page/Profile'
 import Spectator from './page/Spectator'
-import Lobby from './page/Lobby'
+import Lobby from './page/Lobby/Lobby'
 import Game from './page/Game'
 import Welcome from './page/Welcome'
 import { isDevPlayerName, resolveAvatarForPlayer } from './components/profileIdentity'
 
 type ThemeName = 'default' | '1' | '2' | '3' | '4' | '5'
-
-
-function Room() {
-  const { room, playerName } = useParams()
-  const isDevProfile = isDevPlayerName(playerName || '')
-
-  return (
-    <main className="page">
-      <h1>Room</h1>
-      <p className="hint">
-        room: <code>{room}</code> — player: <span className={isDevProfile ? 'dev-name-text' : ''}>{playerName}</span>
-      </p>
-      {isDevProfile && <p className="hint dev-hint">Dev profile detected</p>}
-    </main>
-  )
-}
 
 export default function App() {
   const location = useLocation()
@@ -78,7 +62,6 @@ export default function App() {
         <Route path="/" element={<Welcome playerName={playerName} setPlayerName={setPlayerName} avatar={displayedAvatar} isDevProfile={isDevProfile} />} />
         <Route path="/dev" element={<DevCredits />} />
         <Route path="/spectator" element={<Spectator />} />
-        <Route path="/lobby" element={<Lobby />} />
         <Route path="/game" element={<Game />} />
         <Route
           path="/profile"
@@ -93,7 +76,7 @@ export default function App() {
             />
           }
         />
-        <Route path="/:room/:playerName" element={<Room />} />
+        <Route path="/:room/:playerName" element={<Lobby />} />
       </Routes>
 
       {background && (

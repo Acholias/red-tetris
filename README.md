@@ -27,10 +27,10 @@ node src/index.js
 
 Bonus :
 - mode spectateur (rejoins une game en cours)
-- power down
+- power down (malus adversaire)
 - mode de difficulté
 - thèmes
-- pièces customs (Du jeu blocus) (Plateau plus grand ?)
+- pièces customs (Du jeu blocus)
 - succès
 
 
