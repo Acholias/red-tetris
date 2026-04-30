@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../store/store';
 import { hardDrop, initGame, movePiece, rotatePiece, softDrop } from './gameEngine/gameSlice';
 import { useEffect } from 'react';
+import { io, type Socket } from "socket.io-client";
 
 function renderCells(
           cells: Array<string>,
@@ -30,8 +31,14 @@ function Tetris() {
   const game = useSelector((state: RootState) => state.game);
   const dispatch = useDispatch();
 
+  const socket: Socket = io("http://localhost:3000");
+
   // Keyboard mapping
   useEffect(() => {
+    socket.on("connect", () => {
+      console.log(`Client connected with id : ${socket.id}`);
+    });
+
     // Init game at page start
     dispatch(initGame({
       speed: 0.5,
