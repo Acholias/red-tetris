@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 22:23:27 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/29 11:35:34 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/30 13:18:21 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -451,16 +451,38 @@ code {
   box-shadow: 0 10px 30px rgba(65, 105, 225, 0.18);
   cursor: pointer;
   z-index: 3;
+  right: max(clamp(18px, 4vw, 44px), env(safe-area-inset-right));
 }
 
 .dev-button {
-  left: 1180px;
-  top: 590px;
+  position: absolute;
+  left: 58vw;
+  top: 66vh;
 }
 
 .profile-button {
-  left: 1180px;
-  bottom: 120px;
+  position: absolute;
+  left: 58vw;
+  top: -13vh;
+}
+
+@media (max-width: 520px) {
+  .floating-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 14px;
+    right: max(12px, env(safe-area-inset-right));
+  }
+
+  .dev-button {
+    top: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .profile-button {
+    bottom: auto;
+    top: max(12px, env(safe-area-inset-top));
+  }
 }
 
 .profile-avatar-button {
@@ -875,4 +897,34 @@ code {
   --c-light: #00ffa3;
   --c-mid: #00b3ff;
   --c-dark: #7b2cff;
+}
+
+:root[data-theme='1'] {
+  --c-light: #99f6ff;
+  --c-mid: #57b6ff;
+  --c-dark: #2a5dff;
+}
+
+:root[data-theme='2'] {
+  --c-light: #00ffa3;
+  --c-mid: #00b3ff;
+  --c-dark: #7b2cff;
+}
+
+:root[data-theme='3'] {
+  --c-light: #fdb145;
+  --c-mid: #ff5f6d;
+  --c-dark: #6941e1;
+}
+
+:root[data-theme='4'] {
+  --c-light: #0ea5e9;
+  --c-mid: #4169e1;
+  --c-dark: #1d4ed8;
+}
+
+:root[data-theme='5'] {
+  --c-light: #5e8659;
+  --c-mid: #41b9e1;
+  --c-dark: #3cff00;
 }

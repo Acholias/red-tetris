@@ -6,15 +6,15 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 11:31:47 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/29 11:50:00 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/30 13:18:54 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { isDevPlayerName, resolveAvatarForPlayer } from './profileIdentity'
+import { isDevPlayerName, resolveAvatarForPlayer } from '../components/profileIdentity'
 
-type ThemeName = 'default' | 'ice' | 'neon'
+type ThemeName = 'default' | '1' | '2' | '3' | '4' | '5'
 
 type ProfileProps = {
   playerName: string
@@ -26,7 +26,7 @@ type ProfileProps = {
 }
 
 const themes = [
-  { value: 'Default', label: 'Default', dot: 'linear-gradient(135deg, #41B9E1, #4169E1)' },
+  { value: 'default', label: 'Default', dot: 'linear-gradient(135deg, #41B9E1, #4169E1)' },
   { value: '1', label: '1', dot: 'linear-gradient(135deg, #99F6FF, #57B6FF)' },
   { value: '2', label: '2', dot: 'linear-gradient(135deg, #00FFA3, #00B3FF)' },
   { value: '3', label: '3', dot: 'linear-gradient(135deg, #fdb145, #FF5F6D)' },
@@ -197,7 +197,7 @@ export default function Profile({ playerName, setPlayerName, avatar, setAvatar, 
 
           <section className="profile-name-block">
             <label className="field">
-              <span>  PlayerName</span>
+              <span>  PlayerName </span>
               <input
                 className={isDevPlayerName(draftPlayerName) ? 'dev-name-input dev-name-input--gold' : ''}
                 value={draftPlayerName}

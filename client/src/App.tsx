@@ -6,121 +6,23 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/29 11:41:49 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/30 13:19:21 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom'
+import { Routes, Route, useParams, useLocation } from 'react-router-dom'
 import type { Location as RouterLocation } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
-import { TetrisRain } from './components/TetrisRain'
-import DevCredits from './DevCredits'
-import Profile from './Profile'
-import Spectator from './Spectator'
-import Lobby from './Lobby'
-import Game from './Game'
-import { isDevPlayerName, resolveAvatarForPlayer } from './profileIdentity'
-
-function sanitizeSegment(value: string) {
-  return value.trim().replaceAll('/', '').replaceAll(' ', '-')
-}
+import { useEffect, useState } from 'react'
+import DevCredits from './page/DevCredits'
+import Profile from './page/Profile'
+import Spectator from './page/Spectator'
+import Lobby from './page/Lobby'
+import Game from './page/Game'
+import Welcome from './page/Welcome'
+import { isDevPlayerName, resolveAvatarForPlayer } from './components/profileIdentity'
 
 type ThemeName = 'default' | '1' | '2' | '3' | '4' | '5'
 
-type WelcomeProps = {
-  playerName: string
-  setPlayerName: React.Dispatch<React.SetStateAction<string>>
-  avatar: string | null
-  isDevProfile: boolean
-}
-
-function Welcome({ playerName, setPlayerName, avatar, isDevProfile }: WelcomeProps) {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [room, setRoom] = useState('')
-
-  const cleanPlayer = useMemo(() => sanitizeSegment(playerName), [playerName])
-  const cleanRoom = useMemo(() => sanitizeSegment(room), [room])
-
-  function go(targetRoom: string) {
-    const r = sanitizeSegment(targetRoom)
-    const p = sanitizeSegment(playerName)
-
-    if (!r || !p) return
-
-    navigate(`/${encodeURIComponent(r)}/${encodeURIComponent(p)}`)
-  }
-
-  return (
-    <main className="page">
-      <button
-        type="button"
-        className={`floating-btn profile-button ${avatar ? 'profile-avatar-button' : ''} ${isDevProfile ? 'is-dev-profile' : ''}`}
-        onClick={() => navigate('/profile', { state: { backgroundLocation: location } })}
-        aria-label="Open profile"
-      >
-        {avatar ? <img className="profile-avatar-image" src={avatar} alt="Current avatar" /> : 'Profile'}
-      </button>
-      <button className="floating-btn dev-button" onClick={() => navigate('/dev')}>Devs</button>
-      <TetrisRain />
-      <h1>Blue Tetris</h1>
-
-      <section className="card">
-        <label className="field">
-          <span>Player name</span>
-          <input
-            className={isDevProfile ? 'dev-name-input dev-name-input--gold' : ''}
-            value={playerName}
-            onChange={(e) => {
-              console.log('Welcome: player input', e.target.value)
-              setPlayerName(e.target.value)
-            }}
-            placeholder="PlayerName"
-            autoComplete="nickname"
-          />
-        </label>
-
-        <label className="field">
-          <span>Room</span>
-          <input
-            value={room}
-            onChange={(e) => {
-              console.log('Welcome: room input', e.target.value)
-              setRoom(e.target.value)
-            }}
-            placeholder="42"
-          />
-        </label>
-
-        <div className="actions">
-          <button
-            type="button"
-            disabled={!cleanPlayer}
-            onClick={() => navigate('/game', { state: { mode: 'solo', playerName } })}
-          >
-            Play solo
-          </button>
-
-          <button
-            type="button"
-            disabled={!cleanPlayer || !cleanRoom}
-            onClick={() => navigate('/lobby', { state: { mode: 'multi', playerName, room } })}
-          > 
-            Play multi
-          </button>
-
-            <button
-              type="button"
-              disabled={!cleanPlayer || !cleanRoom}
-              onClick={() => navigate('/spectator')}
-              className="spectator-btn">
-              Spectator
-          </button>
-        </div>
-      </section>
-    </main>
-  )
-}
 
 function Room() {
   const { room, playerName } = useParams()
