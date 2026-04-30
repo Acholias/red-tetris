@@ -1,7 +1,7 @@
 import './tetris.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../store/store';
-import { initGame, movePiece, rotatePiece } from './gameEngine/gameSlice';
+import { hardDrop, initGame, movePiece, rotatePiece, softDrop } from './gameEngine/gameSlice';
 import { useEffect } from 'react';
 
 function renderCells(
@@ -35,23 +35,34 @@ function Tetris() {
     // Init game at page start
     dispatch(initGame({
       speed: 0.5,
-      allPieces: false,
+      allPieces: true,
       width: 10,
       height: 20,
-      pieceId: '1',
-      nextPieceId: 'F',
+      pieceId: 's',
+      nextPieceId: 't',
     }));
 
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
         case 'ArrowUp':
+          event.preventDefault();
           dispatch(rotatePiece());
           break
         case 'ArrowLeft':
+          event.preventDefault();
           dispatch(movePiece({right: false}));
           break
         case 'ArrowRight':
+          event.preventDefault();
           dispatch(movePiece({right: true}));
+          break
+        case 'ArrowDown':
+          event.preventDefault();
+          dispatch(softDrop());
+          break
+        case ' ':
+          event.preventDefault();
+          dispatch(hardDrop());
           break
       }
     };

@@ -18,18 +18,19 @@ export const allPieceIds: PieceId[] = [
     'N', 'n', 'Y', 'y', '5'
 ];
 
-export const pieces: Record<PieceId, {
+interface PieceData {
     cells: string[],
     size: number,
-    rotationId: RotationId | null,
-}> = {
+    rotationId?: RotationId,
+}
+
+export const pieces: Record<PieceId, PieceData> = {
     // 1x1
     '1': {
         'cells': [
             'O',
         ],
         'size': 1,
-        'rotationId': null,
     },
 
     // 2x2
@@ -55,7 +56,6 @@ export const pieces: Record<PieceId, {
             'O', 'O',
         ],
         'size': 2,
-        'rotationId': null,
     },
 
     // 3x3
@@ -142,8 +142,8 @@ export const pieces: Record<PieceId, {
     },
     'P': {
         'cells': [
-            'P', 'P', ' ',
-            'P', 'P', 'P',
+            'O', 'O', ' ',
+            'O', 'O', 'O',
             ' ', ' ', ' ',
         ],
         'size': 3,
@@ -151,8 +151,8 @@ export const pieces: Record<PieceId, {
     },
     'Q': {
         'cells': [
-            ' ', 'Q', 'Q',
-            'Q', 'Q', 'Q',
+            ' ', 'O', 'O',
+            'O', 'O', 'O',
             ' ', ' ', ' ',
         ],
         'size': 3,
@@ -174,7 +174,6 @@ export const pieces: Record<PieceId, {
             ' ', 'V', ' ',
         ],
         'size': 3,
-        'rotationId': null,
     },
     'S': {
         'cells': [
