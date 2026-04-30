@@ -1,9 +1,10 @@
 import './tetris.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../store/store';
-import { hardDrop, initGame, movePiece, rotatePiece, softDrop } from './gameEngine/gameSlice';
+import { initGame, movePiece, rotatePiece, softDrop, hardDrop, tick } from './gameEngine/gameSlice';
 import { useEffect } from 'react';
 import { io, type Socket } from "socket.io-client";
+import { createInterval } from './gameEngine/intervals';
 
 function renderCells(
           cells: Array<string>,
@@ -29,15 +30,23 @@ function renderCells(
 function Tetris() {
   // Get game from store
   const game = useSelector((state: RootState) => state.game);
+  const gameSpeed = useSelector((state: RootState) => state.game.speed);
+  const gameIsEnd = useSelector((state: RootState) => state.game.isEnd);
   const dispatch = useDispatch();
 
-  const socket: Socket = io("http://localhost:3000");
+  // Set game tick interval
+  createInterval(() => {
+      dispatch(tick());
+    },
+    gameIsEnd ? null : gameSpeed * 1000);
+
+  // const socket: Socket = io("http://localhost:3000");
 
   // Keyboard mapping
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log(`Client connected with id : ${socket.id}`);
-    });
+    // socket.on("connect", () => {
+    //   console.log(`Client connected with id : ${socket.id}`);
+    // });
 
     // Init game at page start
     dispatch(initGame({
@@ -49,6 +58,7 @@ function Tetris() {
       nextPieceId: 't',
     }));
 
+    // Key handler
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
         case 'ArrowUp':
