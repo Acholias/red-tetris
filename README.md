@@ -74,8 +74,8 @@ Modal for username (save in cookie)
 | 3x3  | yes      | no    | F_V     | V  | V5   |
 | 3x3  | yes      | yes   | F_L     | l  | L4   |
 | 3x3  | yes      | yes   | F_J     | j  | J4   | ~L4
-| 3x3  | yes      | no    | F_T     | t  | T4   |
-| 3x3  | yes      | yes   | F_T     | T  | T5   |
+| 3x3  | yes      | yes   | F_T     | t  | T4   |
+| 3x3  | yes      | no    | F_T     | T  | T5   |
 | 3x3  | yes      | yes   | F_S     | s  | S4   | ~Z4
 | 3x3  | yes      | yes   | F_Z     | z  | Z4   |
 | 3x3  | yes      | no    | F_O     | U  | U    |
@@ -90,7 +90,7 @@ Modal for username (save in cookie)
 | 4x2  | no       | yes   | F_O     | O  | O    |
 | 4x4  | yes      | yes   | F_I     | 4  | I4   |
 | 4x4  | yes      | no    | F_L     | L  | L5   |
-| 4x4  | yes      | no    | F_J     | J  | J5   | ~J5
+| 4x4  | yes      | no    | F_J     | J  | J5   | ~L5
 | 4x4  | yes      | no    | F_S     | N  | N    |
 | 4x4  | yes      | no    | F_Z     | n  | ~N   |
 | 4x4  | yes      | no    | F_T     | Y  | Y    |
@@ -98,13 +98,18 @@ Modal for username (save in cookie)
 | 5x5  | yes      | no    | F_I     | 5  | I5   |
 
 ## Piece families
-| familly | basic color |
-|---------|-------------|
-| F_I     | light blue  |
-| F_J     | dark blue   |
-| F_L     | orange      |
-| F_O     | yellow      |
-| F_S     | light green |
-| F_T     | red         |
-| F_V     | dark green  |
-| F_Z     | magenta     |
+| familly | basic color           |
+|---------|-----------------------|
+| F_I     | light blue  #01EDFA |
+| F_J     | dark blue   #485DC5 |
+| F_L     | orange      #FFC82E |
+| F_O     | yellow      #FEFB34 |
+| F_S     | light green #53DA3F |
+| F_T     | red         #EA141C |
+| F_V     | dark green  #39892F |
+| F_Z     | magenta     #DD0AB2 |
+|---------|-----------------------|
+| F_E     | gray        #646464 | Empty cells !
+| F_M     | light gray  #969696 | Spectrum !
+| F_U     | dark gray   #323232 | Unbreakable cells !
+|---------|-----------------------|

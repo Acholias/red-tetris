@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 import { useLocation } from 'react-router-dom'
+import Tetris from '../tetris/tetris'
 
 type GameState = {
   mode?: 'solo' | 'multi'
@@ -25,6 +26,7 @@ export default function Game() {
   return (
     <main className="page dev-page">
       <h1>Game</h1>
+      <Tetris/>
       <p>{state?.mode === 'multi' ? 'Multi player game' : 'Solo game'}</p>
     </main>
   )
