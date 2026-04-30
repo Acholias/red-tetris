@@ -1,32 +1,17 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { allPieceIds, basicPieceIds, type PieceId, pieces } from './pieces';
+import { allPieceIds, basicPieceIds, type Piece, type PieceId, pieces } from './pieces';
 import { rotations, type RotationId } from './rotations';
 import { isPieceOverlap, kickTests } from './overlaps';
+import type { Grid } from './grid';
 
 export interface GameState {
     speed: number;
     allPieces: boolean;
     waitNextPiece: boolean;
     isEnd: boolean;
-    grid: {
-        cells: string[];
-        width: number;
-        height: number;
-    };
-    piece: {
-        cells: string[];
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-        rotationId?: RotationId,
-    };
-    nextPiece: {
-        cells: string[];
-        width: number;
-        height: number;
-        rotationId?: RotationId,
-    };
+    grid: Grid;
+    piece: Piece;
+    nextPiece: Piece;
 }
 
 const initialState: GameState = {
@@ -99,6 +84,7 @@ export const gameSlice = createSlice({
         },
         movePiece: (state, action: PayloadAction<{right: boolean}>) => {
             if (state.waitNextPiece || state.isEnd) return;
+            if (state.piece.x == null || state.piece.y == null) return;
             const newX = state.piece.x + (action.payload.right? 1 : -1);
             const newPiece = {...state.piece, x: newX};
 
@@ -107,6 +93,7 @@ export const gameSlice = createSlice({
         },
         rotatePiece: (state) => {
             if (state.waitNextPiece || state.isEnd) return;
+            if (state.piece.x == null || state.piece.y == null) return;
             if (state.piece.rotationId == null) return;
             const rotate = rotations[state.piece.rotationId];
             const rotatedCells = rotate(state.piece.cells);
@@ -126,6 +113,7 @@ export const gameSlice = createSlice({
         },
         softDrop: (state) => {
             if (state.waitNextPiece || state.isEnd) return;
+            if (state.piece.x == null || state.piece.y == null) return;
             const newPiece = {...state.piece, y: state.piece.y + 1};
 
             if (isPieceOverlap(state.grid, newPiece)) {
@@ -157,6 +145,7 @@ export const gameSlice = createSlice({
         },
         hardDrop: (state) => {
             if (state.waitNextPiece || state.isEnd) return;
+            if (state.piece.x == null || state.piece.y == null) return;
             let newY = state.piece.y + 1;
 
             while (1) {
@@ -196,6 +185,7 @@ export const gameSlice = createSlice({
         },
         tick: (state) => {
             if (state.waitNextPiece || state.isEnd) return;
+            if (state.piece.x == null || state.piece.y == null) return;
             const newPiece = {...state.piece, y: state.piece.y + 1};
 
             if (isPieceOverlap(state.grid, newPiece)) {

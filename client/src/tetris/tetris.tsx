@@ -5,40 +5,18 @@ import { initGame, movePiece, rotatePiece, softDrop, hardDrop, tick } from './ga
 import { useEffect } from 'react';
 import { io, type Socket } from "socket.io-client";
 import { createInterval } from './gameEngine/intervals';
-
-function renderCells(
-          cells: Array<string>,
-          x: number, y: number,
-          w: number, h: number) {
-  const gridStyle = {
-    '--x': `${x}vh`,
-    '--y': `${y}vh`,
-    '--width': w,
-    '--height': h,
-  } as React.CSSProperties;
-
-  return (
-    <div className='game-grid' style={gridStyle}>
-      {cells.map((cell, index) => (
-        <div key={index} className={`game-cell cell-${cell}`}/>
-      ))}
-    </div>
-  )
-}
-
+import { renderCells } from './gameEngine/render';
 
 function Tetris() {
   // Get game from store
   const game = useSelector((state: RootState) => state.game);
-  const gameSpeed = useSelector((state: RootState) => state.game.speed);
-  const gameIsEnd = useSelector((state: RootState) => state.game.isEnd);
   const dispatch = useDispatch();
 
   // Set game tick interval
   createInterval(() => {
       dispatch(tick());
     },
-    gameIsEnd ? null : gameSpeed * 1000);
+    game.isEnd ? null : game.speed * 1000);
 
   // const socket: Socket = io("http://localhost:3000");
 
@@ -101,8 +79,8 @@ function Tetris() {
   // Variables computes
   const cellSize = 3;
 
-  const pieceX = piece.x * cellSize;
-  const pieceY = piece.y * cellSize;
+  const pieceX = (piece?.x ?? 0) * cellSize;
+  const pieceY = (piece?.y ?? 0) * cellSize;
 
   const previewX = (game.grid.width + 1) * cellSize;
   const previewGrid = Array(25).fill('E');

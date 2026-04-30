@@ -1,3 +1,6 @@
+import type { Grid } from "./grid";
+import type { Piece } from "./pieces";
+
 export const kickTests = [
     { dx:  0, dy:  0 },
     { dx:  1, dy:  0 },
@@ -8,18 +11,10 @@ export const kickTests = [
 ];
 
 export function isPieceOverlap(
-            grid: {
-                cells: string[],
-                width: number,
-                height: number,
-            },
-            piece: {
-                cells: string[],
-                x: number,
-                y: number,
-                width: number,
-                height: number,
-            }): boolean {
+            grid: Grid,
+            piece: Piece): boolean {
+    if (piece.x == null || piece.y == null) return false;
+
     const length = piece.width * piece.height;
     for (let i = 0; i < length; i++) {
         if (piece.cells[i] == ' ') continue;
