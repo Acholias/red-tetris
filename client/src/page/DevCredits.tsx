@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 07:47:09 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/30 14:24:53 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/04/30 15:32:08 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ type DevCard = {
 const devCards: DevCard[] = [
   {
     avatarSrc: '/avatarsdevs/lumugot.png',
-    title: "Titre pour definir le rôle sur le projet",
+    title: "designer",
     description: 'description',
   },
   {
     avatarSrc: '/avatarsdevs/aderouba.png',
-    title: "Titre pour definir le rôle sur le projet",
+    title: "Game Creator",
     description: 'description',
   },
 ]
