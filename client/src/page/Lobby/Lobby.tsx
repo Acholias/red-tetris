@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/01 15:52:58 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/01 21:02:18 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,16 @@ export default function Lobby() {
       }
     }, [dispatch, room.isSocketConnected, room.id]);
 
+  function updateSettings(key: string, value: any) {
+    dispatch({
+      'type' : 'room/settings',
+      'payload' : {
+        'roomId': urlRoom,
+        [key] : value
+      }
+    });
+  }
+
   // Style define
   const roomStyle = {
     '--player-background' : '#646464',
@@ -50,9 +60,58 @@ export default function Lobby() {
 
       <h2>Game parameters</h2>
       <p>Game mode : {room.players.length == 1 ? 'solo' : 'multi'}</p>
-      <p>Size : {`${room.size.w}x${room.size.h}`}</p>
-      <p>Pieces : {room.allPieces ? 'all' : 'basic'}</p>
-      <p>Speed : {room.gameSpeed != 0 ? `${1 / room.gameSpeed}` : '0 '} ticks per second</p>
+      {room.isAdmin && <div>
+        {/* Size */}
+        <div>
+          <label>Width : </label>
+          <input
+            type="number"
+            min={5}
+            max={20}
+            defaultValue={room.size.w}
+            onBlur={(e) => updateSettings('size', {
+              'w': parseFloat(e.target.value),
+              'h': room.size.h,
+            })}
+          />
+          <label>Height : </label>
+          <input
+            type="number"
+            min={10}
+            max={30}
+            defaultValue={room.size.h}
+            onBlur={(e) => updateSettings('size', {
+              'w': room.size.w,
+              'h': parseFloat(e.target.value),
+            })}
+          />
+        </div>
+        {/* All pieces */}
+        <div>
+          <label>All pieces :</label>
+          <input
+            type='checkbox'
+            checked={room.allPieces}
+            onChange={() => updateSettings('allPieces', !room.allPieces)}
+          />
+        </div>
+        {/* Speed */}
+        <div>
+          <label>Speed (ticks/sec) : </label>
+          <input
+            type="number"
+            min={1}
+            max={10}
+            defaultValue={1 / room.gameSpeed}
+            onBlur={(e) => updateSettings('gameSpeed', 1 / parseFloat(e.target.value))}
+          />
+        </div>
+      </div>}
+      {!room.isAdmin && <div>
+        <p>Size : {`${room.size.w}x${room.size.h}`}</p>
+        <p>Pieces : {room.allPieces ? 'all' : 'basic'}</p>
+        <p>Speed: {room.gameSpeed != 0 ? `${1 / room.gameSpeed}` : '0 '} ticks per second</p>
+      </div>}
 
       <div className='room-info' style={roomStyle}>
         <div className='player-list'>
@@ -69,12 +128,12 @@ export default function Lobby() {
         </div>
       </div>
 
-      <button
+      {room.isAdmin && !room.isPlaying && <button
         type="button"
         onClick={() => navigate('/game', { state: { mode: 'multi', playerName: urlPlayer, room: urlRoom } })}
       >
-        Join game
-      </button>
+        Start game
+      </button>}
     </main>
   )
 }

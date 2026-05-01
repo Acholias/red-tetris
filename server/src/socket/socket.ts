@@ -62,8 +62,18 @@ export function socketListenning(socket: Socket) {
         if (currentPlayer == null || !currentRoom.isAdmin(currentPlayer)) return;
 
         if (body.allPieces != null) currentRoom.allPieces = body.allPieces;
-        if (body.size != null) currentRoom.size = body.size;
-        if (body.gameSpeed != null) currentRoom.gameSpeed = body.gameSpeed;
+        if (body.size != null) {
+            if (body.size.w < 5) body.size.w = 5;
+            else if (body.size.w > 20) body.size.w = 20;
+            if (body.size.h < 10) body.size.h = 10;
+            else if (body.size.h > 30) body.size.h = 30;
+            currentRoom.size = body.size;
+        }
+        if (body.gameSpeed != null) {
+            if (body.gameSpeed < 0.1) body.gameSpeed = 0.1;
+            else if (body.gameSpeed > 1) body.gameSpeed = 1;
+            currentRoom.gameSpeed = body.gameSpeed;
+        }
 
         const bodyAll: BodyRoomUpdate = {
             allPieces: (body.allPieces != null) ? currentRoom.allPieces : undefined,
@@ -71,6 +81,7 @@ export function socketListenning(socket: Socket) {
             gameSpeed: (body.gameSpeed != null) ? currentRoom.gameSpeed : undefined,
         };
         socket.to(currentRoom.id).emit('room/update', bodyAll);
+        socket.emit('room/update', bodyAll);
     });
 
     socket.on('disconnect', () => {

@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { type Middleware } from 'redux';
-import type { BodyRoomJoin, BodyRoomLeave, BodyRoomUpdate } from '@shared/requestBody';
+import type { BodyRoomJoin, BodyRoomLeave, BodyRoomSettings, BodyRoomUpdate } from '@shared/requestBody';
 import { setSocketConnected, updateRoom } from '../gameRoom/logic/roomSlice';
 
 
@@ -8,6 +8,9 @@ export const socketMiddleware = (): Middleware => {
   let socket: Socket;
 
   return ({ dispatch }) => (next) => (action: any) => {
+
+    // SERVER -> CLIENT
+
     // Connection to server
     if (action.type === 'socket/connect') {
       // socket.close();
@@ -21,6 +24,20 @@ export const socketMiddleware = (): Middleware => {
 
       socket.on('connect', () => console.log("Connecté avec l'ID:", socket.id));
     }
+
+    // Case update room
+    if (action.type === 'room/update') {
+      dispatch(updateRoom({
+        isAdmin: action.payload.isAdmin,
+        isPlaying: action.payload.isPlaying,
+        allPieces: action.payload.allPieces,
+        size: action.payload.size,
+        gameSpeed: action.payload.gameSpeed,
+        players: action.payload.players,
+        spectators: action.payload.spectators}));
+    }
+
+    // CLIENT -> SERVER
 
     // Case join room
     if (action.type === 'room/join') {
@@ -39,16 +56,15 @@ export const socketMiddleware = (): Middleware => {
       socket.emit('room/leave', body);
     }
 
-    // Case update room
-    if (action.type === 'room/update') {
-      dispatch(updateRoom({
-        isAdmin: action.payload.isAdmin,
-        isPlaying: action.payload.isPlaying,
+    // Case update room settings
+    if (action.type === 'room/settings') {
+      const body: BodyRoomSettings = {
+        roomId: action.payload.id,
         allPieces: action.payload.allPieces,
         size: action.payload.size,
         gameSpeed: action.payload.gameSpeed,
-        players: action.payload.players,
-        spectators: action.payload.spectators}));
+      }
+      socket.emit('room/settings', body);
     }
 
     return next(action);
