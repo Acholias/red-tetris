@@ -1,9 +1,10 @@
 export class Player {
     id: string;
-    nickname: string;
+    idInRoom?: number;
+    name: string;
 
-    constructor(id: string, nickname: string) {
+    constructor(id: string, name: string) {
         this.id = id;
-        this.nickname = nickname;
+        this.name = name;
     }
 }

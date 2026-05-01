@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { type Middleware } from 'redux';
-import type { BodyRoomJoin, BodyRoomUpdate } from '@shared/requestBody';
+import type { BodyRoomJoin, BodyRoomLeave, BodyRoomUpdate } from '@shared/requestBody';
 import { setSocketConnected, updateRoom } from '../gameRoom/logic/roomSlice';
 
 
@@ -31,10 +31,22 @@ export const socketMiddleware = (): Middleware => {
       socket.emit('room/join', body);
     }
 
+    // Case leave room
+    if (action.type === 'room/leave') {
+      const body: BodyRoomLeave = {
+        roomId: action.payload.id,
+      }
+      socket.emit('room/leave', body);
+    }
+
     // Case update room
     if (action.type === 'room/update') {
       dispatch(updateRoom({
         isAdmin: action.payload.isAdmin,
+        isPlaying: action.payload.isPlaying,
+        allPieces: action.payload.allPieces,
+        size: action.payload.size,
+        gameSpeed: action.payload.gameSpeed,
         players: action.payload.players,
         spectators: action.payload.spectators}));
     }

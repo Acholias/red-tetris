@@ -1,11 +1,28 @@
+// Client -> server
 export interface BodyRoomJoin {
     roomId: string,
     playerName: string,
 };
 
-export interface BodyRoomUpdate {
+export interface BodyRoomLeave {
     roomId: string,
+};
+
+export interface BodyRoomSettings {
+    roomId: string,
+    allPieces?: boolean,
+    size?: {w: number, h: number},
+    gameSpeed?: number,
+};
+
+
+// Server -> client
+export interface BodyRoomUpdate {
     isAdmin?: boolean,
-    players: string[],
-    spectators: string[],
+    isPlaying?: boolean,
+    allPieces?: boolean,
+    size?: {w: number, h: number},
+    gameSpeed?: number,
+    players?: {id: number, name: string}[],
+    spectators?: {id: number, name: string}[],
 };

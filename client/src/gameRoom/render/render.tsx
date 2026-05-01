@@ -4,7 +4,7 @@ export function renderPlayer(
           player: Player) {
   return (
     <div key={`player-${player.id}`} className="player-item">
-      <p>{player.nickname}</p>
+      <p>{player.name}</p>
     </div>
   )
 }

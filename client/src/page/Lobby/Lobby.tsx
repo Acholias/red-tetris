@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/01 14:30:22 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/01 15:52:58 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,15 @@ export default function Lobby() {
 
   return (
     <main className="page dev-page">
-      <h1>Lobby</h1>
-      <p>{urlRoom ? `Room: ${urlRoom}` : ''} - {urlPlayer ? `${urlPlayer}` : ''} {room.isAdmin ? ' - Admin' : ''}</p>
+      <h1>{`Lobby ${urlRoom}`}</h1>
+
+      {room.isPlaying && <h2>In game</h2>}
+
+      <h2>Game parameters</h2>
+      <p>Game mode : {room.players.length == 1 ? 'solo' : 'multi'}</p>
+      <p>Size : {`${room.size.w}x${room.size.h}`}</p>
+      <p>Pieces : {room.allPieces ? 'all' : 'basic'}</p>
+      <p>Speed : {room.gameSpeed != 0 ? `${1 / room.gameSpeed}` : '0 '} ticks per second</p>
 
       <div className='room-info' style={roomStyle}>
         <div className='player-list'>

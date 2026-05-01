@@ -5,6 +5,9 @@ export interface Room {
     isSocketConnected: boolean,
     isAdmin: boolean,
     isPlaying: boolean,
+    allPieces: boolean,
+    size: {w: number, h: number},
+    gameSpeed: number,
     players: Player[],
-    spectators: Player[]
+    spectators: Player[],
 }
