@@ -10,4 +10,5 @@ export interface Room {
     gameSpeed: number,
     players: Player[],
     spectators: Player[],
+    yourId: number,
 }

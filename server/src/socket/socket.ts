@@ -1,7 +1,7 @@
 import { type Socket } from "socket.io";
 import { Room, rooms } from "../data/room.js";
 import { Player } from "../data/player.js";
-import { BodyRoomJoin, BodyRoomLeave, BodyRoomSettings, BodyRoomUpdate } from "@shared/requestBody.js"
+import { BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomUpdate } from "@shared/requestBody.js"
 
 export function socketListenning(socket: Socket) {
     socket.on('room/join', (body: BodyRoomJoin) => {
@@ -20,8 +20,8 @@ export function socketListenning(socket: Socket) {
         socket.join(currentRoom.id);
 
         const bodyAll: BodyRoomUpdate = {
-            players: currentRoom.players.map((player, index) => {return {id: index, name: player.name}}),
-            spectators: currentRoom.spectators.map((player, index) => {return {id: index, name: player.name}}),
+            players: currentRoom.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
+            spectators: currentRoom.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
         };
         socket.to(currentRoom.id).emit('room/update', bodyAll);
 
@@ -31,6 +31,7 @@ export function socketListenning(socket: Socket) {
             allPieces: currentRoom.allPieces,
             size: currentRoom.size,
             gameSpeed: currentRoom.gameSpeed,
+            yourId: newPlayer.idInRoom,
         };
         socket.emit('room/update', bodyNewPlayer);
     });
@@ -48,10 +49,11 @@ export function socketListenning(socket: Socket) {
         socket.leave(currentRoom.id);
 
         const bodyAll: BodyRoomUpdate = {
-            players: currentRoom.players.map((player, index) => {return {id: index, name: player.name}}),
-            spectators: currentRoom.spectators.map((player, index) => {return {id: index, name: player.name}}),
+            players: currentRoom.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
+            spectators: currentRoom.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
         };
         socket.to(currentRoom.id).emit('room/update', bodyAll);
+        socket.emit('room/update', bodyAll);
     });
 
     socket.on('room/settings', (body: BodyRoomSettings) => {
@@ -84,6 +86,32 @@ export function socketListenning(socket: Socket) {
         socket.emit('room/update', bodyAll);
     });
 
+    socket.on('room/playerMode', (body: BodyRoomPlayerMode) => {
+        const currentRoom = rooms.get(body.roomId);
+        if (currentRoom == null) return;
+
+        const currentPlayer = currentRoom.getPlayerById(socket.id);
+        if (currentPlayer == null) return;
+
+        if (body.spectate) {
+            if (currentRoom.isPlayerSpectate(currentPlayer.id)) return;
+            currentRoom.spectators.push(currentPlayer);
+            currentRoom.players = currentRoom.players.filter(p => p.id !== currentPlayer.id);
+        } else {
+            if (!currentRoom.isPlayerSpectate(currentPlayer.id)) return;
+            if (currentRoom.players.length >= 5) return ;
+            currentRoom.players.push(currentPlayer);
+            currentRoom.spectators = currentRoom.spectators.filter(p => p.id !== currentPlayer.id);
+        }
+
+        const bodyAll: BodyRoomUpdate = {
+            players: currentRoom.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
+            spectators: currentRoom.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
+        };
+        socket.to(currentRoom.id).emit('room/update', bodyAll);
+        socket.emit('room/update', bodyAll);
+    });
+
     socket.on('disconnect', () => {
         rooms.forEach((room, roomId) => {
             for (const player of room.players) {
@@ -94,7 +122,7 @@ export function socketListenning(socket: Socket) {
                 } else {
                     const bodyRoomUpdate: BodyRoomUpdate = {
                         players: room.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
-                        spectators: [],
+                        spectators: room.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
                     };
                     socket.to(room.id).emit('room/update', bodyRoomUpdate);
                     if (room.isAdmin(player)) {

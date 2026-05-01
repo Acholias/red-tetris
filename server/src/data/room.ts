@@ -38,7 +38,7 @@ export class Room {
             }
         }
 
-        if (this.players.length < maxNbPlayer) {
+        if (!this.isPlaying && this.players.length < maxNbPlayer) {
             this.players.push(newPlayer);
         } else {
             this.spectators.push(newPlayer);
@@ -52,8 +52,17 @@ export class Room {
         for (const player of this.players) {
             if (player.id == playerId) return player;
         }
-
+        for (const player of this.spectators) {
+            if (player.id == playerId) return player;
+        }
         return null;
+    }
+
+    isPlayerSpectate(playerId: string): boolean {
+        for (const player of this.spectators) {
+            if (player.id == playerId) return true;
+        }
+        return false;
     }
 }
 

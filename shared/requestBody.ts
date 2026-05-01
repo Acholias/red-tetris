@@ -15,6 +15,11 @@ export interface BodyRoomSettings {
     gameSpeed?: number,
 };
 
+export interface BodyRoomPlayerMode {
+    roomId: string,
+    spectate: boolean,
+};
+
 
 // Server -> client
 export interface BodyRoomUpdate {
@@ -25,4 +30,5 @@ export interface BodyRoomUpdate {
     gameSpeed?: number,
     players?: {id: number, name: string}[],
     spectators?: {id: number, name: string}[],
+    yourId?: number,
 };

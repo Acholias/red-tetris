@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/01 21:02:18 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/01 21:38:45 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../../store/store';
 import { initRoom } from '../../gameRoom/logic/roomSlice';
 import { useEffect } from 'react';
+import { canYouPlay, canYouSpectate } from '../../gameRoom/utils/functions';
 
 export default function Lobby() {
   const navigate = useNavigate();
@@ -45,10 +46,20 @@ export default function Lobby() {
       }
     });
   }
+  function changePlayerMode(spectate: boolean) {
+    dispatch({
+      'type' : 'room/playerMode',
+      'payload' : {
+        'roomId': urlRoom,
+        'spectate' : spectate,
+      }
+    });
+  }
 
   // Style define
   const roomStyle = {
     '--player-background' : '#646464',
+    '--you-background' : '#284169',
     '--player-color' : '#EEEEEE',
   } as React.CSSProperties;
 
@@ -117,18 +128,30 @@ export default function Lobby() {
         <div className='player-list'>
           <h3>Players</h3>
           {room.players.map((player) => (
-            renderPlayer(player)
+            renderPlayer(player, room.yourId)
           ))}
         </div>
         <div className='player-list'>
           <h3>Spectators</h3>
           {room.spectators.map((player) => (
-            renderPlayer(player)
+            renderPlayer(player, room.yourId)
           ))}
         </div>
       </div>
 
-      {room.isAdmin && !room.isPlaying && <button
+      {canYouPlay(room) && <button
+        type="button"
+        onClick={() => {changePlayerMode(false)}}
+      >
+        Play
+      </button>}
+      {canYouSpectate(room) && <button
+        type="button"
+        onClick={() => {changePlayerMode(true)}}
+      >
+        Spectate
+      </button>}
+      {room.isAdmin && !room.isPlaying && room.players.length > 0 && <button
         type="button"
         onClick={() => navigate('/game', { state: { mode: 'multi', playerName: urlPlayer, room: urlRoom } })}
       >

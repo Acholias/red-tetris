@@ -12,6 +12,7 @@ const initialState: Room = {
     gameSpeed: 0,
     players: [],
     spectators: [],
+    yourId: -2,
 };
 
 export const roomSlice = createSlice({
@@ -60,6 +61,9 @@ export const roomSlice = createSlice({
             }
             if (action.payload.spectators != null) {
                 state.spectators = action.payload.spectators;
+            }
+            if (action.payload.yourId != null) {
+                state.yourId = action.payload.yourId;
             }
         },
     }

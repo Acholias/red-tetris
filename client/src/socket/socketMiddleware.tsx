@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { type Middleware } from 'redux';
-import type { BodyRoomJoin, BodyRoomLeave, BodyRoomSettings, BodyRoomUpdate } from '@shared/requestBody';
+import type { BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomUpdate } from '@shared/requestBody';
 import { setSocketConnected, updateRoom } from '../gameRoom/logic/roomSlice';
 
 
@@ -34,7 +34,8 @@ export const socketMiddleware = (): Middleware => {
         size: action.payload.size,
         gameSpeed: action.payload.gameSpeed,
         players: action.payload.players,
-        spectators: action.payload.spectators}));
+        spectators: action.payload.spectators,
+        yourId: action.payload.yourId}));
     }
 
     // CLIENT -> SERVER
@@ -65,6 +66,15 @@ export const socketMiddleware = (): Middleware => {
         gameSpeed: action.payload.gameSpeed,
       }
       socket.emit('room/settings', body);
+    }
+
+    // Case change player mode
+    if (action.type === 'room/playerMode') {
+      const body: BodyRoomPlayerMode = {
+        roomId: action.payload.id,
+        spectate: action.payload.spectate,
+      }
+      socket.emit('room/playerMode', body);
     }
 
     return next(action);
