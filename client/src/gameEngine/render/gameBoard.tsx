@@ -18,14 +18,8 @@ export default function GameBoard() {
     },
     game.isEnd ? null : game.speed * 1000);
 
-  // const socket: Socket = io("http://localhost:3000");
-
   // Keyboard mapping
   useEffect(() => {
-    // socket.on("connect", () => {
-    //   console.log(`Client connected with id : ${socket.id}`);
-    // });
-
     // Init game at page start
     dispatch(initGame({
       speed: 0.5,

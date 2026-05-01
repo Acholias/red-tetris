@@ -6,13 +6,15 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 13:05:38 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/30 21:59:42 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/01 14:02:35 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import { TetrisRain } from '../components/TetrisRain'
+import { useDispatch } from 'react-redux';
+import { initRoom } from '../gameRoom/logic/roomSlice';
 
 function sanitizeSegment(value: string) {
 	return value.trim().replaceAll('/', '').replaceAll(' ', '-')
@@ -28,10 +30,21 @@ type WelcomeProps = {
 export default function Welcome({ playerName, setPlayerName, avatar, isDevProfile }: WelcomeProps) {
 	const navigate = useNavigate()
 	const location = useLocation()
-	const [room, setRoom] = useState('')
+	const [roomId, setRoomId] = useState('')
 
 	const cleanPlayer = useMemo(() => sanitizeSegment(playerName), [playerName])
-	const cleanRoom = useMemo(() => sanitizeSegment(room), [room])
+	const cleanRoom = useMemo(() => sanitizeSegment(roomId), [roomId])
+
+	const dispatch = useDispatch();
+
+	function joinRoomMulti() {
+		dispatch(initRoom({id: roomId, playerName: playerName}));
+		dispatch({'type': 'room/join', 'payload': {
+			'roomId': roomId,
+			'playerName': playerName,
+		}});
+		navigate(`/${roomId}/${playerName}`);
+	}
 
 	return (
 		<main className="page">
@@ -54,7 +67,6 @@ export default function Welcome({ playerName, setPlayerName, avatar, isDevProfil
 						className={isDevProfile ? 'dev-name-input dev-name-input--gold' : ''}
 						value={playerName}
 						onChange={(e) => {
-							console.log('Welcome: player input', e.target.value)
 							setPlayerName(e.target.value)
 						}}
 						placeholder="PlayerName"
@@ -65,10 +77,9 @@ export default function Welcome({ playerName, setPlayerName, avatar, isDevProfil
 				<label className="field">
 					<span>Room</span>
 					<input
-						value={room}
+						value={roomId}
 						onChange={(e) => {
-							console.log('Welcome: room input', e.target.value)
-							setRoom(e.target.value)
+							setRoomId(e.target.value)
 						}}
 						placeholder="42"
 					/>
@@ -78,7 +89,7 @@ export default function Welcome({ playerName, setPlayerName, avatar, isDevProfil
 					<button
 						type="button"
 						disabled={!cleanPlayer}
-						onClick={() => navigate('/game', { state: { mode: 'solo', playerName } })}
+						onClick={() => navigate('/game', { state: { mode: 'solo', playerName } })} // TODO: Create random room and start game
 					>
 						Play solo
 					</button>
@@ -86,7 +97,7 @@ export default function Welcome({ playerName, setPlayerName, avatar, isDevProfil
 					<button
 						type="button"
 						disabled={!cleanPlayer || !cleanRoom}
-						onClick={() => navigate(`/${room}/${playerName}`, { state: { mode: 'multi', playerName, room } })}
+						onClick={joinRoomMulti}
 					>
 						Play multi
 					</button>
@@ -94,7 +105,7 @@ export default function Welcome({ playerName, setPlayerName, avatar, isDevProfil
 					<button
 						type="button"
 						disabled={!cleanPlayer || !cleanRoom}
-						onClick={() => navigate('/spectator')}
+						onClick={() => navigate('/spectator')} // TODO: Change path !
 						className="spectator-btn"
 					>
 						Spectator

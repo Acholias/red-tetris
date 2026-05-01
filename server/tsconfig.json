@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    },
     "target": "ESNext",
-    "module": "CommonJS",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,

@@ -6,20 +6,21 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/30 22:49:28 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/01 11:48:54 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Routes, Route, useParams, useLocation } from 'react-router-dom'
-import type { Location as RouterLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import DevCredits from './page/DevCredits'
-import Profile from './page/Profile'
-import Spectator from './page/Spectator'
-import Lobby from './page/Lobby/Lobby'
-import Game from './page/Game'
-import Welcome from './page/Welcome'
-import { isDevPlayerName, resolveAvatarForPlayer } from './components/profileIdentity'
+import { Routes, Route, useLocation } from 'react-router-dom';
+import type { Location as RouterLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import DevCredits from './page/DevCredits';
+import Profile from './page/Profile';
+import Spectator from './page/Spectator';
+import Lobby from './page/Lobby/Lobby';
+import Game from './page/Game';
+import Welcome from './page/Welcome';
+import { isDevPlayerName, resolveAvatarForPlayer } from './components/profileIdentity';
+import { useDispatch } from 'react-redux';
 
 type ThemeName = 'default' | '1' | '2' | '3' | '4' | '5'
 
@@ -34,6 +35,11 @@ export default function App() {
     if (saved === '1' || saved === '2' || saved === '3' || saved === '4' || saved === '5' || saved === 'default') return saved
     return 'default'
   })
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch({'type': 'socket/connect'});
+  }, [dispatch]);
 
   useEffect(() => {
     console.log('App: playerName changed', playerName)

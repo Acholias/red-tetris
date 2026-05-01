@@ -6,44 +6,35 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/30 23:05:19 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/01 14:30:22 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import './Lobby.css'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom';
 import { renderPlayer } from '../../gameRoom/render/render';
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../../store/store';
 import { initRoom } from '../../gameRoom/logic/roomSlice';
 import { useEffect } from 'react';
 
-type LobbyState = {
-  mode?: 'multi'
-  playerName?: string
-  room?: string
-}
-
 export default function Lobby() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const state = (location.state as LobbyState | undefined) || undefined;
+  const { room: urlRoom, playerName: urlPlayer } = useParams();
 
   // Get room from store
   const room = useSelector((state: RootState) => state.room);
   const dispatch = useDispatch();
 
   useEffect(() => {
-      // socket.on("connect", () => {
-      //   console.log(`Client connected with id : ${socket.id}`);
-      // });
-
-      // Init game at page start
-      dispatch(initRoom({
-        id: 4
-      }));
-    }, [dispatch]);
-
+      if (room.isSocketConnected && room.id == '' && urlRoom != null && urlPlayer != null) {
+        dispatch(initRoom({id: urlRoom, playerName: urlPlayer}));
+        dispatch({'type': 'room/join', 'payload': {
+          'roomId': urlRoom,
+          'playerName': urlPlayer,
+        }});
+      }
+    }, [dispatch, room.isSocketConnected, room.id]);
 
   // Style define
   const roomStyle = {
@@ -54,7 +45,7 @@ export default function Lobby() {
   return (
     <main className="page dev-page">
       <h1>Lobby</h1>
-      <p>{state?.room ? `Room: ${state.room}` : ''} - {state?.playerName ? `${state.playerName}` : 'Multi player lobby'}</p>
+      <p>{urlRoom ? `Room: ${urlRoom}` : ''} - {urlPlayer ? `${urlPlayer}` : ''} {room.isAdmin ? ' - Admin' : ''}</p>
 
       <div className='room-info' style={roomStyle}>
         <div className='player-list'>
@@ -64,7 +55,7 @@ export default function Lobby() {
           ))}
         </div>
         <div className='player-list'>
-          <h3>Spectator</h3>
+          <h3>Spectators</h3>
           {room.spectators.map((player) => (
             renderPlayer(player)
           ))}
@@ -73,7 +64,7 @@ export default function Lobby() {
 
       <button
         type="button"
-        onClick={() => navigate('/game', { state: { mode: 'multi', playerName: state?.playerName, room: state?.room } })}
+        onClick={() => navigate('/game', { state: { mode: 'multi', playerName: urlPlayer, room: urlRoom } })}
       >
         Join game
       </button>
