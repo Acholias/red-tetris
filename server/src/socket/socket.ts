@@ -116,8 +116,9 @@ export function socketListenning(socket: Socket) {
         rooms.forEach((room, roomId) => {
             for (const player of room.players) {
                 room.players = room.players.filter(p => p.id !== socket.id);
+                room.spectators = room.spectators.filter(p => p.id !== socket.id);
 
-                if (room.players.length === 0) {
+                if (room.players.length == 0 && room.spectators.length == 0) {
                     rooms.delete(roomId);
                 } else {
                     const bodyRoomUpdate: BodyRoomUpdate = {
