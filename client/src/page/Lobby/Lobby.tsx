@@ -18,13 +18,15 @@ import { type RootState } from '../../store/store';
 import { initRoom } from '../../gameRoom/logic/roomSlice';
 import { useEffect } from 'react';
 import { canYouPlay, canYouSpectate } from '../../gameRoom/utils/functions';
+import { createRoomTheme } from '../../theme/theme';
 
 export default function Lobby() {
   const navigate = useNavigate();
   const { room: urlRoom, playerName: urlPlayer } = useParams();
 
-  // Get room from store
+  // Get room and theme from store
   const room = useSelector((state: RootState) => state.room);
+  const currentTheme = useSelector((state: RootState) => state.theme);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -57,11 +59,7 @@ export default function Lobby() {
   }
 
   // Style define
-  const roomStyle = {
-    '--player-background' : '#646464',
-    '--you-background' : '#284169',
-    '--player-color' : '#EEEEEE',
-  } as React.CSSProperties;
+  const roomStyle = createRoomTheme(currentTheme);
 
   return (
     <main className="page dev-page">

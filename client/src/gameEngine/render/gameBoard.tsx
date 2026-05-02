@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../../store/store';
 import { initGame, movePiece, rotatePiece, softDrop, hardDrop, tick } from '../logic/gameSlice';
 import { useEffect } from 'react';
-import { io, type Socket } from "socket.io-client";
 import { createInterval } from '../utils/intervals';
 import { renderCells } from './render';
+import { createGameTheme } from '../../theme/theme';
 
 export default function GameBoard() {
-  // Get game from store
+  // Get game and theme from store
   const game = useSelector((state: RootState) => state.game);
+  const currentTheme = useSelector((state: RootState) => state.theme);
   const dispatch = useDispatch();
 
   // Set game tick interval
@@ -92,31 +93,7 @@ export default function GameBoard() {
   }
 
   // Style define
-  const gameStyle = {
-    '--cell-size': `${cellSize}vh`,
-    '--color-E' : '#646464',
-    '--color-I' : '#01EDFA',
-    '--color-J' : '#485DC5',
-    '--color-L' : '#FFC82E',
-    '--color-M' : '#969696',
-    '--color-O' : '#FEFB34',
-    '--color-S' : '#53DA3F',
-    '--color-T' : '#EA141C',
-    '--color-U' : '#323232',
-    '--color-V' : '#39892F',
-    '--color-Z' : '#DD0AB2',
-    '--texture-E' : "url('/styles/basic/empty.png')",
-    '--texture-I' : "url('/styles/basic/cell.png')",
-    '--texture-J' : "url('/styles/basic/cell.png')",
-    '--texture-L' : "url('/styles/basic/cell.png')",
-    '--texture-M' : "url('/styles/basic/cell.png')",
-    '--texture-O' : "url('/styles/basic/cell.png')",
-    '--texture-S' : "url('/styles/basic/cell.png')",
-    '--texture-T' : "url('/styles/basic/cell.png')",
-    '--texture-U' : "url('/styles/basic/cell.png')",
-    '--texture-V' : "url('/styles/basic/cell.png')",
-    '--texture-Z' : "url('/styles/basic/cell.png')",
-  } as React.CSSProperties;
+  const gameStyle = createGameTheme(currentTheme, cellSize);
 
   return (
     <>

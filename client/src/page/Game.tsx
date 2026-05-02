@@ -24,7 +24,7 @@ export default function Game() {
   const state = (location.state as GameState | undefined) || undefined
 
   return (
-    <main className="page dev-page">
+    <main className="dev-page">
       <p>{state?.mode === 'multi' ? 'Multi player game' : 'Solo game'}</p>
       <GameBoard/>
     </main>
