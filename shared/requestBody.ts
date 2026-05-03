@@ -47,3 +47,12 @@ export interface BodyGameStarted {
     pieceId: string,
     nextPieceId: string,
 };
+
+export interface BodyGameUpdate {
+    grid: string[],
+    nextPiece?: string,
+};
+
+export interface BodyGameEnd {
+    win: boolean,
+};
