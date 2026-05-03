@@ -21,6 +21,10 @@ export interface BodyRoomPlayerMode {
     spectate: boolean,
 };
 
+export interface BodyRoomStartGame {
+    roomId: string,
+};
+
 
 // Server -> client
 export interface BodyRoomUpdate {
@@ -33,4 +37,13 @@ export interface BodyRoomUpdate {
     players?: {id: number, name: string}[],
     spectators?: {id: number, name: string}[],
     yourId?: number,
+};
+
+export interface BodyGameStarted {
+    allPieces: boolean,
+    malus: boolean,
+    size: {w: number, h: number},
+    gameSpeed: number,
+    pieceId: string,
+    nextPieceId: string,
 };

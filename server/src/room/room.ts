@@ -1,3 +1,4 @@
+import { GameData } from "../gameEngine/gameData.js";
 import { Player } from "./player.js";
 
 const maxNbPlayer = 5;
@@ -13,6 +14,7 @@ export class Room {
     players: Player[];
     spectators: Player[];
     nextIdInRoom: number;
+    gamedata: GameData;
 
     constructor(id: string, player: Player) {
         this.id = id;
@@ -26,6 +28,7 @@ export class Room {
         this.spectators = [];
         this.nextIdInRoom = 1;
         player.idInRoom = 0;
+        this.gamedata = new GameData();
     }
 
     isAdmin(player: Player): boolean {
@@ -65,6 +68,10 @@ export class Room {
             if (player.id == playerId) return true;
         }
         return false;
+    }
+
+    startGame() {
+        this.gamedata.startGame(this.allPieces, this.size, this.players);
     }
 }
 

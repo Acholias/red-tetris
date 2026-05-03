@@ -2,7 +2,7 @@ import express, { type Express } from "express";
 import {Server as SocketIOServer } from 'socket.io';
 import { createServer, type Server as HttpServer } from "node:http";
 import cors from 'cors';
-import { socketListenning } from "../socket/socket.js";
+import { socketListenning } from "./socket/socket.js";
 
 export class Server {
   private app: Express;

@@ -1,7 +1,7 @@
 import './gameBoard.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../../store/store';
-import { initGame, movePiece, rotatePiece, softDrop, hardDrop, tick } from '../logic/gameSlice';
+import { movePiece, rotatePiece, softDrop, hardDrop, tick } from '../logic/gameSlice';
 import { useEffect } from 'react';
 import { createInterval } from '../utils/intervals';
 import { renderCells } from './render';
@@ -21,16 +21,6 @@ export default function GameBoard() {
 
   // Keyboard mapping
   useEffect(() => {
-    // Init game at page start
-    dispatch(initGame({
-      speed: 0.5,
-      allPieces: true,
-      width: 10,
-      height: 20,
-      pieceId: 's',
-      nextPieceId: 't',
-    }));
-
     // Key handler
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {

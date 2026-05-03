@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/03 14:36:06 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/03 15:19:56 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,22 @@ export default function Lobby() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-      if (room.isSocketConnected && room.id == '' && urlRoom != null && urlPlayer != null) {
-        dispatch(initRoom({id: urlRoom, playerName: urlPlayer}));
-        dispatch({'type': 'room/join', 'payload': {
-          'roomId': urlRoom,
-          'playerName': urlPlayer,
-        }});
-      }
-    }, [dispatch, room.isSocketConnected, room.id]);
+    if (room.isSocketConnected && room.id == '' && urlRoom != null && urlPlayer != null) {
+      dispatch(initRoom({id: urlRoom, playerName: urlPlayer}));
+      dispatch({'type': 'room/join', 'payload': {
+        'roomId': urlRoom,
+        'playerName': urlPlayer,
+      }});
+    }
+  }, [dispatch, room.isSocketConnected, room.id]);
+
+  useEffect(() => {
+    if (!room.isPlaying) return;
+
+    // Check if you are a player :
+    navigate('/game');
+
+  }, [dispatch, room.isPlaying]);
 
   function updateSettings(key: string, value: any) {
     dispatch({
@@ -54,6 +62,14 @@ export default function Lobby() {
       'payload' : {
         'roomId': urlRoom,
         'spectate' : spectate,
+      }
+    });
+  }
+  function startGame() {
+    dispatch({
+      'type' : 'room/startGame',
+      'payload' : {
+        'roomId': urlRoom,
       }
     });
   }
@@ -161,7 +177,7 @@ export default function Lobby() {
       </button>}
       {room.isAdmin && !room.isPlaying && room.players.length > 0 && <button
         type="button"
-        onClick={() => navigate('/game', { state: { mode: 'multi', playerName: urlPlayer, room: urlRoom } })}
+        onClick={() => startGame()}
       >
         Start game
       </button>}

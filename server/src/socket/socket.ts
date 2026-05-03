@@ -1,7 +1,7 @@
 import { type Socket } from "socket.io";
-import { Room, rooms } from "../data/room.js";
-import { Player } from "../data/player.js";
-import { BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomUpdate } from "@shared/requestBody.js"
+import { Room, rooms } from "../room/room.js";
+import { Player } from "../room/player.js";
+import { BodyGameStarted, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody.js"
 
 export function socketListenning(socket: Socket) {
     socket.on('room/join', (body: BodyRoomJoin) => {
@@ -62,7 +62,11 @@ export function socketListenning(socket: Socket) {
         if (currentRoom == null) return;
 
         const currentPlayer = currentRoom.getPlayerById(socket.id);
-        if (currentPlayer == null || !currentRoom.isAdmin(currentPlayer)) return;
+        if (currentPlayer == null ||
+            !currentRoom.isAdmin(currentPlayer) ||
+            currentRoom.isPlaying) {
+            return;
+        }
 
         if (body.allPieces != null) currentRoom.allPieces = body.allPieces;
         if (body.malus != null) currentRoom.malus = body.malus;
@@ -113,6 +117,30 @@ export function socketListenning(socket: Socket) {
         };
         socket.to(currentRoom.id).emit('room/update', bodyAll);
         socket.emit('room/update', bodyAll);
+    });
+
+    socket.on('room/startGame', (body: BodyRoomStartGame) => {
+        const currentRoom = rooms.get(body.roomId);
+        if (currentRoom == null) return;
+
+        const currentPlayer = currentRoom.getPlayerById(socket.id);
+        if (currentPlayer == null) return;
+        if (!currentRoom.isAdmin(currentPlayer) || currentRoom.isPlaying) return;
+
+        currentRoom.startGame();
+
+        currentRoom.isPlaying = true;
+        const bodyStartGame: BodyGameStarted = {
+            allPieces: currentRoom.allPieces,
+            malus: currentRoom.malus,
+            size: currentRoom.size,
+            gameSpeed: currentRoom.gameSpeed,
+            pieceId: currentRoom.gamedata.pieces[0],
+            nextPieceId: currentRoom.gamedata.pieces[1],
+        };
+
+        socket.to(currentRoom.id).emit('room/gameStarted', bodyStartGame);
+        socket.emit('room/gameStarted', bodyStartGame);
     });
 
     socket.on('disconnect', () => {
