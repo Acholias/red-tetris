@@ -8,6 +8,7 @@ const initialState: Room = {
     isAdmin: false,
     isPlaying: false,
     allPieces: false,
+    malus: false,
     size: {w: 0, h: 0},
     gameSpeed: 0,
     players: [],
@@ -32,6 +33,7 @@ export const roomSlice = createSlice({
             state.isPlaying = false;
             state.isAdmin = false;
             state.allPieces = false;
+            state.malus = false;
             state.size = {w: 10, h: 20};
             state.gameSpeed = 0.5;
 
@@ -49,6 +51,9 @@ export const roomSlice = createSlice({
             }
             if (action.payload.allPieces != null) {
                 state.allPieces = action.payload.allPieces;
+            }
+            if (action.payload.malus != null) {
+                state.malus = action.payload.malus;
             }
             if (action.payload.size != null) {
                 state.size = action.payload.size;

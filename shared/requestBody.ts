@@ -11,6 +11,7 @@ export interface BodyRoomLeave {
 export interface BodyRoomSettings {
     roomId: string,
     allPieces?: boolean,
+    malus?: boolean,
     size?: {w: number, h: number},
     gameSpeed?: number,
 };
@@ -26,6 +27,7 @@ export interface BodyRoomUpdate {
     isAdmin?: boolean,
     isPlaying?: boolean,
     allPieces?: boolean,
+    malus?: boolean,
     size?: {w: number, h: number},
     gameSpeed?: number,
     players?: {id: number, name: string}[],

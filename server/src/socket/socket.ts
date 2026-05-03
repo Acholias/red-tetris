@@ -29,6 +29,7 @@ export function socketListenning(socket: Socket) {
             isAdmin: currentRoom.isAdmin(newPlayer),
             isPlaying: currentRoom.isPlaying,
             allPieces: currentRoom.allPieces,
+            malus: currentRoom.malus,
             size: currentRoom.size,
             gameSpeed: currentRoom.gameSpeed,
             yourId: newPlayer.idInRoom,
@@ -64,6 +65,7 @@ export function socketListenning(socket: Socket) {
         if (currentPlayer == null || !currentRoom.isAdmin(currentPlayer)) return;
 
         if (body.allPieces != null) currentRoom.allPieces = body.allPieces;
+        if (body.malus != null) currentRoom.malus = body.malus;
         if (body.size != null) {
             if (body.size.w < 5) body.size.w = 5;
             else if (body.size.w > 20) body.size.w = 20;
@@ -79,6 +81,7 @@ export function socketListenning(socket: Socket) {
 
         const bodyAll: BodyRoomUpdate = {
             allPieces: (body.allPieces != null) ? currentRoom.allPieces : undefined,
+            malus: (body.malus != null) ? currentRoom.malus : undefined,
             size: (body.size != null) ? currentRoom.size : undefined,
             gameSpeed: (body.gameSpeed != null) ? currentRoom.gameSpeed : undefined,
         };

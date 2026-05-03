@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/01 21:38:45 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/03 14:36:06 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,24 @@ export default function Lobby() {
       <h2>Game parameters</h2>
       <p>Game mode : {room.players.length == 1 ? 'solo' : 'multi'}</p>
       {room.isAdmin && <div>
+        {/* All pieces */}
+        <div>
+          <label>All pieces :</label>
+          <input
+            type='checkbox'
+            checked={room.allPieces}
+            onChange={() => updateSettings('allPieces', !room.allPieces)}
+          />
+        </div>
+        {/* Malus */}
+        <div>
+          <label>Malus :</label>
+          <input
+            type='checkbox'
+            checked={room.malus}
+            onChange={() => updateSettings('malus', !room.malus)}
+          />
+        </div>
         {/* Size */}
         <div>
           <label>Width : </label>
@@ -95,15 +113,6 @@ export default function Lobby() {
             })}
           />
         </div>
-        {/* All pieces */}
-        <div>
-          <label>All pieces :</label>
-          <input
-            type='checkbox'
-            checked={room.allPieces}
-            onChange={() => updateSettings('allPieces', !room.allPieces)}
-          />
-        </div>
         {/* Speed */}
         <div>
           <label>Speed (ticks/sec) : </label>
@@ -117,8 +126,9 @@ export default function Lobby() {
         </div>
       </div>}
       {!room.isAdmin && <div>
-        <p>Size : {`${room.size.w}x${room.size.h}`}</p>
         <p>Pieces : {room.allPieces ? 'all' : 'basic'}</p>
+        <p>Malus : {room.malus ? 'on' : 'off'}</p>
+        <p>Size : {`${room.size.w}x${room.size.h}`}</p>
         <p>Speed: {room.gameSpeed != 0 ? `${1 / room.gameSpeed}` : '0 '} ticks per second</p>
       </div>}
 

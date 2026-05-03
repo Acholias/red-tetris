@@ -7,6 +7,7 @@ export class Room {
     adminId: string;
     isPlaying: boolean;
     allPieces: boolean;
+    malus: boolean;
     size: {w: number, h: number};
     gameSpeed: number;
     players: Player[];
@@ -18,6 +19,7 @@ export class Room {
         this.adminId = player.id;
         this.isPlaying = false;
         this.allPieces = false;
+        this.malus = false;
         this.size = {w: 10, h: 20};
         this.gameSpeed = 0.5;
         this.players = [player];

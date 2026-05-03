@@ -31,6 +31,7 @@ export const socketMiddleware = (): Middleware => {
         isAdmin: action.payload.isAdmin,
         isPlaying: action.payload.isPlaying,
         allPieces: action.payload.allPieces,
+        malus: action.payload.malus,
         size: action.payload.size,
         gameSpeed: action.payload.gameSpeed,
         players: action.payload.players,
@@ -62,6 +63,7 @@ export const socketMiddleware = (): Middleware => {
       const body: BodyRoomSettings = {
         roomId: action.payload.id,
         allPieces: action.payload.allPieces,
+        malus: action.payload.malus,
         size: action.payload.size,
         gameSpeed: action.payload.gameSpeed,
       }

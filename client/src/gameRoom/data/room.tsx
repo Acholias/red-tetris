@@ -6,6 +6,7 @@ export interface Room {
     isAdmin: boolean,
     isPlaying: boolean,
     allPieces: boolean,
+    malus: boolean,
     size: {w: number, h: number},
     gameSpeed: number,
     players: Player[],
