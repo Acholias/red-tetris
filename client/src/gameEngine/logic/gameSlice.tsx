@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { GameData } from '../data/gameData';
-import { allPieceIds, basicPieceIds, pieces, type PieceId } from '../data/pieces';
+import { pieces, type PieceId } from '../data/pieces';
 import { isPieceOverlap, kickTests } from './overlaps';
 import { rotations } from './rotations';
 
@@ -46,6 +46,7 @@ export const gameSlice = createSlice({
             state.allPieces = action.payload.allPieces;
             state.waitNextPiece = false;
             state.isEnd = false;
+            state.win = undefined;
 
             state.grid.width = action.payload.width;
             state.grid.height = action.payload.height;
@@ -61,11 +62,13 @@ export const gameSlice = createSlice({
         updateGrid: (state, action: PayloadAction<string[]>) => {
             state.grid.cells = [...action.payload];
         },
+        endGame: (state, action: PayloadAction<boolean>) => {
+            state.isEnd = true;
+            state.win = action.payload;
+        },
         generateNextPiece: (state, action: PayloadAction<PieceId>) => {
             const px = Math.floor(state.grid.width / 2) - Math.ceil(state.nextPiece.width / 2);
             state.piece = {...state.nextPiece, x: px, y: 0};
-
-            console.log('test');
 
             const nextPiece = pieces[action.payload];
             state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
@@ -107,31 +110,10 @@ export const gameSlice = createSlice({
             const newPiece = {...state.piece, y: state.piece.y + 1};
 
             if (isPieceOverlap(state.grid, newPiece)) {
-                // TODO: Send msg to back instead, set wait piece
-                console.log('Piece lock');
-                if (state.allPieces) {
-                    console.log('Random piece');
-                    const nextPieceId = Math.floor(Math.random() * allPieceIds.length);
-
-                    const px = Math.floor(state.grid.width / 2) - Math.ceil(state.nextPiece.width / 2);
-                    state.piece = {...state.nextPiece, x: px, y: 0};
-
-                    const nextPiece = pieces[allPieceIds[nextPieceId]];
-                    state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
-                }
-                else {
-                    console.log('Random basic piece');
-                    const nextPieceId = Math.floor(Math.random() * basicPieceIds.length);
-
-                    const px = Math.floor(state.grid.width / 2) - Math.ceil(state.nextPiece.width / 2);
-                    state.piece = {...state.nextPiece, x: px, y: 0};
-
-                    const nextPiece = pieces[basicPieceIds[nextPieceId]];
-                    state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
-                }
-                return;
+                state.waitNextPiece = true;
+            } else {
+                state.piece = newPiece;
             }
-            state.piece = newPiece;
         },
         hardDrop: (state) => {
             if (state.waitNextPiece || state.isEnd) return;
@@ -148,30 +130,7 @@ export const gameSlice = createSlice({
             }
 
             state.piece = {...state.piece, y: newY};
-
-            // TODO: Send msg to back instead, set wait piece
-            console.log('Piece lock');
-            if (state.allPieces) {
-                console.log('Random piece');
-                const nextPieceId = Math.floor(Math.random() * allPieceIds.length);
-
-                const px = Math.floor(state.grid.width / 2) - Math.ceil(state.nextPiece.width / 2);
-                state.piece = {...state.nextPiece, x: px, y: 0};
-
-                const nextPiece = pieces[allPieceIds[nextPieceId]];
-                state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
-            }
-            else {
-                console.log('Random basic piece');
-                const nextPieceId = Math.floor(Math.random() * basicPieceIds.length);
-
-                const px = Math.floor(state.grid.width / 2) - Math.ceil(state.nextPiece.width / 2);
-                state.piece = {...state.nextPiece, x: px, y: 0};
-
-                const nextPiece = pieces[basicPieceIds[nextPieceId]];
-                state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
-            }
-            return;
+            state.waitNextPiece = true;
         },
         tick: (state) => {
             if (state.waitNextPiece || state.isEnd) return;
@@ -179,37 +138,16 @@ export const gameSlice = createSlice({
             const newPiece = {...state.piece, y: state.piece.y + 1};
 
             if (isPieceOverlap(state.grid, newPiece)) {
-                // TODO: Send msg to back instead, set wait piece
-                console.log('Piece lock');
-                if (state.allPieces) {
-                    console.log('Random piece');
-                    const nextPieceId = Math.floor(Math.random() * allPieceIds.length);
-
-                    const px = Math.floor(state.grid.width / 2) - Math.ceil(state.nextPiece.width / 2);
-                    state.piece = {...state.nextPiece, x: px, y: 0};
-
-                    const nextPiece = pieces[allPieceIds[nextPieceId]];
-                    state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
-                }
-                else {
-                    console.log('Random basic piece');
-                    const nextPieceId = Math.floor(Math.random() * basicPieceIds.length);
-
-                    const px = Math.floor(state.grid.width / 2) - Math.ceil(state.nextPiece.width / 2);
-                    state.piece = {...state.nextPiece, x: px, y: 0};
-
-                    const nextPiece = pieces[basicPieceIds[nextPieceId]];
-                    state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
-                }
-                return;
+                state.waitNextPiece = true;
+            } else {
+                state.piece = newPiece;
             }
-            state.piece = newPiece;
         }
     }
 });
 
 export const {
-    initGame, updateGrid, generateNextPiece,
+    initGame, updateGrid, endGame, generateNextPiece,
     movePiece, rotatePiece, softDrop, hardDrop, tick
 } = gameSlice.actions;
 export default gameSlice.reducer;

@@ -71,7 +71,12 @@ export class Room {
     }
 
     startGame() {
-        this.gamedata.startGame(this.allPieces, this.size, this.players);
+        this.gamedata.startGame(
+            this.id,
+            this.allPieces,
+            this.size,
+            this.gameSpeed,
+            this.players);
     }
 }
 

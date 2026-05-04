@@ -1,8 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 import { type Middleware } from 'redux';
-import type { BodyGameStarted, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from '@shared/requestBody';
+import type { BodyGameAction, BodyGameEnd, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from '@shared/requestBody';
 import { setSocketConnected, updateRoom } from '../gameRoom/logic/roomSlice';
-import { initGame } from '../gameEngine/logic/gameSlice';
+import { endGame, generateNextPiece, initGame, updateGrid } from '../gameEngine/logic/gameSlice';
 
 
 export const socketMiddleware = (): Middleware => {
@@ -24,6 +24,15 @@ export const socketMiddleware = (): Middleware => {
       });
       socket.on('room/gameStarted', (data: BodyGameStarted) => {
         dispatch({ type: 'room/gameStarted', payload: data });
+      });
+      socket.on('room/gameUpdate', (data: BodyGameUpdate) => {
+        dispatch({ type: 'room/gameUpdate', payload: data });
+      });
+      socket.on('room/gameEnd', (data: BodyGameEnd) => {
+        dispatch({ type: 'room/gameEnd', payload: data });
+      });
+      socket.on('room/gameFinished', () => {
+        dispatch({ type: 'room/gameFinished' });
       });
 
       socket.on('connect', () => console.log("Connecté avec l'ID:", socket.id));
@@ -54,6 +63,24 @@ export const socketMiddleware = (): Middleware => {
         nextPieceId: action.payload.nextPieceId,
       }));
       dispatch(updateRoom({isPlaying: true}));
+    }
+
+    // Case game update
+    if (action.type === 'room/gameUpdate') {
+      dispatch(updateGrid(action.payload.grid));
+      if (action.payload.nextPiece != null) {
+        dispatch(generateNextPiece(action.payload.nextPiece));
+      }
+    }
+
+    // Case game end
+    if (action.type === 'room/gameEnd') {
+      dispatch(endGame(action.payload.win));
+    }
+
+    // Case game finished
+    if (action.type === 'room/gameFinished') {
+      dispatch(updateRoom({isPlaying: false}));
     }
 
     // CLIENT -> SERVER
@@ -102,6 +129,15 @@ export const socketMiddleware = (): Middleware => {
         roomId: action.payload.roomId,
       }
       socket.emit('room/startGame', body);
+    }
+
+    // Case send game action
+    if (action.type === 'game/action') {
+      const body: BodyGameAction = {
+        roomId: action.payload.roomId,
+        action: action.payload.action,
+      }
+      socket.emit('game/action', body);
     }
 
     return next(action);

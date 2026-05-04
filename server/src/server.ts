@@ -43,6 +43,10 @@ export class Server {
     this.io.on("connection", socketListenning);
   }
 
+  sendSocketMessage(target: string, route: string, payload: any) {
+    this.io.to(target).emit(route, payload);
+  }
+
   listen(): void {
     this.httpServer.listen(this.port, () => {
       console.log(`Start server on port ${this.port}`);

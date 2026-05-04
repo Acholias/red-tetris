@@ -25,6 +25,11 @@ export interface BodyRoomStartGame {
     roomId: string,
 };
 
+export interface BodyGameAction {
+    roomId: string,
+    action: string,
+};
+
 
 // Server -> client
 export interface BodyRoomUpdate {

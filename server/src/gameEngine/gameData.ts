@@ -1,7 +1,10 @@
+import { BodyGameEnd, BodyGameUpdate } from "@shared/requestBody.js";
+import { server } from "../index.js";
 import { Player } from "../room/player.js";
 import { nbLoopPieceAll, nbLoopPieceBasic } from "./defines.js";
 import { allPieceIds, basicPieceIds, PieceId } from "./pieces.js";
 import { PlayerData } from "./playerData.js";
+import { rooms } from "../room/room.js";
 
 export interface GameEvent {
     id: string,
@@ -27,11 +30,13 @@ export class GameData {
     }
 
     startGame(
+        roomId: string,
         allPieces: boolean,
         gridSize: {w: number, h: number},
+        gameSpeed: number,
         players: Player[],
     ) {
-        this.solo = players.length == 0;
+        this.solo = players.length == 1;
         this.isEnd = false;
         this.allPieces = allPieces;
 
@@ -66,6 +71,8 @@ export class GameData {
         for (const player of players) {
             this.playerDatas.set(player.id, new PlayerData(player.id, gridSize, pieceId, nextPieceId));
         }
+
+        setTimeout(() => autoTick(roomId), gameSpeed * 1000);
     }
 
     playerAction(playerId: string, action: string): GameEvent[] {
@@ -73,7 +80,7 @@ export class GameData {
         if (playerData == null) return [];
 
         if (action == 'left') playerData.leftPiece();
-        else if (action == 'right') playerData.leftPiece();
+        else if (action == 'right') playerData.rightPiece();
         else if (action == 'rotate') playerData.rotatePiece();
         else if (action == 'soft-drop') {
             if (!playerData.softDrop()) return [];
@@ -109,7 +116,16 @@ export class GameData {
             'win' : false
         }];
 
-        if (this.isEnd || this.solo) return results;
+        if (this.solo) {
+            results.push({
+                'id': '',
+                'type' : 'finished',
+            });
+            this.isEnd = true;
+            return results;
+        } else if (this.isEnd) {
+            return results;
+        }
 
         let nbAlive = 0;
         let lastAlive = '';
@@ -127,6 +143,10 @@ export class GameData {
                 'type' : 'end',
                 'win' : true
             });
+            results.push({
+                'id': '',
+                'type' : 'finished',
+            });
         }
         return results;
     }
@@ -136,6 +156,7 @@ export class GameData {
 
         for (const playerData of this.playerDatas.values()) {
             if (playerData.alive && playerData.playerId != playerId) {
+                playerData.grid.addUnbreakableLines(nbLine);
                 results.push({
                     'id': playerData.playerId,
                     'type': 'update-grid',
@@ -169,5 +190,36 @@ export class GameData {
         }
 
         return results;
+    }
+}
+
+
+function autoTick(roomId: string) {
+    const currentRoom = rooms.get(roomId);
+    if (currentRoom == null || !currentRoom.isPlaying) return;
+
+    const events: GameEvent[] = currentRoom.gamedata.tick();
+    for (const event of events) {
+        if (event.type == 'update-grid') {
+            const body: BodyGameUpdate = {
+                grid: event.grid!,
+                nextPiece: event.nextPiece
+            };
+            server.sendSocketMessage(event.id, 'room/gameUpdate', body);
+        }
+        else if (event.type == 'end') {
+            const body: BodyGameEnd = {
+                win: event.win!
+            };
+            server.sendSocketMessage(event.id, 'room/gameEnd', body);
+        }
+        else if (event.type == 'finished') {
+            currentRoom.isPlaying = false;
+            server.sendSocketMessage(currentRoom.id, 'room/gameFinished', {});
+        }
+    }
+
+    if (currentRoom.isPlaying) {
+        setTimeout(() => autoTick(roomId), currentRoom.gameSpeed * 1000);
     }
 }

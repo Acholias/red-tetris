@@ -6,6 +6,7 @@ export interface GameData {
     allPieces: boolean;
     waitNextPiece: boolean;
     isEnd: boolean;
+    win?: boolean;
     grid: Grid;
     piece: Piece;
     nextPiece: Piece;

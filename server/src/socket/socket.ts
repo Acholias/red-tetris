@@ -1,7 +1,7 @@
 import { type Socket } from "socket.io";
 import { Room, rooms } from "../room/room.js";
 import { Player } from "../room/player.js";
-import { BodyGameStarted, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody.js"
+import { BodyGameAction, BodyGameEnd, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody.js"
 
 export function socketListenning(socket: Socket) {
     socket.on('room/join', (body: BodyRoomJoin) => {
@@ -121,11 +121,11 @@ export function socketListenning(socket: Socket) {
 
     socket.on('room/startGame', (body: BodyRoomStartGame) => {
         const currentRoom = rooms.get(body.roomId);
-        if (currentRoom == null) return;
+        if (currentRoom == null || currentRoom.isPlaying) return;
 
         const currentPlayer = currentRoom.getPlayerById(socket.id);
         if (currentPlayer == null) return;
-        if (!currentRoom.isAdmin(currentPlayer) || currentRoom.isPlaying) return;
+        if (!currentRoom.isAdmin(currentPlayer)) return;
 
         currentRoom.startGame();
 
@@ -141,6 +141,45 @@ export function socketListenning(socket: Socket) {
 
         socket.to(currentRoom.id).emit('room/gameStarted', bodyStartGame);
         socket.emit('room/gameStarted', bodyStartGame);
+    });
+
+    socket.on('game/action', (body: BodyGameAction) => {
+        const currentRoom = rooms.get(body.roomId);
+        if (currentRoom == null || !currentRoom.isPlaying) return;
+
+        const currentPlayer = currentRoom.getPlayerById(socket.id);
+        if (currentPlayer == null) return;
+
+        const events = currentRoom.gamedata.playerAction(currentPlayer.id, body.action);
+
+        for (const event of events) {
+            if (event.type == 'update-grid') {
+                const body: BodyGameUpdate = {
+                    grid: event.grid!,
+                    nextPiece: event.nextPiece
+                };
+                if (event.id == currentPlayer.id) {
+                    socket.emit('room/gameUpdate', body);
+                } else {
+                    socket.to(event.id).emit('room/gameUpdate', body);
+                }
+            }
+            else if (event.type == 'end') {
+                const body: BodyGameEnd = {
+                    win: event.win!
+                };
+                if (event.id == currentPlayer.id) {
+                    socket.emit('room/gameEnd', body);
+                } else {
+                    socket.to(event.id).emit('room/gameEnd', body);
+                }
+            }
+            else if (event.type == 'finished') {
+                currentRoom.isPlaying = false;
+                socket.to(currentRoom.id).emit('room/gameFinished', {});
+                socket.emit('room/gameFinished', {});
+            }
+        }
     });
 
     socket.on('disconnect', () => {

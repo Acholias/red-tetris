@@ -21,7 +21,7 @@ export class Grid {
         for (let i = 0; i < length; i++) {
             if (piece.cells[i] == ' ') continue;
 
-            const cx = i % piece.width + piece.x;
+            const cx = (i % piece.width) + piece.x;
             if (cx < 0 || cx >= this.width) return true;
 
             const cy = Math.floor(i / piece.width) + piece.y;
@@ -37,7 +37,7 @@ export class Grid {
         for (let i = 0; i < length; i++) {
             if (piece.cells[i] == ' ') continue;
 
-            const cx = i % piece.width + piece.x;
+            const cx = (i % piece.width) + piece.x;
             if (cx < 0 || cx >= this.width) return true;
 
             const cy = Math.floor(i / piece.width) + piece.y;
@@ -96,6 +96,17 @@ export class Grid {
         // Add unbreakable lines
         for (let i = endI; i < this.nbCells; i++) {
             this.cells[i] = 'U';
+        }
+    }
+
+    print() {
+        console.log('Grid');
+        let start = 0;
+        let end = this.width;
+        for (let y = 0; y < this.height; y++) {
+            console.log(`|${this.cells.slice(start, end).join()}|`);
+            start += this.width;
+            end += this.width;
         }
     }
 }

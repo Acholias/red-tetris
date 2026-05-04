@@ -1,23 +1,64 @@
-import './gameBoard.css'
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Game.tsx                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/28 10:25:02 by lumugot           #+#    #+#             */
+/*   Updated: 2026/05/04 13:08:51 by gugus            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+import './Game.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../../store/store';
-import { movePiece, rotatePiece, softDrop, hardDrop, tick } from '../logic/gameSlice';
+import { movePiece, rotatePiece, softDrop, hardDrop, tick } from '../../gameEngine/logic/gameSlice';
 import { useEffect } from 'react';
-import { createInterval } from '../utils/intervals';
-import { renderCells } from './render';
+import { createInterval } from '../../gameEngine/utils/intervals';
+import { renderCells } from '../../gameEngine/render/render';
 import { createGameTheme } from '../../theme/theme';
+import { useNavigate } from 'react-router-dom';
 
-export default function GameBoard() {
+export default function Game() {
+  const navigate = useNavigate();
+
   // Get game and theme from store
   const game = useSelector((state: RootState) => state.game);
+  const room = useSelector((state: RootState) => state.room);
   const currentTheme = useSelector((state: RootState) => state.theme);
   const dispatch = useDispatch();
 
   // Set game tick interval
   createInterval(() => {
-      dispatch(tick());
-    },
-    game.isEnd ? null : game.speed * 1000);
+    dispatch(tick());
+  },
+  game.isEnd ? null : game.speed * 1000);
+
+  function sendAction(action: string) {
+    dispatch({
+      'type' : 'game/action',
+      'payload' : {
+        'roomId': room.id,
+        'action' : action
+      }
+    });
+  }
+
+  function goToRoom() {
+    if (room.id == '') {
+      navigate('/42/gugus'); // TODO: REMOVE
+      // navigate('/');
+      return;
+    }
+    for (const player of room.players) {
+      if (player.id == room.yourId) {
+        navigate(`/${room.id}/${player.name}`);
+        return;
+      }
+    }
+    navigate('/');
+  }
 
   // Keyboard mapping
   useEffect(() => {
@@ -27,22 +68,27 @@ export default function GameBoard() {
         case 'ArrowUp':
           event.preventDefault();
           dispatch(rotatePiece());
+          sendAction('rotate');
           break
         case 'ArrowLeft':
           event.preventDefault();
           dispatch(movePiece({right: false}));
+          sendAction('left');
           break
         case 'ArrowRight':
           event.preventDefault();
           dispatch(movePiece({right: true}));
+          sendAction('right');
           break
         case 'ArrowDown':
           event.preventDefault();
           dispatch(softDrop());
+          sendAction('soft-drop');
           break
         case ' ':
           event.preventDefault();
           dispatch(hardDrop());
+          sendAction('hard-drop');
           break
       }
     };
@@ -86,13 +132,21 @@ export default function GameBoard() {
   const gameStyle = createGameTheme(currentTheme, cellSize);
 
   return (
-    <>
+    <main className="dev-page">
+      <p>{room.players.length == 1 ? 'Solo game' : 'Multi player game'}</p>
+      {game.win != undefined && <p>You {game.win ? 'win !' : 'lose -_-'}</p>}
+      {!room.isPlaying && <button
+        type="button"
+        onClick={() => goToRoom()}
+      >
+        Go back to room
+      </button>}
       <div className='game-board' style={gameStyle}>
         {renderCells(grid.cells, 0, 0, grid.width, grid.height)}
         {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
         {renderCells(previewGrid, previewX, 0, 5, 5)}
         {renderCells(nextPiece.cells, previewX + previewOffset, previewOffset, nextPiece.width, nextPiece.height)}
       </div>
-    </>
+    </main>
   )
 }

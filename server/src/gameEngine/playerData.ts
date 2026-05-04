@@ -28,7 +28,7 @@ export class PlayerData {
     ) {
         this.playerId = playerId;
         this.grid = new Grid(gridSize.w, gridSize.h);
-        this.piece = new Piece(pieceId);
+        this.piece = new Piece(pieceId, gridSize.w);
         this.nextPieceId = nextPieceId;
         this.nextPieceIndex = 2;
         this.alive = true;
@@ -37,7 +37,7 @@ export class PlayerData {
     setNextPiece(nextPieceId: PieceId, allPiece: boolean) {
         if (!this.alive) return;
 
-        this.piece = new Piece(this.nextPieceId);
+        this.piece = new Piece(this.nextPieceId, this.grid.width);
         this.nextPieceId = nextPieceId;
 
         if (allPiece) {
@@ -73,7 +73,7 @@ export class PlayerData {
                 y: piece.y + test.dy
             });
 
-            if (this.grid.isPieceOverlap(piece))  {
+            if (!this.grid.isPieceOverlap(testPiece)) {
                 this.piece = testPiece;
                 return;
             }
@@ -83,11 +83,10 @@ export class PlayerData {
     softDrop(): boolean {
         if (!this.alive) return false;
 
-        this.piece.y -= 1;
+        this.piece.y += 1;
         if (!this.grid.isPieceOverlap(this.piece)) return false;
 
-        this.piece.y += 1;
-
+        this.piece.y -= 1;
         if (this.grid.fixPiece(this.piece)) this.alive = false;
 
         return true;
@@ -96,11 +95,11 @@ export class PlayerData {
     hardDrop() {
         if (!this.alive) return;
 
-        this.piece.y -= 1;
-        while (!this.grid.isPieceOverlap(this.piece)) {
-            this.piece.y -= 1;
-        }
         this.piece.y += 1;
+        while (!this.grid.isPieceOverlap(this.piece)) {
+            this.piece.y += 1;
+        }
+        this.piece.y -= 1;
 
         if (this.grid.fixPiece(this.piece)) this.alive = false;
     }
