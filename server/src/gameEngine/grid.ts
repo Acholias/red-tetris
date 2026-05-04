@@ -1,3 +1,4 @@
+import { Spectrum } from "@shared/requestBody.js";
 import { Piece } from "./piece.js";
 
 export class Grid {
@@ -5,6 +6,7 @@ export class Grid {
     height: number;
     nbCells: number;
     cells: string[];
+    spectrum: Spectrum;
 
     constructor(width: number, height: number) {
         this.width = width;
@@ -13,6 +15,13 @@ export class Grid {
         this.cells = [];
         for (let i = 0; i < this.nbCells; i++) {
             this.cells.push('E');
+        }
+        this.spectrum = {
+            heights : [],
+            unbreakableLines: 0
+        };
+        for (let i = 0; i < this.width; i++) {
+            this.spectrum.heights.push(0);
         }
     }
 
@@ -43,8 +52,12 @@ export class Grid {
             const cy = Math.floor(i / piece.width) + piece.y;
             if (cy < 0 || cy >= this.height) return true;
 
-            if (this.cells[cx + cy * this.width] != 'E') return true;
-            this.cells[cx + cy * this.width] = piece.cells[i];
+            const index = cx + cy * this.width;
+            if (this.cells[index] != 'E') return true;
+            this.cells[index] = piece.cells[i];
+
+            const tmpY = this.height - this.spectrum.unbreakableLines - cy;
+            if (tmpY > this.spectrum.heights[cx]) this.spectrum.heights[cx] = tmpY;
         }
         return false;
     }
@@ -79,6 +92,13 @@ export class Grid {
             }
         }
 
+        // Update spectrum
+        if (nbLinesClear > 0) {
+            for (let i = 0; i < this.width; i++) {
+                this.spectrum.heights[i] -= nbLinesClear;
+            }
+        }
+
         return nbLinesClear;
     }
 
@@ -97,6 +117,9 @@ export class Grid {
         for (let i = endI; i < this.nbCells; i++) {
             this.cells[i] = 'U';
         }
+
+        // Update spectrum
+        this.spectrum.unbreakableLines += nbLines;
     }
 
     print() {

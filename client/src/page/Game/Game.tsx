@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:25:02 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/04 13:08:51 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/04 17:06:53 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,17 @@ import { type RootState } from '../../store/store';
 import { movePiece, rotatePiece, softDrop, hardDrop, tick } from '../../gameEngine/logic/gameSlice';
 import { useEffect } from 'react';
 import { createInterval } from '../../gameEngine/utils/intervals';
-import { renderCells } from '../../gameEngine/render/render';
-import { createGameTheme } from '../../theme/theme';
+import { renderCells, renderSpectrum } from '../../gameEngine/render/render';
+import { createGameTheme, createSpectrumTheme } from '../../theme/theme';
 import { useNavigate } from 'react-router-dom';
+import { initSpectrums } from '../../gameEngine/data/spectrumsSlice';
 
 export default function Game() {
   const navigate = useNavigate();
 
   // Get game and theme from store
   const game = useSelector((state: RootState) => state.game);
+  const spectrums = useSelector((state: RootState) => state.spectrums);
   const room = useSelector((state: RootState) => state.room);
   const currentTheme = useSelector((state: RootState) => state.theme);
   const dispatch = useDispatch();
@@ -62,6 +64,11 @@ export default function Game() {
 
   // Keyboard mapping
   useEffect(() => {
+    // Init spectrums if needed
+    if (Object.values(spectrums).length == 0 && room.players.length > 1) {
+      dispatch(initSpectrums(room));
+    }
+
     // Key handler
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
@@ -130,6 +137,7 @@ export default function Game() {
 
   // Style define
   const gameStyle = createGameTheme(currentTheme, cellSize);
+  const spectrumStyle = createSpectrumTheme(currentTheme, cellSize, cellSize / 4, room);
 
   return (
     <main className="dev-page">
@@ -146,6 +154,9 @@ export default function Game() {
         {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
         {renderCells(previewGrid, previewX, 0, 5, 5)}
         {renderCells(nextPiece.cells, previewX + previewOffset, previewOffset, nextPiece.width, nextPiece.height)}
+      </div>
+      <div className='spectrums'style={spectrumStyle}>
+        {Object.values(spectrums).map((spectrumData) => renderSpectrum(spectrumData))}
       </div>
     </main>
   )

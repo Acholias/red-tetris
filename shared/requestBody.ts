@@ -58,6 +58,16 @@ export interface BodyGameUpdate {
     nextPiece?: string,
 };
 
+export interface Spectrum {
+    heights: number[],
+    unbreakableLines: number
+};
+
+export interface BodyGameSpectrum {
+    playerId: number,
+    spectrum: Spectrum,
+};
+
 export interface BodyGameEnd {
     win: boolean,
 };

@@ -1,4 +1,4 @@
-import { BodyGameEnd, BodyGameUpdate } from "@shared/requestBody.js";
+import { BodyGameEnd, BodyGameSpectrum, BodyGameUpdate } from "@shared/requestBody.js";
 import { server } from "../index.js";
 import { Player } from "../room/player.js";
 import { nbLoopPieceAll, nbLoopPieceBasic } from "./defines.js";
@@ -11,6 +11,10 @@ export interface GameEvent {
     type: string,
     win?: boolean,
     grid?: string[],
+    spectrum?: {
+        heights: number[],
+        unbreakableLines: number
+    },
     nextPiece?: string
 }
 
@@ -109,6 +113,35 @@ export class GameData {
         return results;
     }
 
+    _fixPiece(playerData: PlayerData): GameEvent[] {
+        const nextPieceId = this.pieces[playerData.nextPieceIndex];
+        playerData.setNextPiece(nextPieceId, this.allPieces);
+
+        if (!playerData.alive) {
+            return this._playerLoose(playerData.playerId);
+        }
+
+        const results: GameEvent[] = [{
+            'id': playerData.playerId,
+            'type': 'update-grid',
+            'grid': playerData.grid.cells,
+            'nextPiece': nextPieceId,
+        },{
+            'id': playerData.playerId,
+            'type': 'spectrum',
+            'spectrum': playerData.grid.spectrum,
+        },
+        ];
+
+        const nbLinesClear = playerData.grid.clearLines();
+        if (nbLinesClear > 1) {
+            const res = this._unbreakableLines(playerData.playerId, nbLinesClear - 1);
+            return (res.concat(results));
+        }
+
+        return results;
+    }
+
     _playerLoose(playerId: string): GameEvent[] {
         const results: GameEvent[] = [{
             'id': playerId,
@@ -161,32 +194,12 @@ export class GameData {
                     'id': playerData.playerId,
                     'type': 'update-grid',
                     'grid': playerData.grid.cells,
+                },{
+                    'id': playerData.playerId,
+                    'type': 'spectrum',
+                    'spectrum': playerData.grid.spectrum,
                 });
             }
-        }
-
-        return results;
-    }
-
-    _fixPiece(playerData: PlayerData): GameEvent[] {
-        const nextPieceId = this.pieces[playerData.nextPieceIndex];
-        playerData.setNextPiece(nextPieceId, this.allPieces);
-
-        if (!playerData.alive) {
-            return this._playerLoose(playerData.playerId);
-        }
-
-        const results: GameEvent[] = [{
-            'id': playerData.playerId,
-            'type': 'update-grid',
-            'grid': playerData.grid.cells,
-            'nextPiece': nextPieceId,
-        }];
-
-        const nbLinesClear = playerData.grid.clearLines();
-        if (nbLinesClear > 1) {
-            const res = this._unbreakableLines(playerData.playerId, nbLinesClear - 1);
-            return (res.concat(results));
         }
 
         return results;
@@ -206,6 +219,16 @@ function autoTick(roomId: string) {
                 nextPiece: event.nextPiece
             };
             server.sendSocketMessage(event.id, 'room/gameUpdate', body);
+        }
+        else if (event.type == 'spectrum') {
+            const player = currentRoom.getPlayerById(event.id);
+            if (player == null) continue;
+
+            const body: BodyGameSpectrum = {
+                playerId: player.idInRoom!,
+                spectrum: event.spectrum!
+            };
+            server.sendSocketMessage(currentRoom.id, 'room/gameSpectrum', body);
         }
         else if (event.type == 'end') {
             const body: BodyGameEnd = {

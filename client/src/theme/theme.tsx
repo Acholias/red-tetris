@@ -1,3 +1,4 @@
+import type { Room } from "../gameRoom/data/room";
 import type { ThemeData } from "./themeData";
 
 export function createRoomTheme(
@@ -38,5 +39,25 @@ export function createGameTheme(
         '--texture-U' : themeData.themeGame.texture_U,
         '--texture-V' : themeData.themeGame.texture_V,
         '--texture-Z' : themeData.themeGame.texture_Z,
+    } as React.CSSProperties;
+}
+
+export function createSpectrumTheme(
+                    themeData: ThemeData,
+                    gameCellSize: number,
+                    cellSize: number,
+                    room: Room,
+                    ): React.CSSProperties {
+    return {
+        '--cell-size': `${cellSize}vh`,
+        '--margin': `${gameCellSize * (room.size.w + 10)}vh`,
+        '--spectrum-w': `${cellSize * (room.size.w + 5)}vh`,
+        '--spectrum-h': `${cellSize * (room.size.h + 7)}vh`,
+        '--color-E' : themeData.themeGame.color_E,
+        '--color-M' : themeData.themeGame.color_M,
+        '--color-U' : themeData.themeGame.color_U,
+        '--texture-E' : themeData.themeGame.texture_E,
+        '--texture-M' : themeData.themeGame.texture_M,
+        '--texture-U' : themeData.themeGame.texture_U,
     } as React.CSSProperties;
 }

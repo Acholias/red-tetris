@@ -1,7 +1,8 @@
 import { type Socket } from "socket.io";
 import { Room, rooms } from "../room/room.js";
 import { Player } from "../room/player.js";
-import { BodyGameAction, BodyGameEnd, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody.js"
+import { BodyGameAction, BodyGameEnd, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody.js"
+import { server } from "../index.js";
 
 export function socketListenning(socket: Socket) {
     socket.on('room/join', (body: BodyRoomJoin) => {
@@ -53,8 +54,7 @@ export function socketListenning(socket: Socket) {
             players: currentRoom.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
             spectators: currentRoom.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
         };
-        socket.to(currentRoom.id).emit('room/update', bodyAll);
-        socket.emit('room/update', bodyAll);
+        server.sendSocketMessage(currentRoom.id, 'room/update', bodyAll);
     });
 
     socket.on('room/settings', (body: BodyRoomSettings) => {
@@ -89,8 +89,7 @@ export function socketListenning(socket: Socket) {
             size: (body.size != null) ? currentRoom.size : undefined,
             gameSpeed: (body.gameSpeed != null) ? currentRoom.gameSpeed : undefined,
         };
-        socket.to(currentRoom.id).emit('room/update', bodyAll);
-        socket.emit('room/update', bodyAll);
+        server.sendSocketMessage(currentRoom.id, 'room/update', bodyAll);
     });
 
     socket.on('room/playerMode', (body: BodyRoomPlayerMode) => {
@@ -115,8 +114,7 @@ export function socketListenning(socket: Socket) {
             players: currentRoom.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
             spectators: currentRoom.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
         };
-        socket.to(currentRoom.id).emit('room/update', bodyAll);
-        socket.emit('room/update', bodyAll);
+        server.sendSocketMessage(currentRoom.id, 'room/update', bodyAll);
     });
 
     socket.on('room/startGame', (body: BodyRoomStartGame) => {
@@ -164,6 +162,16 @@ export function socketListenning(socket: Socket) {
                     socket.to(event.id).emit('room/gameUpdate', body);
                 }
             }
+            else if (event.type == 'spectrum') {
+                const player = currentRoom.getPlayerById(event.id);
+                if (player == null) continue;
+
+                const body: BodyGameSpectrum = {
+                    playerId: player.idInRoom!,
+                    spectrum: event.spectrum!
+                };
+                server.sendSocketMessage(currentRoom.id, 'room/gameSpectrum', body);
+            }
             else if (event.type == 'end') {
                 const body: BodyGameEnd = {
                     win: event.win!
@@ -176,8 +184,7 @@ export function socketListenning(socket: Socket) {
             }
             else if (event.type == 'finished') {
                 currentRoom.isPlaying = false;
-                socket.to(currentRoom.id).emit('room/gameFinished', {});
-                socket.emit('room/gameFinished', {});
+                server.sendSocketMessage(currentRoom.id, 'room/gameFinished', {});
             }
         }
     });

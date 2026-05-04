@@ -1,8 +1,9 @@
 import { io, Socket } from 'socket.io-client';
 import { type Middleware } from 'redux';
-import type { BodyGameAction, BodyGameEnd, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from '@shared/requestBody';
+import type { BodyGameAction, BodyGameEnd, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from '@shared/requestBody';
 import { setSocketConnected, updateRoom } from '../gameRoom/logic/roomSlice';
 import { endGame, generateNextPiece, initGame, updateGrid } from '../gameEngine/logic/gameSlice';
+import { clearSpectrums, updateSpectrum } from '../gameEngine/data/spectrumsSlice';
 
 
 export const socketMiddleware = (): Middleware => {
@@ -27,6 +28,9 @@ export const socketMiddleware = (): Middleware => {
       });
       socket.on('room/gameUpdate', (data: BodyGameUpdate) => {
         dispatch({ type: 'room/gameUpdate', payload: data });
+      });
+      socket.on('room/gameSpectrum', (data: BodyGameSpectrum) => {
+        dispatch({ type: 'room/gameSpectrum', payload: data });
       });
       socket.on('room/gameEnd', (data: BodyGameEnd) => {
         dispatch({ type: 'room/gameEnd', payload: data });
@@ -54,6 +58,7 @@ export const socketMiddleware = (): Middleware => {
 
     // Case game started
     if (action.type === 'room/gameStarted') {
+      dispatch(clearSpectrums());
       dispatch(initGame({
         speed: action.payload.gameSpeed,
         allPieces: action.payload.allPieces,
@@ -71,6 +76,11 @@ export const socketMiddleware = (): Middleware => {
       if (action.payload.nextPiece != null) {
         dispatch(generateNextPiece(action.payload.nextPiece));
       }
+    }
+
+    // Case game spectrum update
+    if (action.type === 'room/gameSpectrum') {
+      dispatch(updateSpectrum(action.payload));
     }
 
     // Case game end

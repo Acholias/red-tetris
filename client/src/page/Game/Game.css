@@ -2,6 +2,13 @@
     position: relative;
 }
 
+.spectrums {
+    margin-left: var(--margin);
+    display: grid;
+    grid-template-columns: repeat(2, var(--spectrum-w));
+    grid-template-rows: repeat(2, var(--spectrum-h));
+}
+
 .game-grid {
     position: absolute;
     display: grid;
