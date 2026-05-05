@@ -1,8 +1,10 @@
 import type { Grid } from "./grid";
-import type { Piece } from "./pieces";
+import type { Piece } from "../../../../shared/pieces";
+import type { GameSpeed } from "@shared/interfaces";
 
 export interface GameData {
-    speed: number;
+    speed: GameSpeed;
+    tickBeforeAccelerate: number,
     allPieces: boolean;
     waitNextPiece: boolean;
     isEnd: boolean;

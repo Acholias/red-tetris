@@ -1,4 +1,4 @@
-import type { RotationId } from "../logic/rotations";
+import type { RotationId } from "./rotations";
 
 export interface Piece {
     cells: string[];
@@ -9,6 +9,7 @@ export interface Piece {
     rotationId?: RotationId,
 }
 
+// Piece ids
 export type PieceId =
     '1' | '2' | 'v' | '3' | 'V' | 'l' |
     'j' | 't' | 'T' | 's' | 'z' | 'U' |

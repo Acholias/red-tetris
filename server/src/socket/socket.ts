@@ -3,6 +3,7 @@ import { Room, rooms } from "../room/room.js";
 import { Player } from "../room/player.js";
 import { BodyGameAction, BodyGameEnd, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody.js"
 import { server } from "../index.js";
+import { maxGridHeight, maxGridWidth, maxSpeed, maxSpeedFrequency, maxSpeedRate, minGridHeight, minGridWidth, minSpeed, minSpeedFrequency, minSpeedRate } from "../gameEngine/defines.js";
 
 export function socketListenning(socket: Socket) {
     socket.on('room/join', (body: BodyRoomJoin) => {
@@ -59,8 +60,18 @@ export function socketListenning(socket: Socket) {
             currentRoom.size = body.size;
         }
         if (body.gameSpeed != null) {
-            if (body.gameSpeed < 0.1) body.gameSpeed = 0.1;
-            else if (body.gameSpeed > 1) body.gameSpeed = 1;
+            if (body.gameSpeed.speed < minSpeed) body.gameSpeed.speed = minSpeed;
+            else if (body.gameSpeed.speed > maxSpeed) body.gameSpeed.speed = maxSpeed;
+
+            if (body.gameSpeed.frequency < minSpeedFrequency) body.gameSpeed.frequency = minSpeedFrequency;
+            else if (body.gameSpeed.frequency > maxSpeedFrequency) body.gameSpeed.frequency = maxSpeedFrequency;
+
+            if (body.gameSpeed.rate < minSpeedRate) body.gameSpeed.rate = minSpeedRate;
+            else if (body.gameSpeed.rate > maxSpeedRate) body.gameSpeed.rate = maxSpeedRate;
+
+            if (body.gameSpeed.max < body.gameSpeed.speed) body.gameSpeed.max = body.gameSpeed.speed;
+            else if (body.gameSpeed.max > maxSpeed) body.gameSpeed.max = maxSpeed;
+
             currentRoom.gameSpeed = body.gameSpeed;
         }
 

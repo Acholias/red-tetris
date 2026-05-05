@@ -1,3 +1,4 @@
+import type { GameSpeed } from "@shared/interfaces";
 import type { Player } from "./player";
 
 export interface Room {
@@ -8,7 +9,7 @@ export interface Room {
     allPieces: boolean,
     malus: boolean,
     size: {w: number, h: number},
-    gameSpeed: number,
+    gameSpeed: GameSpeed,
     players: Player[],
     spectators: Player[],
     yourId: number,

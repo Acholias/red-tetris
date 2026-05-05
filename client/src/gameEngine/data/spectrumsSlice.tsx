@@ -1,7 +1,8 @@
-import type { BodyGameSpectrum, Spectrum } from "@shared/requestBody";
+import type { BodyGameSpectrum } from "@shared/requestBody";
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { Room } from "../../gameRoom/data/room";
 import type { Grid } from "./grid";
+import type { Spectrum } from "@shared/interfaces";
 
 export interface SpectrumData {
     playerName: string,

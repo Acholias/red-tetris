@@ -19,7 +19,7 @@ npm install
 
 Run
 ```bash
-node src/index.js
+npm run dev
 ```
 
 

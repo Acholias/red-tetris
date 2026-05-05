@@ -59,14 +59,7 @@ export const socketMiddleware = (): Middleware => {
     // Case game started
     if (action.type === 'room/gameStarted') {
       dispatch(clearSpectrums());
-      dispatch(initGame({
-        speed: action.payload.gameSpeed,
-        allPieces: action.payload.allPieces,
-        width: action.payload.size.w,
-        height: action.payload.size.h,
-        pieceId: action.payload.pieceId,
-        nextPieceId: action.payload.nextPieceId,
-      }));
+      dispatch(initGame(action.payload));
       dispatch(updateRoom({isPlaying: true}));
     }
 

@@ -1,12 +1,3 @@
-import { basicPieceIds, allPieceIds } from "./pieces.js";
-
-export const nbLoopPieceBasic = 6;
-export const listLengthPieceBasic = nbLoopPieceBasic * basicPieceIds.length;
-
-export const nbLoopPieceAll = 3;
-export const listLengthPieceAll = nbLoopPieceAll * allPieceIds.length;
-
-
 // Grid size
 export const minGridWidth = 5;
 export const maxGridWidth = 20;

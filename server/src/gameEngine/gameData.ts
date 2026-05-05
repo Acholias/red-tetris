@@ -2,9 +2,10 @@ import { BodyGameEnd, BodyGameSpectrum, BodyGameUpdate } from "@shared/requestBo
 import { server } from "../index.js";
 import { Player } from "../room/player.js";
 import { nbLoopPieceAll, nbLoopPieceBasic } from "./defines.js";
-import { allPieceIds, basicPieceIds, PieceId } from "./pieces.js";
+import { allPieceIds, basicPieceIds, type PieceId } from "./pieces.js";
 import { PlayerData } from "./playerData.js";
 import { rooms } from "../room/room.js";
+import { GameSpeed } from "@shared/interfaces.js";
 
 export interface GameEvent {
     id: string,
@@ -15,13 +16,14 @@ export interface GameEvent {
         heights: number[],
         unbreakableLines: number
     },
-    nextPiece?: string
+    nextPiece?: PieceId
 }
 
 export class GameData {
     solo: boolean;
     isEnd: boolean;
     allPieces: boolean;
+    gameSpeed: GameSpeed;
     pieces: PieceId[];
     playerDatas: Map<string, PlayerData>;
 
@@ -29,6 +31,13 @@ export class GameData {
         this.solo = true;
         this.isEnd = false;
         this.allPieces = false;
+        this.gameSpeed = {
+            speed: 0,
+            acceleration: false,
+            frequency: 0,
+            rate: 0,
+            max: 0,
+        };
         this.pieces = [];
         this.playerDatas = new Map();
     }
@@ -37,12 +46,13 @@ export class GameData {
         roomId: string,
         allPieces: boolean,
         gridSize: {w: number, h: number},
-        gameSpeed: number,
+        gameSpeed: GameSpeed,
         players: Player[],
     ) {
         this.solo = players.length == 1;
         this.isEnd = false;
         this.allPieces = allPieces;
+        this.gameSpeed = gameSpeed;
 
         this.pieces = [];
         if (allPieces) {
@@ -76,7 +86,7 @@ export class GameData {
             this.playerDatas.set(player.id, new PlayerData(player.id, gridSize, pieceId, nextPieceId));
         }
 
-        setTimeout(() => autoTick(roomId), gameSpeed * 1000);
+        setTimeout(() => autoTick(roomId), (1 / gameSpeed.speed) * 1000);
     }
 
     removePlayer(playerId: string): GameEvent[] {
@@ -270,7 +280,21 @@ function autoTick(roomId: string) {
         }
     }
 
+    // Change game speed
+    if (currentRoom.gamedata.gameSpeed.acceleration &&
+        currentRoom.gamedata.gameSpeed.speed < currentRoom.gamedata.gameSpeed.max)
+    {
+        currentRoom.gamedata.gameSpeed.frequency--;
+        if (currentRoom.gamedata.gameSpeed.frequency <= 0) {
+            currentRoom.gamedata.gameSpeed.frequency = currentRoom.gameSpeed.frequency;
+            currentRoom.gamedata.gameSpeed.speed += currentRoom.gamedata.gameSpeed.rate;
+            if (currentRoom.gamedata.gameSpeed.speed > currentRoom.gamedata.gameSpeed.max) {
+                currentRoom.gamedata.gameSpeed.speed = currentRoom.gamedata.gameSpeed.max;
+            }
+        }
+    }
+
     if (currentRoom.isPlaying) {
-        setTimeout(() => autoTick(roomId), currentRoom.gameSpeed * 1000);
+        setTimeout(() => autoTick(roomId), (1 / currentRoom.gamedata.gameSpeed.speed) * 1000);
     }
 }

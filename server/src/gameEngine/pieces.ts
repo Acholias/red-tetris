@@ -1,5 +1,15 @@
 import type { RotationId } from "./rotations.js";
 
+export interface Piece {
+    cells: string[];
+    x?: number;
+    y?: number;
+    width: number;
+    height: number;
+    rotationId?: RotationId,
+}
+
+// Piece ids
 export type PieceId =
     '1' | '2' | 'v' | '3' | 'V' | 'l' |
     'j' | 't' | 'T' | 's' | 'z' | 'U' |

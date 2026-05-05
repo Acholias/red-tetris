@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:25:02 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/05 10:47:28 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/05 14:28:15 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,31 +33,31 @@ export default function Game() {
 
     // Set game tick interval
     createInterval(() => {
-        dispatch(tick());
-    },
-    game.isEnd ? null : game.speed * 1000);
+            dispatch(tick());
+        },
+        game.isEnd ? null : (1 / game.speed.speed) * 1000
+    );
 
     function sendAction(action: string) {
         dispatch({
-        'type' : 'game/action',
-        'payload' : {
-            'roomId': room.id,
-            'action' : action
-        }
+            'type' : 'game/action',
+            'payload' : {
+                'roomId': room.id,
+                'action' : action
+            }
         });
     }
 
     function goToRoom() {
         if (room.id == '') {
-        navigate('/42/gugus'); // TODO: REMOVE
-        // navigate('/');
-        return;
-        }
-        for (const player of room.players) {
-        if (player.id == room.yourId) {
-            navigate(`/${room.id}/${player.name}`);
+            navigate('/');
             return;
         }
+        for (const player of room.players) {
+            if (player.id == room.yourId) {
+                navigate(`/${room.id}/${player.name}`);
+                return;
+            }
         }
         navigate('/');
     }
@@ -75,29 +75,29 @@ export default function Game() {
         const handleKeyDown = (event: KeyboardEvent) => {
         switch (event.key) {
             case 'ArrowUp':
-            event.preventDefault();
-            dispatch(rotatePiece());
-            sendAction('rotate');
+                event.preventDefault();
+                dispatch(rotatePiece());
+                sendAction('rotate');
             break
             case 'ArrowLeft':
-            event.preventDefault();
-            dispatch(movePiece({right: false}));
-            sendAction('left');
+                event.preventDefault();
+                dispatch(movePiece({right: false}));
+                sendAction('left');
             break
             case 'ArrowRight':
-            event.preventDefault();
-            dispatch(movePiece({right: true}));
-            sendAction('right');
+                event.preventDefault();
+                dispatch(movePiece({right: true}));
+                sendAction('right');
             break
             case 'ArrowDown':
-            event.preventDefault();
-            dispatch(softDrop());
-            sendAction('soft-drop');
+                event.preventDefault();
+                dispatch(softDrop());
+                sendAction('soft-drop');
             break
             case ' ':
-            event.preventDefault();
-            dispatch(hardDrop());
-            sendAction('hard-drop');
+                event.preventDefault();
+                dispatch(hardDrop());
+                sendAction('hard-drop');
             break
         }
         };
@@ -127,14 +127,14 @@ export default function Game() {
     let previewOffset = 0;
     switch (nextPiece.width) {
         case 1:
-        previewOffset = 2 * cellSize;
-        break;
+            previewOffset = 2 * cellSize;
+            break;
         case 2:
-        previewOffset = 1 * cellSize;
-        break;
+            previewOffset = 1 * cellSize;
+            break;
         case 3:
-        previewOffset = 1 * cellSize;
-        break;
+            previewOffset = 1 * cellSize;
+            break;
     }
 
     // Style define
@@ -143,23 +143,23 @@ export default function Game() {
 
     return (
         <main className="dev-page">
-        <p>{room.players.length == 1 ? 'Solo game' : 'Multi player game'}</p>
-        {game.win != undefined && <p>You {game.win ? 'win !' : 'lose -_-'}</p>}
-        {!room.isPlaying && <button
-            type="button"
-            onClick={() => goToRoom()}
-        >
-            Go back to room
-        </button>}
-        <div className='game-board' style={gameStyle}>
-            {renderCells(grid.cells, 0, 0, grid.width, grid.height)}
-            {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
-            {renderCells(previewGrid, previewX, 0, 5, 5)}
-            {renderCells(nextPiece.cells, previewX + previewOffset, previewOffset, nextPiece.width, nextPiece.height)}
-        </div>
-        <div className='spectrums'style={spectrumStyle}>
-            {Object.values(spectrums).map((spectrumData) => renderSpectrum(spectrumData))}
-        </div>
+            <p>{room.players.length == 1 ? 'Solo game' : 'Multi player game'}</p>
+            {game.win != undefined && <p>You {game.win ? 'win !' : 'lose -_-'}</p>}
+            {!room.isPlaying && <button
+                type="button"
+                onClick={() => goToRoom()}
+            >
+                Go back to room
+            </button>}
+            <div className='game-board' style={gameStyle}>
+                {renderCells(grid.cells, 0, 0, grid.width, grid.height)}
+                {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
+                {renderCells(previewGrid, previewX, 0, 5, 5)}
+                {renderCells(nextPiece.cells, previewX + previewOffset, previewOffset, nextPiece.width, nextPiece.height)}
+            </div>
+            <div className='spectrums'style={spectrumStyle}>
+                {Object.values(spectrums).map((spectrumData) => renderSpectrum(spectrumData))}
+            </div>
         </main>
     )
 }

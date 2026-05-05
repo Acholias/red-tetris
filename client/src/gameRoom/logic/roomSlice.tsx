@@ -10,7 +10,13 @@ const initialState: Room = {
     allPieces: false,
     malus: false,
     size: {w: 0, h: 0},
-    gameSpeed: 0,
+    gameSpeed: {
+        speed: 0,
+        acceleration: false,
+        frequency: 0,
+        rate: 0,
+        max: 0,
+    },
     players: [],
     spectators: [],
     yourId: -2,
@@ -35,7 +41,13 @@ export const roomSlice = createSlice({
             state.allPieces = false;
             state.malus = false;
             state.size = {w: 10, h: 20};
-            state.gameSpeed = 0.5;
+            state.gameSpeed = {
+                speed: 2,
+                acceleration: false,
+                frequency: 60,
+                rate: 1,
+                max: 10,
+            };
 
             state.players = [{ id: 0, name: action.payload.playerName }];
             state.spectators = [];

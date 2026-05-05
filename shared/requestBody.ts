@@ -1,3 +1,6 @@
+import type { GameSpeed, Spectrum } from "./interfaces";
+import type { PieceId } from "./pieces";
+
 // Client -> server
 export interface BodyRoomJoin {
     roomId: string,
@@ -13,7 +16,7 @@ export interface BodyRoomSettings {
     allPieces?: boolean,
     malus?: boolean,
     size?: {w: number, h: number},
-    gameSpeed?: number,
+    gameSpeed?: GameSpeed,
 };
 
 export interface BodyRoomPlayerMode {
@@ -38,7 +41,7 @@ export interface BodyRoomUpdate {
     allPieces?: boolean,
     malus?: boolean,
     size?: {w: number, h: number},
-    gameSpeed?: number,
+    gameSpeed?: GameSpeed,
     players?: {id: number, name: string}[],
     spectators?: {id: number, name: string}[],
     yourId?: number,
@@ -48,19 +51,14 @@ export interface BodyGameStarted {
     allPieces: boolean,
     malus: boolean,
     size: {w: number, h: number},
-    gameSpeed: number,
-    pieceId: string,
-    nextPieceId: string,
+    gameSpeed: GameSpeed,
+    pieceId: PieceId,
+    nextPieceId: PieceId,
 };
 
 export interface BodyGameUpdate {
     grid: string[],
-    nextPiece?: string,
-};
-
-export interface Spectrum {
-    heights: number[],
-    unbreakableLines: number
+    nextPiece?: PieceId,
 };
 
 export interface BodyGameSpectrum {

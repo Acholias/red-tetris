@@ -1,11 +1,19 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { GameData } from '../data/gameData';
-import { pieces, type PieceId } from '../data/pieces';
 import { isPieceOverlap, kickTests } from './overlaps';
-import { rotations } from './rotations';
+import { rotations } from '../../../../shared/rotations';
+import type { BodyGameStarted } from '@shared/requestBody';
+import { pieces, type PieceId } from '@shared/pieces';
 
 const initialState: GameData = {
-    speed: 0,
+    speed: {
+        speed: 0,
+        acceleration: false,
+        frequency: 0,
+        rate: 0,
+        max: 0,
+    },
+    tickBeforeAccelerate: 0,
     allPieces: false,
     waitNextPiece: false,
     isEnd: false,
@@ -34,22 +42,16 @@ export const gameSlice = createSlice({
     reducers: {
         initGame: (
                 state,
-                action: PayloadAction<{
-                    speed: number,
-                    allPieces: boolean,
-                    width: number,
-                    height: number,
-                    pieceId: PieceId,
-                    nextPieceId: PieceId,
-                }>) => {
-            state.speed = action.payload.speed;
+                action: PayloadAction<BodyGameStarted>) => {
+            state.speed = {...action.payload.gameSpeed};
+            state.tickBeforeAccelerate = state.speed.frequency;
             state.allPieces = action.payload.allPieces;
             state.waitNextPiece = false;
             state.isEnd = false;
             state.win = undefined;
 
-            state.grid.width = action.payload.width;
-            state.grid.height = action.payload.height;
+            state.grid.width = action.payload.size.w;
+            state.grid.height = action.payload.size.h;
             state.grid.cells = Array(state.grid.width * state.grid.height).fill('E');
 
             const piece = pieces[action.payload.pieceId];
@@ -136,6 +138,18 @@ export const gameSlice = createSlice({
             if (state.waitNextPiece || state.isEnd) return;
             if (state.piece.x == null || state.piece.y == null) return;
             const newPiece = {...state.piece, y: state.piece.y + 1};
+
+            // Update game speed
+            if (state.speed.acceleration && state.speed.speed < state.speed.max) {
+                state.tickBeforeAccelerate--;
+                if (state.tickBeforeAccelerate <= 0) {
+                    state.tickBeforeAccelerate = state.speed.frequency;
+                    state.speed.speed += state.speed.rate;
+                    if (state.speed.speed > state.speed.max) {
+                        state.speed.speed = state.speed.max;
+                    }
+                }
+            }
 
             if (isPieceOverlap(state.grid, newPiece)) {
                 state.waitNextPiece = true;

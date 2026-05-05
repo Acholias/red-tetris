@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/05 11:46:52 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/05 14:18:37 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ import { initRoom } from '../../gameRoom/logic/roomSlice';
 import { useEffect } from 'react';
 import { canYouPlay, canYouSpectate } from '../../gameRoom/utils/functions';
 import { createRoomTheme } from '../../theme/theme';
+import { maxGridHeight, maxGridWidth, maxSpeed, maxSpeedFrequency, maxSpeedRate, minGridHeight, minGridWidth, minSpeed, minSpeedFrequency, minSpeedRate } from "@shared/defines";
 
 export default function Lobby() {
     const navigate = useNavigate();
@@ -104,64 +105,131 @@ export default function Lobby() {
         {room.isAdmin && <div>
             {/* All pieces */}
             <div>
-            <label>All pieces :</label>
-            <input
-                type='checkbox'
-                checked={room.allPieces}
-                onChange={() => updateSettings('allPieces', !room.allPieces)}
-            />
+                <label>All pieces :</label>
+                <input
+                    type='checkbox'
+                    checked={room.allPieces}
+                    onChange={() => updateSettings('allPieces', !room.allPieces)}
+                />
             </div>
             {/* Malus */}
             <div>
-            <label>Malus :</label>
-            <input
-                type='checkbox'
-                checked={room.malus}
-                onChange={() => updateSettings('malus', !room.malus)}
-            />
+                <label>Malus :</label>
+                <input
+                    type='checkbox'
+                    checked={room.malus}
+                    onChange={() => updateSettings('malus', !room.malus)}
+                />
             </div>
             {/* Size */}
             <div>
-            <label>Width : </label>
-            <input
-                type="number"
-                min={5}
-                max={20}
-                defaultValue={room.size.w}
-                onBlur={(e) => updateSettings('size', {
-                'w': parseFloat(e.target.value),
-                'h': room.size.h,
-                })}
-            />
-            <label>Height : </label>
-            <input
-                type="number"
-                min={10}
-                max={30}
-                defaultValue={room.size.h}
-                onBlur={(e) => updateSettings('size', {
-                'w': room.size.w,
-                'h': parseFloat(e.target.value),
-                })}
-            />
+                <label>Width : </label>
+                <input
+                    type="number"
+                    min={minGridWidth}
+                    max={maxGridWidth}
+                    defaultValue={room.size.w}
+                    onBlur={(e) => updateSettings('size', {
+                    'w': parseFloat(e.target.value),
+                    'h': room.size.h,
+                    })}
+                />
+                <label>Height : </label>
+                <input
+                    type="number"
+                    min={minGridHeight}
+                    max={maxGridHeight}
+                    defaultValue={room.size.h}
+                    onBlur={(e) => updateSettings('size', {
+                    'w': room.size.w,
+                    'h': parseFloat(e.target.value),
+                    })}
+                />
             </div>
-            {/* Speed */}
-            <div>
-            <label>Speed (ticks/sec) : </label>
-            <input
-                type="number"
-                min={1}
-                max={10}
-                defaultValue={1 / room.gameSpeed}
-                onBlur={(e) => updateSettings('gameSpeed', 1 / parseFloat(e.target.value))}
-            />
-            </div>
+            {/* Speed no acceleration */}
+            {!room.gameSpeed.acceleration && <div>
+                <label>Speed acceleration : </label>
+                <input
+                    type='checkbox'
+                    checked={room.gameSpeed.acceleration}
+                    onChange={() => updateSettings('gameSpeed', {
+                        ...room.gameSpeed, acceleration: !room.gameSpeed.acceleration
+                    })}
+                />
+                <label>Speed (ticks/sec) : </label>
+                <input
+                    type="number"
+                    min={minSpeed}
+                    max={maxSpeed}
+                    defaultValue={room.gameSpeed.speed}
+                    onBlur={(e) => updateSettings('gameSpeed', {
+                        ...room.gameSpeed, speed: parseFloat(e.target.value)
+                    })}
+                />
+            </div>}
+            {/* Speed acceleration */}
+            {room.gameSpeed.acceleration && <div>
+                <label>Speed acceleration : </label>
+                <input
+                    type='checkbox'
+                    checked={room.gameSpeed.acceleration}
+                    onChange={() => updateSettings('gameSpeed', {
+                        ...room.gameSpeed, acceleration: !room.gameSpeed.acceleration
+                    })}
+                />
+                <label>Default speed (ticks/sec) : </label>
+                <input
+                    type="number"
+                    min={minSpeed}
+                    max={maxSpeed}
+                    defaultValue={room.gameSpeed.speed}
+                    onBlur={(e) => updateSettings('gameSpeed', {
+                        ...room.gameSpeed, speed: parseFloat(e.target.value)
+                    })}
+                />
+                <label>Acceleration frequency (ticks) : </label>
+                <input
+                    type="number"
+                    min={minSpeedFrequency}
+                    max={maxSpeedFrequency}
+                    defaultValue={room.gameSpeed.frequency}
+                    onBlur={(e) => updateSettings('gameSpeed', {
+                        ...room.gameSpeed, frequency: parseFloat(e.target.value)
+                    })}
+                />
+                <label>Acceleration rate (ticks/sec) : </label>
+                <input
+                    type="number"
+                    min={minSpeedRate}
+                    max={maxSpeedRate}
+                    defaultValue={room.gameSpeed.rate}
+                    onBlur={(e) => updateSettings('gameSpeed', {
+                        ...room.gameSpeed, rate: parseFloat(e.target.value)
+                    })}
+                />
+                <label>Max speed (ticks/sec) : </label>
+                <input
+                    type="number"
+                    min={room.gameSpeed.speed}
+                    max={maxSpeed}
+                    defaultValue={room.gameSpeed.max}
+                    onBlur={(e) => updateSettings('gameSpeed', {
+                        ...room.gameSpeed, max: parseFloat(e.target.value)
+                    })}
+                />
+            </div>}
         </div>}
         {!room.isAdmin && <div>
             <p>Pieces : {room.allPieces ? 'all' : 'basic'}</p>
             <p>Malus : {room.malus ? 'on' : 'off'}</p>
             <p>Size : {`${room.size.w}x${room.size.h}`}</p>
-            <p>Speed: {room.gameSpeed != 0 ? `${1 / room.gameSpeed}` : '0 '} ticks per second</p>
+            {!room.gameSpeed.acceleration && <p>Speed: {`${room.gameSpeed.speed}`} ticks per second</p>}
+            {room.gameSpeed.acceleration && <div>
+                <p>Default speed: {`${room.gameSpeed.speed}`} ticks per second</p>
+                <p>Acceleration frequency : each {`${room.gameSpeed.frequency}`} ticks</p>
+                <p>Acceleration rate : {`${room.gameSpeed.rate}`} ticks per second</p>
+                <p>Max speed : {`${room.gameSpeed.max}`} ticks per second</p>
+            </div>}
         </div>}
 
         <div className='room-info' style={roomStyle}>

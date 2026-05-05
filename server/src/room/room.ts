@@ -1,3 +1,4 @@
+import { GameSpeed } from "@shared/interfaces.js";
 import { GameData } from "../gameEngine/gameData.js";
 import { Player } from "./player.js";
 
@@ -10,7 +11,7 @@ export class Room {
     allPieces: boolean;
     malus: boolean;
     size: {w: number, h: number};
-    gameSpeed: number;
+    gameSpeed: GameSpeed;
     players: Player[];
     spectators: Player[];
     nextIdInRoom: number;
@@ -23,7 +24,13 @@ export class Room {
         this.allPieces = false;
         this.malus = false;
         this.size = {w: 10, h: 20};
-        this.gameSpeed = 0.5;
+        this.gameSpeed = {
+            speed: 2,
+            acceleration: false,
+            frequency: 60,
+            rate: 1,
+            max: 10,
+        };
         this.players = [player];
         this.spectators = [];
         this.nextIdInRoom = 1;
