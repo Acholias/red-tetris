@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/05 10:39:13 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/05 11:46:52 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,29 +56,38 @@ export default function Lobby() {
 
     function updateSettings(key: string, value: any) {
         dispatch({
-        'type' : 'room/settings',
-        'payload' : {
-            'roomId': urlRoom,
-            [key] : value
-        }
+            'type' : 'room/settings',
+            'payload' : {
+                'roomId': urlRoom,
+                [key] : value
+            }
         });
     }
     function changePlayerMode(spectate: boolean) {
         dispatch({
-        'type' : 'room/playerMode',
-        'payload' : {
-            'roomId': urlRoom,
-            'spectate' : spectate,
-        }
+            'type' : 'room/playerMode',
+            'payload' : {
+                'roomId': urlRoom,
+                'spectate' : spectate,
+            }
         });
     }
     function startGame() {
         dispatch({
-        'type' : 'room/startGame',
-        'payload' : {
-            'roomId': urlRoom,
-        }
+            'type' : 'room/startGame',
+            'payload' : {
+                'roomId': urlRoom,
+            }
         });
+    }
+    function quitRoom() {
+        dispatch({
+            'type' : 'room/leave',
+            'payload' : {
+                'roomId': urlRoom,
+            }
+        });
+        navigate('/');
     }
 
     // Style define
@@ -170,6 +179,12 @@ export default function Lobby() {
             </div>
         </div>
 
+        <button
+            type="button"
+            onClick={() => {quitRoom()}}
+        >
+            Quit room
+        </button>
         {canYouPlay(room) && <button
             type="button"
             onClick={() => {changePlayerMode(false)}}
