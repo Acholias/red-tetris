@@ -38,25 +38,6 @@ export function socketListenning(socket: Socket) {
         socket.emit('room/update', bodyNewPlayer);
     });
 
-    socket.on('room/leave', (body: BodyRoomLeave) => {
-        const currentRoom = rooms.get(body.roomId);
-        if (currentRoom == null) return;
-
-        const currentPlayer = currentRoom.getPlayerById(socket.id);
-        if (currentPlayer == null) return;
-
-        currentRoom.players = currentRoom.players.filter(p => p.id !== currentPlayer.id);
-
-        // Add current currentRoom to listen field
-        socket.leave(currentRoom.id);
-
-        const bodyAll: BodyRoomUpdate = {
-            players: currentRoom.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
-            spectators: currentRoom.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
-        };
-        server.sendSocketMessage(currentRoom.id, 'room/update', bodyAll);
-    });
-
     socket.on('room/settings', (body: BodyRoomSettings) => {
         const currentRoom = rooms.get(body.roomId);
         if (currentRoom == null) return;
@@ -189,25 +170,108 @@ export function socketListenning(socket: Socket) {
         }
     });
 
+    socket.on('room/leave', (body: BodyRoomLeave) => {
+        const currentRoom = rooms.get(body.roomId);
+        if (currentRoom == null) return;
+
+        const currentPlayer = currentRoom.getPlayerById(socket.id);
+        if (currentPlayer == null) return;
+
+        // Remove current currentRoom to listen field
+        socket.leave(currentRoom.id);
+
+        // Delete room if it will be empty
+        if (currentRoom.players.length + currentRoom.spectators.length == 1) {
+            rooms.delete(currentRoom.id);
+            return;
+        }
+
+        // If room is playing, check if someone win
+        if (currentRoom.isPlaying) {
+            const events = currentRoom.gamedata.removePlayer(socket.id);
+            for (const event of events) {
+                if (event.type == 'end') {
+                    const body: BodyGameEnd = {
+                        win: event.win!
+                    };
+                    socket.to(event.id).emit('room/gameEnd', body);
+                }
+                else if (event.type == 'finished') {
+                    currentRoom.isPlaying = false;
+                    server.sendSocketMessage(currentRoom.id, 'room/gameFinished', {});
+                }
+            }
+        }
+
+        // Remove player from players and spectators
+        currentRoom.players = currentRoom.players.filter(p => p.id !== socket.id);
+        currentRoom.spectators = currentRoom.spectators.filter(p => p.id !== socket.id);
+
+        // Send new players and spectators
+        const bodyRoomUpdate: BodyRoomUpdate = {
+            players: currentRoom.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
+            spectators: currentRoom.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
+        };
+        socket.to(currentRoom.id).emit('room/update', bodyRoomUpdate);
+
+        // Change admin if needed
+        if (currentRoom.adminId == socket.id) {
+            if (currentRoom.players.length > 0) {
+                currentRoom.adminId = currentRoom.players[0].id;
+            } else {
+                currentRoom.adminId = currentRoom.spectators[0].id;
+            }
+            socket.to(currentRoom.adminId).emit('room/update', {...bodyRoomUpdate, isAdmin: true});
+        }
+    });
+
     socket.on('disconnect', () => {
         rooms.forEach((room, roomId) => {
-            for (const player of room.players) {
-                room.players = room.players.filter(p => p.id !== socket.id);
-                room.spectators = room.spectators.filter(p => p.id !== socket.id);
+            // Check if the player is in the room
+            if (room.getPlayerById(socket.id) == null) return;
 
-                if (room.players.length == 0 && room.spectators.length == 0) {
-                    rooms.delete(roomId);
-                } else {
-                    const bodyRoomUpdate: BodyRoomUpdate = {
-                        players: room.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
-                        spectators: room.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
-                    };
-                    socket.to(room.id).emit('room/update', bodyRoomUpdate);
-                    if (room.isAdmin(player)) {
-                        room.adminId = room.players[0].id;
-                        socket.to(room.adminId).emit('room/update', {...bodyRoomUpdate, isAdmin: true});
+            // Delete room if it will be empty
+            if (room.players.length + room.spectators.length == 1) {
+                rooms.delete(roomId);
+                return;
+            }
+
+            // If room is playing, check if someone win
+            if (room.isPlaying) {
+                const events = room.gamedata.removePlayer(socket.id);
+                for (const event of events) {
+                    if (event.type == 'end') {
+                        const body: BodyGameEnd = {
+                            win: event.win!
+                        };
+                        socket.to(event.id).emit('room/gameEnd', body);
+                    }
+                    else if (event.type == 'finished') {
+                        room.isPlaying = false;
+                        server.sendSocketMessage(room.id, 'room/gameFinished', {});
                     }
                 }
+            }
+
+            // Remove player from players and spectators
+            room.players = room.players.filter(p => p.id !== socket.id);
+            room.spectators = room.spectators.filter(p => p.id !== socket.id);
+
+            // Send new players and spectators
+            const bodyRoomUpdate: BodyRoomUpdate = {
+                players: room.players.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
+                spectators: room.spectators.map((player) => {return {id: player.idInRoom??-1, name: player.name}}),
+            };
+            socket.to(room.id).emit('room/update', bodyRoomUpdate);
+
+            // Change admin if needed
+            if (room.adminId == socket.id) {
+                if (room.players.length > 0) {
+                    room.adminId = room.players[0].id;
+                } else {
+                    room.adminId = room.spectators[0].id;
+                }
+                socket.to(room.adminId).emit('room/update', {...bodyRoomUpdate, isAdmin: true});
             }
         });
     });

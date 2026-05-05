@@ -17,12 +17,18 @@ export const spectrumsSlice = createSlice({
     reducers: {
         initSpectrums: (
                 state,
-                action: PayloadAction<Room>) => {
-            const gridWidth = action.payload.size.w;
-            const gridHeight = action.payload.size.h;
+                action: PayloadAction<{
+                    room: Room,
+                    skipCurrentPlayer: boolean
+                }>) => {
+            const gridWidth = action.payload.room.size.w;
+            const gridHeight = action.payload.room.size.h;
 
-            for (const player of action.payload.players) {
-                if (player.id == action.payload.yourId) continue;
+            for (const player of action.payload.room.players) {
+                if (action.payload.skipCurrentPlayer &&
+                    player.id == action.payload.room.yourId) {
+                    continue;
+                }
                 state[player.id] = {
                     playerName: player.name,
                     spectrum: {

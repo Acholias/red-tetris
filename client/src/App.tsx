@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 21:23:28 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/04 11:19:59 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/05 10:01:45 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ import type { Location as RouterLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import DevCredits from './page/DevCredits';
 import Profile from './page/Profile';
-import Spectator from './page/Spectator';
+import Spectator from './page/Spectator/Spectator';
 import Lobby from './page/Lobby/Lobby';
 import Game from './page/Game/Game';
 import Welcome from './page/Welcome';

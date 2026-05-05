@@ -79,6 +79,34 @@ export class GameData {
         setTimeout(() => autoTick(roomId), gameSpeed * 1000);
     }
 
+    removePlayer(playerId: string): GameEvent[] {
+        if (this.solo || this.isEnd) return [];
+        if (!this.playerDatas.delete(playerId)) return [];
+
+        let nbAlive = 0;
+        let lastAlive = '';
+        for (const playerData of this.playerDatas.values()) {
+            if (playerData.alive) {
+                nbAlive += 1;
+                lastAlive = playerData.playerId;
+            }
+        }
+
+        if (nbAlive == 1) {
+            this.isEnd = true;
+            return [{
+                'id': lastAlive,
+                'type' : 'end',
+                'win' : true
+            },
+            {
+                'id': '',
+                'type' : 'finished',
+            }];
+        }
+        return [];
+    }
+
     playerAction(playerId: string, action: string): GameEvent[] {
         const playerData = this.playerDatas.get(playerId);
         if (playerData == null) return [];
