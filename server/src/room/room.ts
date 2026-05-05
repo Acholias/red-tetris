@@ -1,4 +1,4 @@
-import { GameSpeed } from "@shared/interfaces.js";
+import { GameSpeed } from "@shared/interfaces";
 import { GameData } from "../gameEngine/gameData.js";
 import { Player } from "./player.js";
 

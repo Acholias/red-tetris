@@ -1,5 +1,5 @@
-import { type PieceId, pieces } from "./pieces.js";
-import { type RotationId, rotations } from "./rotations.js";
+import { type PieceId, pieces } from "@shared/pieces";
+import { type RotationId, rotations } from "@shared/rotations";
 
 export class Piece {
     pieceId: PieceId;

@@ -1,4 +1,4 @@
-import { Spectrum } from "@shared/interfaces.js";
+import { Spectrum } from "@shared/interfaces";
 import { Piece } from "./piece.js";
 
 export class Grid {

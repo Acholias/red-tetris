@@ -1,22 +1,7 @@
-import { basicPieceIds, allPieceIds } from "./pieces.js";
+import { basicPieceIds, allPieceIds } from "@shared/pieces";
 
 export const nbLoopPieceBasic = 6;
 export const listLengthPieceBasic = nbLoopPieceBasic * basicPieceIds.length;
 
 export const nbLoopPieceAll = 3;
 export const listLengthPieceAll = nbLoopPieceAll * allPieceIds.length;
-
-
-// Grid size
-export const minGridWidth = 5;
-export const maxGridWidth = 20;
-export const minGridHeight = 10;
-export const maxGridHeight = 30;
-
-// Game speed
-export const minSpeed = 1;
-export const maxSpeed = 100;
-export const minSpeedFrequency = 1;
-export const maxSpeedFrequency = 200;
-export const minSpeedRate = 1;
-export const maxSpeedRate = 10;

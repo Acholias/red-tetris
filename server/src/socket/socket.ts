@@ -1,9 +1,9 @@
 import { type Socket } from "socket.io";
 import { Room, rooms } from "../room/room.js";
 import { Player } from "../room/player.js";
-import { BodyGameAction, BodyGameEnd, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody.js"
+import { BodyGameAction, BodyGameEnd, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody"
 import { server } from "../index.js";
-import { maxGridHeight, maxGridWidth, maxSpeed, maxSpeedFrequency, maxSpeedRate, minGridHeight, minGridWidth, minSpeed, minSpeedFrequency, minSpeedRate } from "../gameEngine/defines.js";
+import { maxGridHeight, maxGridWidth, maxSpeed, maxSpeedFrequency, maxSpeedRate, minGridHeight, minGridWidth, minSpeed, minSpeedFrequency, minSpeedRate } from "@shared/defines";
 
 export function socketListenning(socket: Socket) {
     socket.on('room/join', (body: BodyRoomJoin) => {
@@ -53,10 +53,10 @@ export function socketListenning(socket: Socket) {
         if (body.allPieces != null) currentRoom.allPieces = body.allPieces;
         if (body.malus != null) currentRoom.malus = body.malus;
         if (body.size != null) {
-            if (body.size.w < 5) body.size.w = 5;
-            else if (body.size.w > 20) body.size.w = 20;
-            if (body.size.h < 10) body.size.h = 10;
-            else if (body.size.h > 30) body.size.h = 30;
+            if (body.size.w < minGridWidth) body.size.w = minGridWidth;
+            else if (body.size.w > maxGridWidth) body.size.w = maxGridWidth;
+            if (body.size.h < minGridHeight) body.size.h = minGridHeight;
+            else if (body.size.h > maxGridHeight) body.size.h = maxGridHeight;
             currentRoom.size = body.size;
         }
         if (body.gameSpeed != null) {

@@ -1,4 +1,4 @@
-import { PieceId } from "@shared/pieces.js";
+import { PieceId } from "@shared/pieces";
 import { listLengthPieceAll, listLengthPieceBasic } from "./defines.js";
 import { Grid } from "./grid.js";
 import { Piece } from "./piece.js";

@@ -1,8 +1,8 @@
-import { BodyGameEnd, BodyGameSpectrum, BodyGameUpdate } from "@shared/requestBody.js";
+import { BodyGameEnd, BodyGameSpectrum, BodyGameUpdate } from "@shared/requestBody";
 import { server } from "../index.js";
 import { Player } from "../room/player.js";
 import { nbLoopPieceAll, nbLoopPieceBasic } from "./defines.js";
-import { allPieceIds, basicPieceIds, type PieceId } from "./pieces.js";
+import { allPieceIds, basicPieceIds, type PieceId } from "@shared/pieces";
 import { PlayerData } from "./playerData.js";
 import { rooms } from "../room/room.js";
 import { GameSpeed } from "@shared/interfaces.js";
