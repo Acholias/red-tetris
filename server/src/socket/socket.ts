@@ -1,7 +1,7 @@
 import { type Socket } from "socket.io";
 import { Room, rooms } from "../room/room.js";
 import { Player } from "../room/player.js";
-import { BodyGameAction, BodyGameEnd, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from "@shared/requestBody"
+import { BodyGameAction, BodyGameEnd, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate, BodyGameNextPiece, BodyGameMalus } from "@shared/requestBody"
 import { server } from "../index.js";
 import { maxGridHeight, maxGridWidth, maxSpeed, maxSpeedFrequency, maxSpeedRate, minGridHeight, minGridWidth, minSpeed, minSpeedFrequency, minSpeedRate } from "@shared/defines";
 
@@ -163,6 +163,29 @@ export function socketListenning(socket: Socket) {
                     spectrum: event.spectrum!
                 };
                 server.sendSocketMessage(currentRoom.id, 'room/gameSpectrum', body);
+            }
+            else if (event.type == 'next-piece') {
+                const player = currentRoom.getPlayerById(event.id);
+                if (player == null) continue;
+
+                const body: BodyGameNextPiece = {
+                    nextPiece: event.nextPiece!
+                };
+                if (event.id == currentPlayer.id) {
+                    socket.emit('room/nextPiece', body);
+                } else {
+                    socket.to(event.id).emit('room/nextPiece', body);
+                }
+            }
+            else if (event.type == 'malus') {
+                const player = currentRoom.getPlayerById(event.id);
+                if (player == null) continue;
+
+                const body: BodyGameMalus = {
+                    playerId: player.idInRoom!,
+                    malusId: event.malusId!,
+                };
+                server.sendSocketMessage(currentRoom.id, 'room/malus', body);
             }
             else if (event.type == 'end') {
                 const body: BodyGameEnd = {

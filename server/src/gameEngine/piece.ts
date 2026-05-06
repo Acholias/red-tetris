@@ -30,6 +30,44 @@ export class Piece {
         this.cells = rotations[this.rotationId](this.cells);
     }
 
+    mergeWith(piece: Piece) {
+        // Create empty 5x5 cells
+    let cells: string[] = Array(25).fill(' ');
+
+    // Merge first piece
+    const offset1 = computeOffset(this.width);
+    for (let y = 0; y < this.height; y++) {
+        for (let x = 0; x < this.width; x++) {
+            const index1 = x + y * this.width;
+            if (this.cells[index1] == ' ') continue;
+
+            const index = (x + offset1) + (y + offset1) * 5;
+            cells[index] = this.cells[index1];
+        }
+    }
+
+    // Merge second piece
+    const offset2 = computeOffset(piece.width);
+    for (let y = 0; y < piece.height; y++) {
+        for (let x = 0; x < piece.width; x++) {
+            const index2 = x + y * piece.width;
+            if (piece.cells[index2] == ' ') continue;
+
+            const index = (x + offset2) + (y + offset2) * 5;
+            if (cells[index] != ' ') continue;
+
+            cells[index] = piece.cells[index2];
+        }
+    }
+
+    this.cells = cells,
+    this.x = this.x! - offset1,
+    this.y = this.y! - offset1,
+    this.width = 5,
+    this.height = 5,
+    this.rotationId = '5x5'
+    }
+
     copyWith(param: {x?: number, y?: number}) {
         const piece = new Piece(this.pieceId);
 
@@ -59,4 +97,17 @@ export class Piece {
             end += this.width;
         }
     }
+}
+
+
+function computeOffset(pieceSize: number): number {
+    switch (pieceSize) {
+        case 1:
+            return 2;
+        case 2:
+            return 1;
+        case 3:
+            return 1;
+    }
+    return 0;
 }

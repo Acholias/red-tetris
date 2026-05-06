@@ -81,6 +81,7 @@ export class Room {
         this.gamedata.startGame(
             this.id,
             this.allPieces,
+            this.malus,
             this.size,
             this.gameSpeed,
             this.players);

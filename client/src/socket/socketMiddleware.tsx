@@ -1,15 +1,14 @@
 import { io, Socket } from 'socket.io-client';
 import { type Middleware } from 'redux';
-import type { BodyGameAction, BodyGameEnd, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from '@shared/requestBody';
+import type { BodyGameAction, BodyGameEnd, BodyGameMalus, BodyGameNextPiece, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from '@shared/requestBody';
 import { setSocketConnected, updateRoom } from '../gameRoom/logic/roomSlice';
-import { endGame, generateNextPiece, initGame, updateGrid } from '../gameEngine/logic/gameSlice';
+import { applyMalus, endGame, generateNextPiece, initGame, updateGrid, updateNextPiece } from '../gameEngine/logic/gameSlice';
 import { clearSpectrums, updateSpectrum } from '../gameEngine/data/spectrumsSlice';
-
 
 export const socketMiddleware = (): Middleware => {
   let socket: Socket;
 
-  return ({ dispatch }) => (next) => (action: any) => {
+  return ({ dispatch, getState }) => (next) => (action: any) => {
 
     // SERVER -> CLIENT
 
@@ -28,6 +27,12 @@ export const socketMiddleware = (): Middleware => {
       });
       socket.on('room/gameUpdate', (data: BodyGameUpdate) => {
         dispatch({ type: 'room/gameUpdate', payload: data });
+      });
+      socket.on('room/nextPiece', (data: BodyGameNextPiece) => {
+        dispatch({ type: 'room/nextPiece', payload: data });
+      });
+      socket.on('room/malus', (data: BodyGameMalus) => {
+        dispatch({ type: 'room/malus', payload: data });
       });
       socket.on('room/gameSpectrum', (data: BodyGameSpectrum) => {
         dispatch({ type: 'room/gameSpectrum', payload: data });
@@ -74,6 +79,20 @@ export const socketMiddleware = (): Middleware => {
     // Case game spectrum update
     if (action.type === 'room/gameSpectrum') {
       dispatch(updateSpectrum(action.payload));
+    }
+
+    // Case game next piece update
+    if (action.type === 'room/nextPiece') {
+      dispatch(updateNextPiece(action.payload.nextPiece));
+    }
+
+    // Case game apply malus
+    if (action.type === 'room/malus') {
+      const state = getState();
+      if (state.room.yourId != action.payload.playerId) {
+        dispatch(applyMalus(action.payload.malusId));
+      }
+      // TODO: Popup display malus
     }
 
     // Case game end

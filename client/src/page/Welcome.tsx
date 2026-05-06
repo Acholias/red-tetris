@@ -6,7 +6,7 @@
 /*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 13:05:38 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/01 14:02:35 by gugus            ###   ########.fr       */
+/*   Updated: 2026/05/06 13:59:13 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ export default function Welcome({ playerName, setPlayerName, avatar, isDevProfil
 					<button
 						type="button"
 						disabled={!cleanPlayer || !cleanRoom}
-						onClick={() => navigate('/spectator')} // TODO: Change path !
+						onClick={() => navigate('/spectator')} // TODO: Remove ?
 						className="spectator-btn"
 					>
 						Spectator

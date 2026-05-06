@@ -1,5 +1,6 @@
 import type { GameSpeed, Spectrum } from "./interfaces";
 import type { PieceId } from "./pieces";
+import { MalusId } from "./malus";
 
 // Client -> server
 export interface BodyRoomJoin {
@@ -64,6 +65,15 @@ export interface BodyGameUpdate {
 export interface BodyGameSpectrum {
     playerId: number,
     spectrum: Spectrum,
+};
+
+export interface BodyGameNextPiece {
+    nextPiece: PieceId,
+};
+
+export interface BodyGameMalus {
+    playerId: number,
+    malusId: MalusId,
 };
 
 export interface BodyGameEnd {

@@ -1,11 +1,12 @@
-import { BodyGameEnd, BodyGameSpectrum, BodyGameUpdate } from "@shared/requestBody";
+import { BodyGameEnd, BodyGameSpectrum, BodyGameUpdate, BodyGameNextPiece, BodyGameMalus } from "@shared/requestBody";
 import { server } from "../index.js";
 import { Player } from "../room/player.js";
 import { nbLoopPieceAll, nbLoopPieceBasic } from "./defines.js";
 import { allPieceIds, basicPieceIds, type PieceId } from "@shared/pieces";
-import { PlayerData } from "./playerData.js";
+import { MalusEvent, PlayerData } from "./playerData.js";
 import { rooms } from "../room/room.js";
-import { GameSpeed } from "@shared/interfaces.js";
+import { GameSpeed } from "@shared/interfaces";
+import { MalusId, allMalus } from "@shared/malus";
 
 export interface GameEvent {
     id: string,
@@ -16,13 +17,15 @@ export interface GameEvent {
         heights: number[],
         unbreakableLines: number
     },
-    nextPiece?: PieceId
+    nextPiece?: PieceId,
+    malusId?: MalusId,
 }
 
 export class GameData {
     solo: boolean;
     isEnd: boolean;
     allPieces: boolean;
+    malus: boolean;
     gameSpeed: GameSpeed;
     pieces: PieceId[];
     playerDatas: Map<string, PlayerData>;
@@ -31,6 +34,7 @@ export class GameData {
         this.solo = true;
         this.isEnd = false;
         this.allPieces = false;
+        this.malus = false;
         this.gameSpeed = {
             speed: 0,
             acceleration: false,
@@ -45,6 +49,7 @@ export class GameData {
     startGame(
         roomId: string,
         allPieces: boolean,
+        malus: boolean,
         gridSize: {w: number, h: number},
         gameSpeed: GameSpeed,
         players: Player[],
@@ -52,6 +57,7 @@ export class GameData {
         this.solo = players.length == 1;
         this.isEnd = false;
         this.allPieces = allPieces;
+        this.malus = malus;
         this.gameSpeed = gameSpeed;
 
         this.pieces = [];
@@ -143,6 +149,7 @@ export class GameData {
         for (const playerData of this.playerDatas.values()) {
             if (!playerData.alive) continue;
 
+            if (this.malus) playerData.tickMalus();
             if (playerData.softDrop()) {
                 results = results.concat(this._fixPiece(playerData));
             }
@@ -159,7 +166,7 @@ export class GameData {
             return this._playerLoose(playerData.playerId);
         }
 
-        const results: GameEvent[] = [{
+        let results: GameEvent[] = [{
             'id': playerData.playerId,
             'type': 'update-grid',
             'grid': playerData.grid.cells,
@@ -172,9 +179,15 @@ export class GameData {
         ];
 
         const nbLinesClear = playerData.grid.clearLines();
+
+        if (this.malus && nbLinesClear > 0) {
+            const malusEvents = this._applyMalus(playerData.playerId, nbLinesClear);
+            results = results.concat(malusEvents);
+        }
+
         if (nbLinesClear > 1) {
-            const res = this._unbreakableLines(playerData.playerId, nbLinesClear - 1);
-            return (res.concat(results));
+            const unbreakableEvents = this._unbreakableLines(playerData.playerId, nbLinesClear - 1);
+            results = results.concat(unbreakableEvents);
         }
 
         return results;
@@ -242,6 +255,37 @@ export class GameData {
 
         return results;
     }
+
+    _applyMalus(playerId: string, nbLine: number): GameEvent[] {
+        if (Math.random() * 5 > nbLine) return [];
+
+        const malusId = Math.floor(allMalus.length * Math.random());
+        let results: GameEvent[] = [{
+            'id': playerId,
+            'type': 'malus',
+            'malusId': malusId,
+        }];
+
+        for (const playerData of this.playerDatas.values()) {
+            if (playerData.alive && playerData.playerId != playerId) {
+                const event:MalusEvent = playerData.applyMalus(malusId);
+                if (event == 'fix-piece') {
+                    results = results.concat(this._fixPiece(playerData));
+                }
+                else if (event == 'next-piece') {
+                    const nextPieceId = this.pieces[playerData.nextPieceIndex];
+                    playerData.setNextPiece(nextPieceId, this.allPieces, false);
+                    results.push({
+                        'id': playerData.playerId,
+                        'type': 'next-piece',
+                        'nextPiece': playerData.nextPieceId,
+                    });
+                }
+            }
+        }
+
+        return results;
+    }
 }
 
 
@@ -267,6 +311,25 @@ function autoTick(roomId: string) {
                 spectrum: event.spectrum!
             };
             server.sendSocketMessage(currentRoom.id, 'room/gameSpectrum', body);
+        }
+        else if (event.type == 'next-piece') {
+            const player = currentRoom.getPlayerById(event.id);
+            if (player == null) continue;
+
+            const body: BodyGameNextPiece = {
+                nextPiece: event.nextPiece!
+            };
+            server.sendSocketMessage(event.id, 'room/nextPiece', body);
+        }
+        else if (event.type == 'malus') {
+            const player = currentRoom.getPlayerById(event.id);
+            if (player == null) continue;
+
+            const body: BodyGameMalus = {
+                playerId: player.idInRoom!,
+                malusId: event.malusId!,
+            };
+            server.sendSocketMessage(currentRoom.id, 'room/malus', body);
         }
         else if (event.type == 'end') {
             const body: BodyGameEnd = {

@@ -4,6 +4,8 @@ import { isPieceOverlap, kickTests } from './overlaps';
 import { rotations } from '../../../../shared/rotations';
 import type { BodyGameStarted } from '@shared/requestBody';
 import { pieces, type PieceId } from '@shared/pieces';
+import type { MalusId } from '@shared/malus';
+import { mergePiece } from './mergePiece';
 
 const initialState: GameData = {
     speed: {
@@ -14,6 +16,7 @@ const initialState: GameData = {
         max: 0,
     },
     tickBeforeAccelerate: 0,
+    tickDrunk: 0,
     allPieces: false,
     waitNextPiece: false,
     isEnd: false,
@@ -45,6 +48,7 @@ export const gameSlice = createSlice({
                 action: PayloadAction<BodyGameStarted>) => {
             state.speed = {...action.payload.gameSpeed};
             state.tickBeforeAccelerate = state.speed.frequency;
+            state.tickDrunk = 0;
             state.allPieces = action.payload.allPieces;
             state.waitNextPiece = false;
             state.isEnd = false;
@@ -64,6 +68,10 @@ export const gameSlice = createSlice({
         updateGrid: (state, action: PayloadAction<string[]>) => {
             state.grid.cells = [...action.payload];
         },
+        updateNextPiece: (state, action: PayloadAction<PieceId>) => {
+            const nextPiece = pieces[action.payload];
+            state.nextPiece = {...nextPiece, width: nextPiece.size, height: nextPiece.size};
+        },
         endGame: (state, action: PayloadAction<boolean>) => {
             state.isEnd = true;
             state.win = action.payload;
@@ -80,6 +88,9 @@ export const gameSlice = createSlice({
         movePiece: (state, action: PayloadAction<{right: boolean}>) => {
             if (state.waitNextPiece || state.isEnd) return;
             if (state.piece.x == null || state.piece.y == null) return;
+
+            if (state.tickDrunk != 0) action.payload.right = !action.payload.right;
+
             const newX = state.piece.x + (action.payload.right? 1 : -1);
             const newPiece = {...state.piece, x: newX};
 
@@ -137,6 +148,11 @@ export const gameSlice = createSlice({
         tick: (state) => {
             if (state.waitNextPiece || state.isEnd) return;
             if (state.piece.x == null || state.piece.y == null) return;
+
+            if (state.tickDrunk > 0) {
+                state.tickDrunk--;
+            }
+
             const newPiece = {...state.piece, y: state.piece.y + 1};
 
             // Update game speed
@@ -156,12 +172,37 @@ export const gameSlice = createSlice({
             } else {
                 state.piece = newPiece;
             }
-        }
+        },
+        applyMalus: (state, action: PayloadAction<MalusId>) => {
+            if (action.payload == 'fastForward') {
+                if (state.waitNextPiece || state.isEnd) return;
+                if (state.piece.x == null || state.piece.y == null) return;
+
+                for (let i = 0; i < 5; i++) {
+                    const newPiece = {...state.piece, y: state.piece.y! + 1};
+
+                    if (isPieceOverlap(state.grid, newPiece)) {
+                        state.waitNextPiece = true;
+                        break
+                    } else {
+                        state.piece = newPiece;
+                    }
+                }
+            }
+
+            else if (action.payload == 'drunk') {
+                state.tickDrunk += 10;
+            }
+
+            else if (action.payload == 'merge') {
+                state.piece = mergePiece(state.piece, state.nextPiece);
+            }
+        },
     }
 });
 
 export const {
-    initGame, updateGrid, endGame, generateNextPiece,
-    movePiece, rotatePiece, softDrop, hardDrop, tick
+    initGame, updateGrid, updateNextPiece, endGame, generateNextPiece,
+    movePiece, rotatePiece, softDrop, hardDrop, tick, applyMalus
 } = gameSlice.actions;
 export default gameSlice.reducer;

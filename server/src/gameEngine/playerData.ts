@@ -2,6 +2,7 @@ import { PieceId } from "@shared/pieces";
 import { listLengthPieceAll, listLengthPieceBasic } from "./defines.js";
 import { Grid } from "./grid.js";
 import { Piece } from "./piece.js";
+import { MalusId, allMalus } from "@shared/malus";
 
 const kickTests = [
     { dx:  0, dy:  0 },
@@ -12,6 +13,8 @@ const kickTests = [
     { dx: -2, dy:  0 }
 ];
 
+export type MalusEvent = 'none' | 'fix-piece' | 'next-piece';
+
 export class PlayerData {
     playerId: string;
     grid: Grid;
@@ -19,6 +22,7 @@ export class PlayerData {
     nextPieceId: PieceId;
     nextPieceIndex: number;
     alive: boolean;
+    controlReverseTick: number;
 
     constructor(
         playerId: string,
@@ -32,12 +36,18 @@ export class PlayerData {
         this.nextPieceId = nextPieceId;
         this.nextPieceIndex = 2;
         this.alive = true;
+        this.controlReverseTick = 0;
     }
 
-    setNextPiece(nextPieceId: PieceId, allPiece: boolean) {
+    setNextPiece(nextPieceId: PieceId, allPiece: boolean, updateCurrentPiece: boolean = true) {
         if (!this.alive) return;
 
-        this.piece = new Piece(this.nextPieceId, this.grid.width);
+        if (updateCurrentPiece) {
+            this.piece = new Piece(this.nextPieceId, this.grid.width);
+
+            if (this.grid.isPieceOverlap(this.piece)) this.alive = false;
+        }
+
         this.nextPieceId = nextPieceId;
 
         if (allPiece) {
@@ -45,20 +55,40 @@ export class PlayerData {
         } else {
             this.nextPieceIndex = (this.nextPieceIndex + 1) % listLengthPieceAll;
         }
-
-        if (this.grid.isPieceOverlap(this.piece)) this.alive = false;
     }
 
     leftPiece() {
         if (!this.alive) return;
-        this.piece.x -= 1;
-        if (this.grid.isPieceOverlap(this.piece)) this.piece.x += 1;
+
+        if (this.controlReverseTick == 0) {
+            this.piece.x -= 1;
+            if (this.grid.isPieceOverlap(this.piece)) {
+                this.piece.x += 1;
+            }
+        }
+        else {
+            this.piece.x += 1;
+            if (this.grid.isPieceOverlap(this.piece)) {
+                this.piece.x -= 1;
+            }
+        }
     }
 
     rightPiece() {
         if (!this.alive) return;
-        this.piece.x += 1;
-        if (this.grid.isPieceOverlap(this.piece)) this.piece.x -= 1;
+
+        if (this.controlReverseTick == 0) {
+            this.piece.x += 1;
+            if (this.grid.isPieceOverlap(this.piece)) {
+                this.piece.x -= 1;
+            }
+        }
+        else {
+            this.piece.x -= 1;
+            if (this.grid.isPieceOverlap(this.piece)) {
+                this.piece.x += 1;
+            }
+        }
     }
 
     rotatePiece() {
@@ -102,5 +132,31 @@ export class PlayerData {
         this.piece.y -= 1;
 
         if (this.grid.fixPiece(this.piece)) this.alive = false;
+    }
+
+    applyMalus(malusId: MalusId): MalusEvent {
+        if (malusId == 'fastForward') {
+            for (let i = 0; i < 5; i++) {
+                if (this.softDrop()) return 'fix-piece';
+            }
+        }
+
+        else if (malusId == 'drunk') {
+            this.controlReverseTick += 10;
+        }
+
+        else if (malusId == 'merge') {
+            const pieceToMerge = new Piece(this.nextPieceId, this.grid.width);
+            this.piece.mergeWith(pieceToMerge);
+
+            return 'next-piece';
+        }
+        return 'none';
+    }
+
+    tickMalus() {
+        if (this.controlReverseTick > 0) {
+            this.controlReverseTick--;
+        }
     }
 }
