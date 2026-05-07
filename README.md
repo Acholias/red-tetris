@@ -10,6 +10,11 @@ Run
 npm run dev
 ```
 
+Tests
+```bash
+npm run coverage
+```
+
 
 # Server
 Build
@@ -20,6 +25,17 @@ npm install
 Run
 ```bash
 npm run dev
+```
+
+Tests
+```bash
+npm run coverage
+```
+
+# Shared
+Tests
+```bash
+npm run coverage
 ```
 
 
