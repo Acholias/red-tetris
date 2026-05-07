@@ -103,7 +103,7 @@ export class Grid {
     }
 
     addUnbreakableLines(nbLines: number) {
-        if (nbLines < 0 || nbLines > 5) return;
+        if (nbLines <= 0 || nbLines > 5) return;
 
         const offset = this.width * nbLines;
         const endI = this.nbCells - offset;
@@ -120,16 +120,5 @@ export class Grid {
 
         // Update spectrum
         this.spectrum.unbreakableLines += nbLines;
-    }
-
-    print() {
-        console.log('Grid');
-        let start = 0;
-        let end = this.width;
-        for (let y = 0; y < this.height; y++) {
-            console.log(`|${this.cells.slice(start, end).join()}|`);
-            start += this.width;
-            end += this.width;
-        }
     }
 }

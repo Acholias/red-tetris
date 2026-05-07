@@ -10,19 +10,30 @@ export class Piece {
     height: number;
     rotationId?: RotationId;
 
-    constructor(pieceId: PieceId, gridWidth?: number){
-        this.pieceId = pieceId;
-        const piece = pieces[pieceId];
-        this.cells = [...piece.cells];
-        if (gridWidth != undefined) {
-            this.x = Math.floor(gridWidth / 2) - Math.ceil(piece.size / 2);
-        } else {
-            this.x = 0;
+    constructor(pieceId: PieceId, gridWidth?: number) {
+        try {
+            this.pieceId = pieceId;
+            const piece = pieces[pieceId];
+            this.cells = [...piece.cells];
+            if (gridWidth != undefined) {
+                this.x = Math.floor(gridWidth / 2) - Math.ceil(piece.size / 2);
+            } else {
+                this.x = 0;
+            }
+            this.y = 0;
+            this.width = piece.size;
+            this.height = piece.size;
+            this.rotationId = piece.rotationId;
         }
-        this.y = 0;
-        this.width = piece.size;
-        this.height = piece.size;
-        this.rotationId = piece.rotationId;
+        catch (e) {
+            this.pieceId = pieceId;
+            this.cells = [];
+            this.x = 0;
+            this.y = 0;
+            this.width = 0;
+            this.height = 0;
+            this.rotationId = undefined;
+        }
     }
 
     rotate() {
@@ -85,17 +96,6 @@ export class Piece {
         piece.cells = [...this.cells];
 
         return piece;
-    }
-
-    print() {
-        console.log(`Piece ${this.pieceId}, pos (${this.x}, ${this.y})`);
-        let start = 0;
-        let end = this.width;
-        for (let y = 0; y < this.height; y++) {
-            console.log(`|${this.cells.slice(start, end).join()}|`);
-            start += this.width;
-            end += this.width;
-        }
     }
 }
 
