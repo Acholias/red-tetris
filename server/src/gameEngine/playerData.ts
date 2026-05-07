@@ -135,6 +135,8 @@ export class PlayerData {
     }
 
     applyMalus(malusId: MalusId): MalusEvent {
+        if (!this.alive) return 'none';
+
         if (malusId == 'fastForward') {
             for (let i = 0; i < 5; i++) {
                 if (this.softDrop()) return 'fix-piece';
@@ -151,10 +153,13 @@ export class PlayerData {
 
             return 'next-piece';
         }
+
         return 'none';
     }
 
     tickMalus() {
+        if (!this.alive) return;
+
         if (this.controlReverseTick > 0) {
             this.controlReverseTick--;
         }
