@@ -24,19 +24,7 @@ export class Server {
           methods: ["GET", "POST"]
       }
     });
-    this.setRoutes();
     this.setSocket();
-  }
-
-  private setRoutes(): void {
-    this.app.get("/", (req, res) => {
-      res.send("Hello World!");
-      console.log("Response sent");
-    });
-
-    this.app.get("/helloThere", (req, res) => {
-      res.send({"ref": "General Kenobi"});
-    });
   }
 
   private setSocket(): void {
