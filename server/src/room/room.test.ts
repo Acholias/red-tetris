@@ -3,7 +3,7 @@ import { Room } from './room.js';
 import { Player } from './player.js';
 
 
-describe('addPlayer', () => {
+describe('isAdmin', () => {
     it('no game', () => {
         // 1. Setup
         const admin = new Player('admin-id', 'aderouba');

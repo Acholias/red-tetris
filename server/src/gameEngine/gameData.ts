@@ -125,7 +125,7 @@ export class GameData {
 
     playerAction(playerId: string, action: string): GameEvent[] {
         const playerData = this.playerDatas.get(playerId);
-        if (playerData == null) return [];
+        if (playerData == null || this.isEnd) return [];
 
         if (action == 'left') playerData.leftPiece();
         else if (action == 'right') playerData.rightPiece();
@@ -207,8 +207,6 @@ export class GameData {
             });
             this.isEnd = true;
             return results;
-        } else if (this.isEnd) {
-            return results;
         }
 
         let nbAlive = 0;
@@ -259,7 +257,8 @@ export class GameData {
     _applyMalus(playerId: string, nbLine: number): GameEvent[] {
         if (Math.random() * 5 > nbLine) return [];
 
-        const malusId = Math.floor(allMalus.length * Math.random());
+        const malusIndex = Math.floor(allMalus.length * Math.random());
+        const malusId = allMalus[malusIndex];
         let results: GameEvent[] = [{
             'id': playerId,
             'type': 'malus',
@@ -268,7 +267,7 @@ export class GameData {
 
         for (const playerData of this.playerDatas.values()) {
             if (playerData.alive && playerData.playerId != playerId) {
-                const event:MalusEvent = playerData.applyMalus(malusId);
+                const event: MalusEvent = playerData.applyMalus(malusId);
                 if (event == 'fix-piece') {
                     results = results.concat(this._fixPiece(playerData));
                 }
