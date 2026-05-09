@@ -129,8 +129,7 @@ export function socketListenning(socket: Socket) {
             nextPieceId: currentRoom.gamedata.pieces[1],
         };
 
-        socket.to(currentRoom.id).emit('room/gameStarted', bodyStartGame);
-        socket.emit('room/gameStarted', bodyStartGame);
+        server.sendSocketMessage(currentRoom.id, 'room/gameStarted', bodyStartGame);
     });
 
     socket.on('game/action', (body: BodyGameAction) => {

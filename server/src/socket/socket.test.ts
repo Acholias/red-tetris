@@ -49,13 +49,16 @@ describe('Socket Listening', () => {
         return { mockSocket, mockEmit, mockTo, mockToEmit };
     }
 
+    // -----------------------------------------------------------------------
+    // room/join
+    // -----------------------------------------------------------------------
+
     it('room/join - create room', () => {
         // 1. Setup
         const client1 = createMockClient('socket-test-1');
         const payload1 = { roomId: 'room-42', playerName: 'aderouba' };
 
         // 2. Action
-        // Fake message revieced on 'room/join'
         clientHandlers['socket-test-1']['room/join'](payload1);
 
         // 3. Assert
@@ -97,7 +100,6 @@ describe('Socket Listening', () => {
         const payload6 = { roomId: 'room-42', playerName: 'hde-min' };
 
         // 2. Action
-        // Fake message revieced on 'room/join'
         clientHandlers['socket-test-1']['room/join'](payload1);
         clientHandlers['socket-test-2']['room/join'](payload2);
         clientHandlers['socket-test-3']['room/join'](payload3);
@@ -164,6 +166,10 @@ describe('Socket Listening', () => {
         }));
     });
 
+    // -----------------------------------------------------------------------
+    // room/settings
+    // -----------------------------------------------------------------------
+
     it('room/settings - classic', () => {
         // 1. Setup
         const client1 = createMockClient('socket-test-1');
@@ -175,7 +181,6 @@ describe('Socket Listening', () => {
         clientHandlers['socket-test-2']['room/join'](payloadJoin2);
 
         // 2. Action
-        // Fake message revieced on 'room/join'
         const payloadSettings1 = {
             roomId: 'room-42',
             allPieces: true,
@@ -228,6 +233,1144 @@ describe('Socket Listening', () => {
                 }
             })
         );
+    });
+
+    it('room/settings - bad room', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        // 2. Action
+        const payloadSettings1 = {
+            roomId: 'room-uwu',
+            allPieces: true,
+            malus: true,
+            size: {w: 12, h: 25},
+            gameSpeed: {
+                speed: 4,
+                acceleration: true,
+                frequency : 10,
+                rate : 2,
+                max : 42,
+            }
+        };
+        clientHandlers['socket-test-1']['room/settings'](payloadSettings1);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(1);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('room/settings - bad client', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+
+        // 2. Action
+        const payloadSettings1 = {
+            roomId: 'room-42',
+            allPieces: true,
+            malus: true,
+            size: {w: 12, h: 25},
+            gameSpeed: {
+                speed: 4,
+                acceleration: true,
+                frequency : 10,
+                rate : 2,
+                max : 42,
+            }
+        };
+        clientHandlers['socket-test-2']['room/settings'](payloadSettings1);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(1);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(client1.mockSocket.join).toHaveBeenCalledWith('room-42');
+        expect(client1.mockTo).toHaveBeenCalledWith('room-42');
+        expect(client2.mockSocket.join).not.toHaveBeenCalled();
+        expect(client2.mockTo).not.toHaveBeenCalled();
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+    });
+
+    it('room/settings - not admin', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        // 2. Action
+        const payloadSettings1 = {
+            roomId: 'room-42',
+            allPieces: true,
+            malus: true,
+            size: {w: 12, h: 25},
+            gameSpeed: {
+                speed: 4,
+                acceleration: true,
+                frequency : 10,
+                rate : 2,
+                max : 42,
+            }
+        };
+        clientHandlers['socket-test-2']['room/settings'](payloadSettings1);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(2);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(client1.mockSocket.join).toHaveBeenCalledWith('room-42');
+        expect(client1.mockTo).toHaveBeenCalledWith('room-42');
+        expect(client2.mockSocket.join).toHaveBeenCalledWith('room-42');
+        expect(client2.mockTo).toHaveBeenCalledWith('room-42');
+    });
+
+    it('room/settings - too low', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        // 2. Action
+        const payloadSettings1 = {
+            roomId: 'room-42',
+            size: {w: 1, h: 1},
+            gameSpeed: {
+                speed: 0,
+                acceleration: true,
+                frequency : 0,
+                rate : 0,
+                max : 0,
+            }
+        };
+        clientHandlers['socket-test-1']['room/settings'](payloadSettings1);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(2);
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.size.w).toBe(5);
+        expect(room.size.h).toBe(10);
+        expect(room.gameSpeed.speed).toBe(1);
+        expect(room.gameSpeed.acceleration).toBe(true);
+        expect(room.gameSpeed.frequency).toBe(1);
+        expect(room.gameSpeed.rate).toBe(1);
+        expect(room.gameSpeed.max).toBe(1);
+
+        expect(client1.mockSocket.join).toHaveBeenCalledWith('room-42');
+        expect(client1.mockTo).toHaveBeenCalledWith('room-42');
+        expect(client2.mockSocket.join).toHaveBeenCalledWith('room-42');
+        expect(client2.mockTo).toHaveBeenCalledWith('room-42');
+
+        expect(server.sendSocketMessage).toHaveBeenCalledWith(
+            'room-42',
+            'room/update',
+            expect.objectContaining({
+                size: {w: 5, h: 10},
+                gameSpeed: {
+                    speed: 1,
+                    acceleration: true,
+                    frequency : 1,
+                    rate : 1,
+                    max : 1,
+                }
+            })
+        );
+    });
+
+    it('room/settings - too high', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        // 2. Action
+        const payloadSettings1 = {
+            roomId: 'room-42',
+            size: {w: 100, h: 100},
+            gameSpeed: {
+                speed: 1000,
+                acceleration: true,
+                frequency : 1000,
+                rate : 1000,
+                max : 1000,
+            }
+        };
+        clientHandlers['socket-test-1']['room/settings'](payloadSettings1);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(2);
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.size.w).toBe(20);
+        expect(room.size.h).toBe(30);
+        expect(room.gameSpeed.speed).toBe(100);
+        expect(room.gameSpeed.acceleration).toBe(true);
+        expect(room.gameSpeed.frequency).toBe(200);
+        expect(room.gameSpeed.rate).toBe(10);
+        expect(room.gameSpeed.max).toBe(100);
+
+        expect(client1.mockSocket.join).toHaveBeenCalledWith('room-42');
+        expect(client1.mockTo).toHaveBeenCalledWith('room-42');
+        expect(client2.mockSocket.join).toHaveBeenCalledWith('room-42');
+        expect(client2.mockTo).toHaveBeenCalledWith('room-42');
+
+        expect(server.sendSocketMessage).toHaveBeenCalledWith(
+            'room-42',
+            'room/update',
+            expect.objectContaining({
+                size: {w: 20, h: 30},
+                gameSpeed: {
+                    speed: 100,
+                    acceleration: true,
+                    frequency : 200,
+                    rate : 10,
+                    max : 100,
+                }
+            })
+        );
+    });
+
+    // -----------------------------------------------------------------------
+    // room/playerMode
+    // -----------------------------------------------------------------------
+
+    it('room/playerMode - bad room', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-uwu',
+            spectate: true,
+        };
+        clientHandlers['socket-test-1']['room/playerMode'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(2);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('room/playerMode - bad player', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            spectate: true,
+        };
+        clientHandlers['socket-test-2']['room/playerMode'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(1);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+    });
+
+    it('room/playerMode - spectate valid', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            spectate: true,
+        };
+        clientHandlers['socket-test-1']['room/playerMode'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(1);
+        expect(room.spectators.length).toBe(1);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(server.sendSocketMessage).toHaveBeenCalledWith(
+            'room-42',
+            'room/update',
+            expect.objectContaining({
+                players: [{id: 1, name: 'lumugot'}],
+                spectators: [{id: 0, name: 'aderouba'}],
+            })
+        );
+    });
+
+    it('room/playerMode - spectate invalid', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+        const payloadSpectate1 = { roomId: 'room-42', spectate: true };
+        clientHandlers['socket-test-1']['room/playerMode'](payloadSpectate1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            spectate: true,
+        };
+        clientHandlers['socket-test-1']['room/playerMode'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(1);
+        expect(room.spectators.length).toBe(1);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(server.sendSocketMessage).toHaveBeenCalledTimes(1);
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('room/playerMode - play valid', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+        const payloadSpectate1 = { roomId: 'room-42', spectate: true };
+        clientHandlers['socket-test-1']['room/playerMode'](payloadSpectate1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            spectate: false,
+        };
+        clientHandlers['socket-test-1']['room/playerMode'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(2);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(server.sendSocketMessage).toHaveBeenCalledWith(
+            'room-42',
+            'room/update',
+            expect.objectContaining({
+                players: [{id: 1, name: 'lumugot'}, {id: 0, name: 'aderouba'}],
+                spectators: [],
+            })
+        );
+    });
+
+    it('room/playerMode - play invalid', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            spectate: false,
+        };
+        clientHandlers['socket-test-1']['room/playerMode'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(2);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    // -----------------------------------------------------------------------
+    // room/startGame
+    // -----------------------------------------------------------------------
+
+    it('room/startGame - bad room', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-uwu',
+        };
+        clientHandlers['socket-test-1']['room/startGame'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(2);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(false);
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('room/startGame - already playing', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+        };
+        clientHandlers['socket-test-1']['room/startGame'](payloadTest);
+
+        // 3. Assert
+        expect(room.players.length).toBe(2);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(true);
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('room/startGame - bad player', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+        };
+        clientHandlers['socket-test-2']['room/startGame'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(1);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(false);
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+    });
+
+    it('room/startGame - is not admin', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+        };
+        clientHandlers['socket-test-2']['room/startGame'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(2);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('room/startGame - started', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        vi.spyOn(room, 'startGame').mockImplementation(() => {
+            room.gamedata.pieces = ['O', 't'];
+        });
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+        };
+        clientHandlers['socket-test-1']['room/startGame'](payloadTest);
+
+        // 3. Assert
+        expect(room.players.length).toBe(2);
+        expect(room.spectators.length).toBe(0);
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(true);
+
+        expect(server.sendSocketMessage).toHaveBeenCalledWith(
+            'room-42',
+            'room/gameStarted',
+            expect.objectContaining({
+                allPieces: false,
+                malus: false,
+                size: {w: 10, h: 20},
+                gameSpeed: {
+                    speed: 2,
+                    acceleration: false,
+                    frequency: 60,
+                    rate: 1,
+                    max: 10
+                },
+                pieceId: 'O',
+                nextPieceId: 't',
+            })
+        );
+    });
+
+    // -----------------------------------------------------------------------
+    // game/action
+    // -----------------------------------------------------------------------
+
+    it('game/action - bad room', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-uwu',
+        };
+        clientHandlers['socket-test-1']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('game/action - is not playing', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            action: 'soft-drop',
+        };
+        clientHandlers['socket-test-1']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('game/action - bad player', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            action: 'soft-drop',
+        };
+        clientHandlers['socket-test-2']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).toHaveBeenCalledTimes(1);
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+    });
+
+    it('game/action - event update-grid', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.spyOn(room.gamedata, 'playerAction').mockImplementation(() => {
+            return [
+                {
+                    type: 'update-grid',
+                    id: 'socket-test-2',
+                    grid: ['X'],
+                    nextPiece: 's'
+                },
+                {
+                    type: 'update-grid',
+                    id: 'socket-test-1',
+                    grid: ['X'],
+                }
+            ];
+        });
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            action: 'soft-drop',
+        };
+        clientHandlers['socket-test-2']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(true);
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockTo).toHaveBeenCalledWith('socket-test-1');
+        expect(client2.mockEmit).toHaveBeenCalledWith('room/gameUpdate', expect.objectContaining({
+            grid: ['X'],
+            nextPiece: 's'
+        }));
+    });
+
+    it('game/action - event spectrum', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.spyOn(room.gamedata, 'playerAction').mockImplementation(() => {
+            return [
+                {
+                    type: 'spectrum',
+                    id: 'socket-test-2',
+                    spectrum: {
+                        heights: [0, 1, 2],
+                        unbreakableLines: 1
+                    }
+                }
+            ];
+        });
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            action: 'soft-drop',
+        };
+        clientHandlers['socket-test-2']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(true);
+
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+        expect(server.sendSocketMessage).toHaveBeenCalledWith(
+            'room-42',
+            'room/gameSpectrum',
+            expect.objectContaining({
+                playerId: 1,
+                spectrum: {
+                    heights: [0, 1, 2],
+                    unbreakableLines: 1
+                }
+            }
+        ));
+    });
+
+    it('game/action - event next-piece', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.spyOn(room.gamedata, 'playerAction').mockImplementation(() => {
+            return [
+                {
+                    type: 'next-piece',
+                    id: 'socket-test-2',
+                    nextPiece: 's'
+                },
+                {
+                    type: 'next-piece',
+                    id: 'socket-test-1',
+                    nextPiece: 't'
+                }
+            ];
+        });
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            action: 'soft-drop',
+        };
+        clientHandlers['socket-test-2']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(true);
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockTo).toHaveBeenCalledWith('socket-test-1');
+        expect(client2.mockEmit).toHaveBeenCalledWith('room/nextPiece', expect.objectContaining({
+            nextPiece: 's'
+        }));
+    });
+
+    it('game/action - event malus', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.spyOn(room.gamedata, 'playerAction').mockImplementation(() => {
+            return [
+                {
+                    type: 'malus',
+                    id: 'socket-test-2',
+                    malusId: 'drunk'
+                }
+            ];
+        });
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            action: 'soft-drop',
+        };
+        clientHandlers['socket-test-2']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(true);
+
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+        expect(server.sendSocketMessage).toHaveBeenCalledWith(
+            'room-42',
+            'room/malus',
+            expect.objectContaining({
+                playerId: 1,
+                malusId: 'drunk'
+            }
+        ));
+    });
+
+    it('game/action - event end', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.spyOn(room.gamedata, 'playerAction').mockImplementation(() => {
+            return [
+                {
+                    type: 'end',
+                    id: 'socket-test-2',
+                    win: true
+                },
+                {
+                    type: 'end',
+                    id: 'socket-test-1',
+                    win: false
+                }
+            ];
+        });
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            action: 'soft-drop',
+        };
+        clientHandlers['socket-test-2']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(true);
+
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockTo).toHaveBeenCalledWith('socket-test-1');
+        expect(client2.mockEmit).toHaveBeenCalledWith('room/gameEnd', expect.objectContaining({
+            win: true
+        }));
+    });
+
+    it('game/action - event finished', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.spyOn(room.gamedata, 'playerAction').mockImplementation(() => {
+            return [
+                {
+                    type: 'finished',
+                    id: 'socket-test-2',
+                }
+            ];
+        });
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+            action: 'soft-drop',
+        };
+        clientHandlers['socket-test-2']['game/action'](payloadTest);
+
+        // 3. Assert
+        expect(room.adminId).toBe('socket-test-1');
+        expect(room.isPlaying).toBe(false);
+
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+        expect(server.sendSocketMessage).toHaveBeenCalled();
+    });
+
+    // -----------------------------------------------------------------------
+    // room/leave
+    // -----------------------------------------------------------------------
+
+    it('room/leave - bad room', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-uwu',
+        };
+        clientHandlers['socket-test-1']['room/leave'](payloadTest);
+
+        // 3. Assert
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+    });
+
+    it('room/leave - bad player', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+        };
+        clientHandlers['socket-test-2']['room/leave'](payloadTest);
+
+        // 3. Assert
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockEmit).not.toHaveBeenCalled();
+    });
+
+    it('room/leave - not last player, in game', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        room.isPlaying = true;
+
+        vi.clearAllMocks();
+        vi.spyOn(room.gamedata, 'removePlayer').mockImplementation(() => {
+            return [
+                {
+                    type: 'end',
+                    id: 'socket-test-1',
+                    win: true
+                },
+                {
+                    type: 'finished',
+                    id: '',
+                }
+            ];
+        });
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+        };
+        clientHandlers['socket-test-2']['room/leave'](payloadTest);
+
+        // 3. Assert
+        expect(room.players.length).toBe(1);
+        expect(room.spectators.length).toBe(0);
+        expect(room.isPlaying).toBe(false);
+
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client2.mockTo).toHaveBeenCalledWith('socket-test-1');
+        expect(server.sendSocketMessage).toHaveBeenCalledWith(
+            'room-42',
+            'room/gameFinished',
+            expect.objectContaining({}
+        ));
+    });
+
+    it('room/leave - last player', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+
+
+        vi.clearAllMocks();
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+        };
+        clientHandlers['socket-test-1']['room/leave'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(false);
+
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
+    });
+
+    it('room/leave - not last player, giving change admin in players', () => {
+        // 1. Setup
+        const client1 = createMockClient('socket-test-1');
+        const payloadJoin1 = { roomId: 'room-42', playerName: 'aderouba' };
+        clientHandlers['socket-test-1']['room/join'](payloadJoin1);
+        const payloadSpectate1 = { roomId: 'room-42', spectate: true };
+        clientHandlers['socket-test-1']['room/playerMode'](payloadSpectate1);
+
+        const client2 = createMockClient('socket-test-2');
+        const payloadJoin2 = { roomId: 'room-42', playerName: 'lumugot' };
+        clientHandlers['socket-test-2']['room/join'](payloadJoin2);
+
+        const client3 = createMockClient('socket-test-3');
+        const payloadJoin3 = { roomId: 'room-42', playerName: 'vviovi' };
+        clientHandlers['socket-test-3']['room/join'](payloadJoin3);
+        const payloadSpectate3 = { roomId: 'room-42', spectate: true };
+        clientHandlers['socket-test-3']['room/playerMode'](payloadSpectate3);
+
+        vi.clearAllMocks();
+
+
+        // 2. Action
+        const payloadTest = {
+            roomId: 'room-42',
+        };
+        clientHandlers['socket-test-1']['room/leave'](payloadTest);
+
+        // 3. Assert
+        expect(rooms.has('room-42')).toBe(true);
+        const room = rooms.get('room-42')!;
+        expect(room.players.length).toBe(1);
+        expect(room.spectators.length).toBe(1);
+        expect(room.isPlaying).toBe(false);
+        expect(room.adminId).toBe('socket-test-2');
+
+        expect(client1.mockEmit).not.toHaveBeenCalled();
+        expect(client1.mockTo).toHaveBeenCalledWith('socket-test-2');
+        expect(server.sendSocketMessage).not.toHaveBeenCalled();
     });
 
 });
