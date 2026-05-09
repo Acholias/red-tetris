@@ -8,6 +8,8 @@ export const themeSlice = createSlice({
         setTheme: (state, action: PayloadAction<string>) => {
             const theme = themesData.get(action.payload);
             if (theme != null) state = theme;
+
+            return state;
         },
     }
 });

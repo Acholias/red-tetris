@@ -30,6 +30,7 @@ interface ThemeGame {
 }
 
 export interface ThemeData {
+    'name': string,
     'themeRoom': ThemeRoom,
     'themeGame': ThemeGame
 }
@@ -39,6 +40,7 @@ export interface ThemeData {
 export const themesData = new Map<string, ThemeData>();
 
 export const blueTetrisTheme: ThemeData = {
+    'name': 'blue-tetris',
     'themeRoom': {
         'player_background' : '#646464',
         'you_background' : '#284169',
