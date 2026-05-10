@@ -3,7 +3,7 @@ import { type Middleware } from 'redux';
 import type { BodyGameAction, BodyGameEnd, BodyGameMalus, BodyGameNextPiece, BodyGameSpectrum, BodyGameStarted, BodyGameUpdate, BodyRoomJoin, BodyRoomLeave, BodyRoomPlayerMode, BodyRoomSettings, BodyRoomStartGame, BodyRoomUpdate } from '@shared/requestBody';
 import { setSocketConnected, updateRoom } from '../gameRoom/logic/roomSlice';
 import { applyMalus, endGame, generateNextPiece, initGame, updateGrid, updateNextPiece } from '../gameEngine/logic/gameSlice';
-import { clearSpectrums, updateSpectrum } from '../gameEngine/data/spectrumsSlice';
+import { clearSpectrums, updateSpectrum } from '../gameEngine/logic/spectrumsSlice';
 
 export const socketMiddleware = (): Middleware => {
   let socket: Socket;

@@ -1,4 +1,4 @@
-import type { SpectrumData } from "../data/spectrumsSlice";
+import type { SpectrumData } from "../logic/spectrumsSlice";
 
 export function renderCells(
           cells: string[],

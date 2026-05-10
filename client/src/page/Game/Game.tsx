@@ -19,7 +19,7 @@ import { createInterval } from '../../gameEngine/utils/intervals';
 import { renderCells, renderSpectrum } from '../../gameEngine/render/render';
 import { createGameTheme, createSpectrumTheme } from '../../theme/theme';
 import { useNavigate } from 'react-router-dom';
-import { initSpectrums } from '../../gameEngine/data/spectrumsSlice';
+import { initSpectrums } from '../../gameEngine/logic/spectrumsSlice';
 
 export default function Game() {
     const navigate = useNavigate();

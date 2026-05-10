@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { renderCells, renderSpectrum } from './render';
-import type { SpectrumData } from '../data/spectrumsSlice';
+import type { SpectrumData } from '../logic/spectrumsSlice';
 
 describe('renderCells', () => {
     it('render ', () => {

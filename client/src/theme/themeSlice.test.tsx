@@ -4,7 +4,7 @@ import themeReducer, { setTheme } from './themeSlice';
 // Setup
 vi.mock('./themeData', () => {
     const mockThemes = new Map();
-    mockThemes.set('dark', { name: 'darkTheme' });
+    mockThemes.set('blue-tetris', { name: 'blueTetrisTheme' });
 
     return {
         blueTetrisTheme: { name: 'defaultTheme' },
@@ -13,24 +13,24 @@ vi.mock('./themeData', () => {
 });
 
 describe('themeSlice', () => {
-    // it('setTheme found', () => {
-    //     // Setup
-    //     const initialState = { name: 'defaultTheme' } as any;
+    it('setTheme found', () => {
+        // Setup
+        const initialState = { name: 'defaultTheme' } as any;
 
-    //     // Action
-    //     const action = setTheme('darkTheme');
-    //     const result = themeReducer(initialState, action);
+        // Action
+        const action = setTheme('blue-tetris');
+        const result = themeReducer(initialState, action);
 
-    //     // Assert
-    //     expect(result).toEqual({ name: 'defaultTheme' });
-    // });
+        // Assert
+        expect(result).toEqual({ name: 'blueTetrisTheme' });
+    });
 
     it('setTheme not found', () => {
         // Setup
         const initialState = { name: 'defaultTheme' } as any;
 
         // Action
-        const action = setTheme('unknown');
+        const action = setTheme('uwu');
         const result = themeReducer(initialState, action);
 
         // Assert

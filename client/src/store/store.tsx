@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import gameReducer from '../gameEngine/logic/gameSlice';
-import spectrumsReducer from '../gameEngine/data/spectrumsSlice';
+import spectrumsReducer from '../gameEngine/logic/spectrumsSlice';
 import roomReducer from '../gameRoom/logic/roomSlice';
 import themeReducer from '../theme/themeSlice';
 import { socketMiddleware } from '../socket/socketMiddleware';

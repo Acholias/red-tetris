@@ -1,7 +1,7 @@
 import type { BodyGameSpectrum } from "@shared/requestBody";
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { Room } from "../../gameRoom/data/room";
-import type { Grid } from "./grid";
+import type { Grid } from "../data/grid";
 import type { Spectrum } from "@shared/interfaces";
 
 export interface SpectrumData {
@@ -48,8 +48,7 @@ export const spectrumsSlice = createSlice({
             const spectrumData = state[action.payload.playerId];
             if (spectrumData == null) return;
 
-            spectrumData.spectrum = action.payload.spectrum;
-
+            spectrumData.spectrum = {...action.payload.spectrum};
 
             const unbreakableHeight = spectrumData.grid.height - spectrumData.spectrum.unbreakableLines;
             const fillHeights = spectrumData.spectrum.heights.map((height) => unbreakableHeight - height);

@@ -16,7 +16,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../../store/store';
 import { createSpectrumTheme } from '../../theme/theme';
 import { renderSpectrum } from '../../gameEngine/render/render';
-import { initSpectrums } from '../../gameEngine/data/spectrumsSlice';
+import { initSpectrums } from '../../gameEngine/logic/spectrumsSlice';
 
 export default function Spectator() {
     const navigate = useNavigate();
