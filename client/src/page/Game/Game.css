@@ -1,11 +1,20 @@
+:root {
+    --cell-size: 32px;
+}
+
 .game-page {
-    min-height: 100svh;
+    height: 100svh;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 22px;
-    padding: 28px 18px;
+    gap: 8px;
+    padding: 10px 10px;
+    overflow: hidden;
+}
+
+.game-page > h1 {
+    display: none;
 }
 
 .game-top {
@@ -14,7 +23,14 @@
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+    margin-bottom: 0;
+
+    padding: 8px 10px;
+    border-radius: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-md);
 }
 
 .game-mode {
@@ -24,24 +40,53 @@
 }
 
 .game-result {
-    margin: 0 0 14px;
+    margin: 0;
     text-align: center;
 }
 
 .game-split {
     width: 100%;
     display: grid;
-    grid-template-columns: 1.05fr 10px 1fr;
+    grid-template-columns: 0.9fr 10px 1.45fr 10px 0.9fr;
     gap: 0;
     align-items: stretch;
     flex: 1;
     min-height: 0;
+    overflow: hidden;
 }
 
-.game-left,
-.game-right {
-    padding: clamp(14px, 2.4vw, 22px);
+.game-panel {
+    padding: clamp(12px, 2.0vw, 18px);
     min-height: 0;
+
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-md);
+}
+
+.game-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.7;
+    background:
+        radial-gradient(900px 620px at 10% 8%, rgba(255, 255, 255, 0.08), transparent 62%),
+        radial-gradient(780px 560px at 85% 16%, rgba(255, 255, 255, 0.05), transparent 66%),
+        radial-gradient(880px 640px at 40% 110%, rgba(255, 255, 255, 0.05), transparent 60%);
+}
+
+.game-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background: radial-gradient(closest-side at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
 }
 
 .game-divider {
@@ -52,12 +97,43 @@
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10) inset;
 }
 
+.game-center {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+}
+
+.game-side {
+    display: grid;
+    min-height: 0;
+}
+
+.game-side-stack {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(12px, 2.2vw, 22px);
+    align-content: stretch;
+    align-items: stretch;
+    justify-items: stretch;
+    min-height: 0;
+    position: relative;
+    z-index: 1;
+}
+
 .game-left-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.game-center .game-left-head {
+    display: none;
 }
 
 .game-left-title {
@@ -82,32 +158,53 @@
 .game-left-stage {
     display: grid;
     place-items: center;
-    min-height: 100%;
+    min-height: 0;
+    height: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 .game-center-board {
     position: relative;
     border-radius: 14px;
     overflow: hidden;
+
+    max-width: 100%;
+    max-height: 100%;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
+.game-center-board::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    pointer-events: none;
+    opacity: 0.22;
+    background:
+        radial-gradient(closest-side at 18% 22%, rgba(255, 255, 255, 0.20), transparent 62%),
+        radial-gradient(closest-side at 78% 20%, rgba(255, 255, 255, 0.16), transparent 66%),
+        radial-gradient(closest-side at 55% 88%, rgba(255, 255, 255, 0.12), transparent 70%);
+    transform: translate3d(-2%, -1%, 0);
+    animation: game-float-glow 10s ease-in-out infinite;
+}
 
-.game-right-grid {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(240px, 1fr));
-    gap: clamp(18px, 2.6vw, 32px);
-    align-content: center;
-    align-items: stretch;
-    justify-items: stretch;
+.game-center-board::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 30%),
+        radial-gradient(closest-side at 50% 50%, transparent 58%, rgba(0, 0, 0, 0.55) 100%);
 }
 
 .game-frame {
     border-radius: 16px;
     padding: 12px;
     overflow: hidden;
+    position: relative;
 
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.22);
@@ -115,6 +212,27 @@
     height: 100%;
     display: grid;
     min-height: 0;
+
+    transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.game-frame::before {
+    content: "";
+    position: absolute;
+    inset: -60% -40%;
+    pointer-events: none;
+    opacity: 0.18;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.16) 45%, transparent 60%);
+    transform: translate3d(-6%, -4%, 0) rotate(8deg);
+    animation: game-sheen 7s ease-in-out infinite;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .game-frame:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.28);
+    }
 }
 
 .game-frame .spectrum {
@@ -154,13 +272,57 @@
 
 @media (max-width: 980px) {
     .game-split {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 10px auto;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1.15fr 0.85fr;
+        gap: 12px;
     }
 
     .game-divider {
-        width: 100%;
-        height: 10px;
+        display: none;
+    }
+
+    .game-center {
+        grid-column: 1 / -1;
+    }
+
+    .game-side-stack {
+        gap: 12px;
+    }
+}
+
+@keyframes game-float-glow {
+    0% {
+        transform: translate3d(-2%, -1%, 0);
+    }
+    50% {
+        transform: translate3d(2%, 1%, 0);
+    }
+    100% {
+        transform: translate3d(-2%, -1%, 0);
+    }
+}
+
+@keyframes game-sheen {
+    0% {
+        transform: translate3d(-8%, -6%, 0) rotate(8deg);
+        opacity: 0.12;
+    }
+    50% {
+        transform: translate3d(8%, 6%, 0) rotate(8deg);
+        opacity: 0.20;
+    }
+    100% {
+        transform: translate3d(-8%, -6%, 0) rotate(8deg);
+        opacity: 0.12;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .game-frame,
+    .game-frame::before,
+    .game-center-board::before {
+        animation: none !important;
+        transition: none !important;
     }
 }
 

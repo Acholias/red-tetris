@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:25:02 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/14 14:35:37 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/05/14 15:32:18 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@ import './Game.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../../store/store';
 import { movePiece, rotatePiece, softDrop, hardDrop, tick } from '../../gameEngine/logic/gameSlice';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createInterval } from '../../gameEngine/utils/intervals';
 import { renderCells, renderSpectrum } from '../../gameEngine/render/render';
 import { createGameTheme, createSpectrumTheme } from '../../theme/theme';
@@ -41,6 +41,40 @@ export default function Game() {
     const room = useSelector((state: RootState) => state.room);
     const currentTheme = useSelector((state: RootState) => state.theme);
     const dispatch = useDispatch();
+
+    const stageRef = useRef<HTMLDivElement | null>(null);
+    const [stageSize, setStageSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+    const [viewportHeightPx, setViewportHeightPx] = useState<number>(() => {
+        if (typeof window === 'undefined') return 900;
+        return window.visualViewport?.height ?? window.innerHeight;
+    });
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const update = () => {
+            setViewportHeightPx(window.visualViewport?.height ?? window.innerHeight);
+        };
+        update();
+        window.addEventListener('resize', update);
+        window.visualViewport?.addEventListener('resize', update);
+        return () => {
+            window.removeEventListener('resize', update);
+            window.visualViewport?.removeEventListener('resize', update);
+        };
+    }, []);
+
+    useEffect(() => {
+        const el = stageRef.current;
+        if (!el || typeof ResizeObserver === 'undefined') return;
+
+        const ro = new ResizeObserver((entries) => {
+            const rect = entries[0]?.contentRect;
+            if (!rect) return;
+            setStageSize({ width: rect.width, height: rect.height });
+        });
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
 
     // Set game tick interval
     createInterval(
@@ -194,7 +228,27 @@ export default function Game() {
     const nextPiece = game.nextPiece;
 
     // Variables computes
-    const cellSize = 3;
+    const cellSize = useMemo(() => {
+        const width = stageSize.width;
+        const height = stageSize.height;
+        if (width <= 0 || height <= 0 || viewportHeightPx <= 0) return 3;
+
+        const safeWidth = Math.max(0, width - 2);
+        const safeHeight = Math.max(0, height - 2);
+
+        const boardCellsX = grid.width + 6;
+        const boardCellsY = Math.max(grid.height, 5);
+        const cellPx = Math.min(safeWidth / boardCellsX, safeHeight / boardCellsY);
+        const cellVh = (cellPx / viewportHeightPx) * 100;
+
+        // Fit-to-container guarantees no overflow; cap only avoids absurd sizes on huge screens.
+        return Math.max(1.2, Math.min(9, cellVh * 0.995));
+    }, [grid.height, grid.width, stageSize.height, stageSize.width, viewportHeightPx]);
+
+    const spectrumCellSize = useMemo(() => {
+        const v = cellSize * 0.58;
+        return Math.max(0.9, Math.min(2.6, v));
+    }, [cellSize]);
 
     const pieceX = (piece?.x ?? 0) * cellSize;
     const pieceY = (piece?.y ?? 0) * cellSize;
@@ -216,7 +270,7 @@ export default function Game() {
 
     // Style define
     const gameStyle = createGameTheme(currentTheme, cellSize);
-    const spectrumStyle = createSpectrumTheme(currentTheme, cellSize, cellSize / 2, room);
+    const spectrumStyle = createSpectrumTheme(currentTheme, cellSize, spectrumCellSize, room);
 
     const boardWidthVh = (grid.width + 6) * cellSize;
     const boardHeightVh = Math.max(grid.height, 5) * cellSize;
@@ -240,13 +294,26 @@ export default function Game() {
             {game.win != undefined && <p className="game-result">You {game.win ? 'win !' : 'lose -_-'}</p>}
 
             <div className="game-split" aria-label="Game layout">
-                <section className="game-left" aria-label="Your game">
+                <section className="game-panel game-side game-side-left" aria-label="Other players (left)" style={spectrumStyle}>
+                    <div className="game-side-stack">
+                        <div className="game-frame">
+                            {spectrumList[0] ? renderSpectrum(spectrumList[0]) : <div className="game-frame-empty" />}
+                        </div>
+                        <div className="game-frame">
+                            {spectrumList[1] ? renderSpectrum(spectrumList[1]) : <div className="game-frame-empty" />}
+                        </div>
+                    </div>
+                </section>
+
+                <div className="game-divider" aria-hidden="true" />
+
+                <section className="game-panel game-center" aria-label="Your game">
                     <header className="game-left-head">
                         <h2 className="game-left-title">Tetris</h2>
                         <div className="game-left-badge" aria-hidden="true" />
                     </header>
 
-                    <div className="game-left-stage">
+                    <div className="game-left-stage" ref={stageRef}>
                         <div className='game-board game-center-board' style={gameBoardStyle}>
                             {renderCells(grid.cells, 0, 0, grid.width, grid.height)}
                             {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
@@ -258,14 +325,8 @@ export default function Game() {
 
                 <div className="game-divider" aria-hidden="true" />
 
-                <section className="game-right" aria-label="Other players" style={spectrumStyle}>
-                    <div className="game-right-grid">
-                        <div className="game-frame">
-                            {spectrumList[0] ? renderSpectrum(spectrumList[0]) : <div className="game-frame-empty" />}
-                        </div>
-                        <div className="game-frame">
-                            {spectrumList[1] ? renderSpectrum(spectrumList[1]) : <div className="game-frame-empty" />}
-                        </div>
+                <section className="game-panel game-side game-side-right" aria-label="Other players (right)" style={spectrumStyle}>
+                    <div className="game-side-stack">
                         <div className="game-frame">
                             {spectrumList[2] ? renderSpectrum(spectrumList[2]) : <div className="game-frame-empty" />}
                         </div>
