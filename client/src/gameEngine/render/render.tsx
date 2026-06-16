@@ -5,8 +5,8 @@ export function renderCells(
           x: number, y: number,
           w: number, h: number) {
   const gridStyle = {
-    '--x': `${x}vh`,
-    '--y': `${y}vh`,
+    '--x': `${x}px`,
+    '--y': `${y}px`,
     '--width': w,
     '--height': h,
   } as React.CSSProperties;
@@ -22,8 +22,8 @@ export function renderCells(
 
 export function renderSpectrum(spectrum: SpectrumData) {
   const gridStyle = {
-    '--x': `${0}vh`,
-    '--y': `${0}vh`,
+    '--x': `${0}px`,
+    '--y': `${0}px`,
     '--width': spectrum.grid.width,
     '--height': spectrum.grid.height,
   } as React.CSSProperties;

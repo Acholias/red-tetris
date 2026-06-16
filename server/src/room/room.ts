@@ -7,6 +7,7 @@ const maxNbPlayer = 5;
 export class Room {
     id: string;
     adminId: string;
+    ownerName: string;
     isPlaying: boolean;
     allPieces: boolean;
     malus: boolean;
@@ -20,6 +21,7 @@ export class Room {
     constructor(id: string, player: Player) {
         this.id = id;
         this.adminId = player.id;
+        this.ownerName = player.name;
         this.isPlaying = false;
         this.allPieces = false;
         this.malus = false;

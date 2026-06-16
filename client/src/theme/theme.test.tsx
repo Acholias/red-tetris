@@ -43,7 +43,7 @@ describe('theme', () => {
 
         // Assert
         expect(result).toEqual({
-            '--cell-size': '5vh',
+            '--cell-size': '5px',
             '--color-E': 'cE', '--color-I': 'cI', '--color-J': 'cJ', '--color-L': 'cL',
             '--color-M': 'cM', '--color-O': 'cO', '--color-S': 'cS', '--color-T': 'cT',
             '--color-U': 'cU', '--color-V': 'cV', '--color-Z': 'cZ',
@@ -70,10 +70,10 @@ describe('theme', () => {
 
         // Assert
         expect(result).toEqual({
-            '--cell-size': '4vh',
-            '--margin': '40vh',
-            '--spectrum-w': '60vh',
-            '--spectrum-h': '108vh',
+            '--cell-size': '4px',
+            '--margin': '40px',
+            '--spectrum-w': '60px',
+            '--spectrum-h': '108px',
             '--color-E': 'cE',
             '--color-M': 'cM',
             '--color-U': 'cU',

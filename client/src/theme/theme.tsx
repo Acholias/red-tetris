@@ -8,6 +8,10 @@ export function createRoomTheme(
         '--player-background' : themeData.themeRoom.player_background,
         '--you-background' : themeData.themeRoom.you_background,
         '--player-color' : themeData.themeRoom.player_color,
+        '--lobby-accent-1': themeData.themeGame.color_I,
+        '--lobby-accent-2': themeData.themeGame.color_J,
+        '--lobby-accent-3': themeData.themeGame.color_O,
+        '--lobby-accent-strong': themeData.themeGame.color_T,
     } as React.CSSProperties;
 }
 
@@ -16,7 +20,7 @@ export function createGameTheme(
                     cellSize: number
                     ): React.CSSProperties {
     return {
-        '--cell-size': `${cellSize}vh`,
+    '--cell-size': `${cellSize}px`,
         '--color-E' : themeData.themeGame.color_E,
         '--color-I' : themeData.themeGame.color_I,
         '--color-J' : themeData.themeGame.color_J,
@@ -49,10 +53,10 @@ export function createSpectrumTheme(
                     room: Room,
                     ): React.CSSProperties {
     return {
-        '--cell-size': `${cellSize}vh`,
-        '--margin': `${gameCellSize * (room.size.w + 10)}vh`,
-        '--spectrum-w': `${cellSize * (room.size.w + 5)}vh`,
-        '--spectrum-h': `${cellSize * (room.size.h + 7)}vh`,
+    '--cell-size': `${cellSize}px`,
+    '--margin': `${gameCellSize * (room.size.w + 10)}px`,
+    '--spectrum-w': `${cellSize * (room.size.w + 5)}px`,
+    '--spectrum-h': `${cellSize * (room.size.h + 7)}px`,
         '--color-E' : themeData.themeGame.color_E,
         '--color-M' : themeData.themeGame.color_M,
         '--color-U' : themeData.themeGame.color_U,

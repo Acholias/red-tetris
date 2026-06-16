@@ -1,25 +1,452 @@
-.room-info {
+.lobby-page {
+    place-content: start center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.lobby-shell {
+    width: min(1240px, 100%);
+    display: grid;
+    gap: 18px;
+}
+
+.lobby-hero,
+.lobby-panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(5, 6, 10, 0.52);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-lg);
+}
+
+.lobby-hero {
     display: flex;
     justify-content: space-between;
+    gap: 20px;
+    padding: 24px;
+}
+
+.lobby-hero::before,
+.lobby-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(500px circle at 12% 0%, rgba(65, 185, 225, 0.14), transparent 45%),
+        radial-gradient(420px circle at 92% 18%, rgba(105, 65, 225, 0.16), transparent 40%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 30%);
+}
+
+.lobby-hero-copy,
+.lobby-hero-meta,
+.lobby-layout,
+.lobby-actions {
+    position: relative;
+    z-index: 1;
+}
+
+.lobby-kicker,
+.panel-eyebrow,
+.setting-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(238, 242, 255, 0.64);
+}
+
+.lobby-hero-copy h1,
+.panel-heading h2,
+.setting-card__header h3,
+.people-column h3 {
+    margin: 8px 0 0;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+}
+
+.lobby-hero-copy h1 {
+    font-size: clamp(34px, 5vw, 62px);
+}
+
+.lobby-hero-copy p,
+.panel-heading p,
+.setting-copy,
+.speed-summary p,
+.player-empty {
+    margin: 10px 0 0;
+    color: rgba(238, 242, 255, 0.74);
+    max-width: 58ch;
+}
+
+.lobby-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.status-pill,
+.setting-state,
+.setting-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.status-pill--live,
+.setting-state.is-on,
+.setting-badge.is-on {
+    background: rgba(65, 185, 225, 0.18);
+    border-color: rgba(65, 185, 225, 0.30);
+}
+
+.status-pill--waiting,
+.setting-state.is-off,
+.setting-badge.is-off {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.lobby-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.9fr);
+    gap: 18px;
+}
+
+.lobby-panel {
+    padding: 22px;
+}
+
+.lobby-panel--settings {
+    display: grid;
+    gap: 18px;
+}
+
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: end;
+}
+
+.panel-heading p {
+    margin: 0;
+    max-width: 34ch;
+    text-align: right;
+}
+
+.settings-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.settings-summary > div {
+    padding: 14px 15px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-summary span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(238, 242, 255, 0.60);
+}
+
+.settings-summary strong {
+    font-size: 18px;
+}
+
+.settings-stack {
+    display: grid;
+    gap: 12px;
+}
+
+.setting-card {
+    padding: 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.setting-card--full {
+    display: grid;
+    gap: 14px;
+}
+
+.setting-card__header,
+.setting-card__head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: start;
+    margin-bottom: 14px;
+}
+
+.setting-card__header h3,
+.setting-card__head h3 {
+    font-size: 22px;
+}
+
+.toggle-group {
+    display: inline-grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: min(320px, 100%);
+}
+
+.toggle-group button,
+.toggle-pill,
+.secondary-action,
+.primary-action {
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: none;
+}
+
+.toggle-group button:hover,
+.toggle-pill:hover,
+.secondary-action:hover {
+    transform: none;
+    filter: none;
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.toggle-group button.is-active,
+.toggle-pill.is-on,
+.primary-action {
+    background: linear-gradient(90deg, var(--lobby-accent-1), var(--lobby-accent-2));
+    border-color: color-mix(in srgb, var(--lobby-accent-1) 65%, white 0%);
+    box-shadow: 0 12px 28px color-mix(in srgb, var(--lobby-accent-3) 22%, transparent);
+}
+
+.grid-editor,
+.advanced-grid,
+.size-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.size-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-editor--speed {
+    align-items: end;
+}
+
+.field {
+    display: grid;
+    gap: 6px;
+}
+
+.field > span {
+    font-size: 14px;
+    color: rgba(238, 242, 255, 0.72);
+}
+
+.field--compact {
+    gap: 8px;
+}
+
+.field--toggle {
+    align-content: end;
+}
+
+.stepper-field {
+    display: grid;
+    gap: 8px;
+}
+
+.stepper-field > span {
+    font-size: 14px;
+    color: rgba(238, 242, 255, 0.72);
+}
+
+.stepper {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 8px;
+    padding: 6px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stepper button {
+    height: 42px;
+    padding: 0;
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stepper strong {
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: -0.03em;
+}
+
+.number-input {
+    width: 100%;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 18px;
+}
+
+.advanced-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.speed-summary {
+    display: grid;
+    gap: 6px;
+}
+
+.room-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 .player-list {
-    width: 45%;
+    min-width: 0;
     text-align: center;
 }
 
-.player-item {
-    background-color: var(--player-background);
-    color: var(--player-color);
-    padding: 1px;
-    margin-bottom: 1vh;
-    border-radius: 10px;
+.people-column h3,
+.player-list h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
 }
 
-.player-you {
+.player-list {
+    display: grid;
+    gap: 10px;
+}
+
+.player-list .player-item,
+.player-list .player-you {
+    padding: 12px 14px;
+    border-radius: 14px;
+    text-align: center;
+}
+
+.player-list .player-item {
+    background-color: var(--player-background);
+    color: var(--player-color);
+}
+
+.player-list .player-you {
     background-color: var(--you-background);
     color: var(--player-color);
-    padding: 1px;
-    margin-bottom: 1vh;
-    border-radius: 10px;
+}
+
+.player-list p {
+    margin: 0;
+    font-weight: 650;
+}
+
+.player-empty {
+    text-align: center;
+    margin-top: 0;
+}
+
+.lobby-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.secondary-action,
+.primary-action {
+    min-width: 150px;
+}
+
+.primary-action {
+    background: linear-gradient(90deg, var(--lobby-accent-1), var(--lobby-accent-strong));
+}
+
+@media (max-width: 980px) {
+    .lobby-hero,
+    .panel-heading {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .panel-heading p {
+        text-align: left;
+    }
+
+    .settings-summary,
+    .advanced-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lobby-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .lobby-page {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .lobby-hero,
+    .lobby-panel {
+        border-radius: 20px;
+        padding: 18px;
+    }
+
+    .settings-summary,
+    .size-grid,
+    .advanced-grid,
+    .room-info {
+        grid-template-columns: 1fr;
+    }
+
+    .stepper {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+    }
+
+    .toggle-group,
+    .secondary-action,
+    .primary-action {
+        width: 100%;
+    }
+
+    .lobby-actions {
+        flex-direction: column;
+    }
 }

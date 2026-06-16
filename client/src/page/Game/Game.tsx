@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:25:02 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/14 15:32:18 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/16 19:00:27 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,23 +231,22 @@ export default function Game() {
     const cellSize = useMemo(() => {
         const width = stageSize.width;
         const height = stageSize.height;
-        if (width <= 0 || height <= 0 || viewportHeightPx <= 0) return 3;
+        if (width <= 0 || height <= 0) return 32;
 
-        const safeWidth = Math.max(0, width - 2);
-        const safeHeight = Math.max(0, height - 2);
+        const safeWidth = Math.max(0, width - 24);
+        const safeHeight = Math.max(0, height - 24);
 
         const boardCellsX = grid.width + 6;
         const boardCellsY = Math.max(grid.height, 5);
         const cellPx = Math.min(safeWidth / boardCellsX, safeHeight / boardCellsY);
-        const cellVh = (cellPx / viewportHeightPx) * 100;
 
         // Fit-to-container guarantees no overflow; cap only avoids absurd sizes on huge screens.
-        return Math.max(1.2, Math.min(9, cellVh * 0.995));
-    }, [grid.height, grid.width, stageSize.height, stageSize.width, viewportHeightPx]);
+        return Math.max(24, Math.min(56, cellPx * 1.05));
+    }, [grid.height, grid.width, stageSize.height, stageSize.width]);
 
     const spectrumCellSize = useMemo(() => {
         const v = cellSize * 0.58;
-        return Math.max(0.9, Math.min(2.6, v));
+        return Math.max(14, Math.min(30, v));
     }, [cellSize]);
 
     const pieceX = (piece?.x ?? 0) * cellSize;
@@ -272,12 +271,12 @@ export default function Game() {
     const gameStyle = createGameTheme(currentTheme, cellSize);
     const spectrumStyle = createSpectrumTheme(currentTheme, cellSize, spectrumCellSize, room);
 
-    const boardWidthVh = (grid.width + 6) * cellSize;
-    const boardHeightVh = Math.max(grid.height, 5) * cellSize;
+    const boardWidthPx = (grid.width + 6) * cellSize;
+    const boardHeightPx = Math.max(grid.height, 5) * cellSize;
     const gameBoardStyle = {
         ...gameStyle,
-        width: `${boardWidthVh}vh`,
-        height: `${boardHeightVh}vh`,
+        width: `${boardWidthPx}px`,
+        height: `${boardHeightPx}px`,
     } as React.CSSProperties;
 
     const spectrumList = Object.values(spectrums).slice(0, 4);
