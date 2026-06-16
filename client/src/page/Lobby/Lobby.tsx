@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/06/16 19:06:04 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/16 19:10:33 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -404,7 +404,6 @@ export default function Lobby() {
                         <div className="panel-heading">
                             <div>
                                 <span className="panel-eyebrow">Room</span>
-                                <h2>Players</h2>
                             </div>
                         </div>
 
