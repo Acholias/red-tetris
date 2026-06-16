@@ -18,10 +18,6 @@ export function socketListenning(socket: Socket) {
             currentRoom.addPlayer(newPlayer);
         }
 
-        if (currentRoom.ownerName === newPlayer.name) {
-            currentRoom.adminId = newPlayer.id;
-        }
-
         // Add current currentRoom to listen field
         socket.join(currentRoom.id);
 

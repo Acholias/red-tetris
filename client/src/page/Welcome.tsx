@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Welcome.tsx                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
+/*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 13:05:38 by lumugot           #+#    #+#             */
-/*   Updated: 2026/05/06 13:59:13 by gugus            ###   ########.fr       */
+/*   Updated: 2026/06/16 23:03:42 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,27 +88,10 @@ export default function Welcome({ playerName, setPlayerName, avatar, isDevProfil
 				<div className="actions">
 					<button
 						type="button"
-						disabled={!cleanPlayer}
-						onClick={() => navigate('/game', { state: { mode: 'solo', playerName } })} // TODO: Create random room and start game
-					>
-						Play solo
-					</button>
-
-					<button
-						type="button"
 						disabled={!cleanPlayer || !cleanRoom}
 						onClick={joinRoomMulti}
 					>
-						Play multi
-					</button>
-
-					<button
-						type="button"
-						disabled={!cleanPlayer || !cleanRoom}
-						onClick={() => navigate('/spectator')} // TODO: Remove ?
-						className="spectator-btn"
-					>
-						Spectator
+						Play
 					</button>
 				</div>
 			</section>

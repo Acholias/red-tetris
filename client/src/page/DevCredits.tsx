@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 07:47:09 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/30 15:32:08 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/16 22:31:39 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,13 @@ type DevCard = {
 const devCards: DevCard[] = [
   {
     avatarSrc: '/avatarsdevs/lumugot.png',
-    title: "designer",
-    description: 'description',
+    title: "Designer",
+    description: 'Creation of the project pages design',
   },
   {
     avatarSrc: '/avatarsdevs/aderouba.png',
     title: "Game Creator",
-    description: 'description',
+    description: 'Creation of the game engine and rules',
   },
 ]
 

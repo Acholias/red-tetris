@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:25:02 by lumugot           #+#    #+#             */
-/*   Updated: 2026/06/16 19:00:27 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/16 23:26:19 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,9 +180,7 @@ export default function Game() {
         }
     }, [dispatch, spectrums, room]);
 
-    // Keyboard mapping
     useEffect(() => {
-        // Handle keyboard input
         const handleKeyDown = (event: KeyboardEvent) => {
         switch (event.key) {
             case 'ArrowUp':
@@ -213,21 +211,17 @@ export default function Game() {
         }
         };
 
-        // Add event listener
         window.addEventListener('keydown', handleKeyDown);
 
-        // Remove event listener on page quit
         return () => {
         window.removeEventListener('keydown', handleKeyDown);
         };
     }, [dispatch, room.id]);
 
-    // Get grid, piece and next piece from game
     const grid = game.grid;
     const piece = game.piece;
     const nextPiece = game.nextPiece;
 
-    // Variables computes
     const cellSize = useMemo(() => {
         const width = stageSize.width;
         const height = stageSize.height;
@@ -240,7 +234,6 @@ export default function Game() {
         const boardCellsY = Math.max(grid.height, 5);
         const cellPx = Math.min(safeWidth / boardCellsX, safeHeight / boardCellsY);
 
-        // Fit-to-container guarantees no overflow; cap only avoids absurd sizes on huge screens.
         return Math.max(24, Math.min(56, cellPx * 1.05));
     }, [grid.height, grid.width, stageSize.height, stageSize.width]);
 
@@ -267,9 +260,8 @@ export default function Game() {
             break;
     }
 
-    // Style define
     const gameStyle = createGameTheme(currentTheme, cellSize);
-    const spectrumStyle = createSpectrumTheme(currentTheme, cellSize, spectrumCellSize, room);
+    const spectrumStyle = createSpectrumTheme(currentTheme, cellSize, spectrumCellSize / 2, room);
 
     const boardWidthPx = (grid.width + 6) * cellSize;
     const boardHeightPx = Math.max(grid.height, 5) * cellSize;
