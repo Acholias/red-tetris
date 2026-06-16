@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 11:05:43 by lumugot           #+#    #+#             */
-/*   Updated: 2026/06/16 18:35:46 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/16 19:06:04 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ export default function Lobby() {
     const navigate = useNavigate();
     const { room: urlRoom, playerName: urlPlayer } = useParams();
 
-    // Get room and theme from store
     const room = useSelector((state: RootState) => state.room);
     const currentTheme = useSelector((state: RootState) => state.theme);
     const dispatch = useDispatch();
@@ -59,7 +58,6 @@ export default function Lobby() {
     useEffect(() => {
         if (!room.isPlaying) return;
 
-        // Check if you are a player
         for (const player of room.players) {
         if (player.id == room.yourId) {
             navigate('/game');
@@ -67,7 +65,6 @@ export default function Lobby() {
         }
         }
 
-        // Else, you are a spectator
         navigate('/spectator');
     }, [dispatch, room.isPlaying]);
 
@@ -165,7 +162,6 @@ export default function Lobby() {
     const speedLabel = `${room.gameSpeed.speed} ticks / sec`;
     const gridLabel = `${room.size.w} x ${room.size.h}`;
 
-    // Style define
     const roomStyle = createRoomTheme(currentTheme);
 
     const lobbyStyle = {
@@ -184,9 +180,6 @@ export default function Lobby() {
                     <div className="lobby-hero-copy">
                         <span className="lobby-kicker">Game room</span>
                         <h1>{roomLabel}</h1>
-                        <p>
-                            Tune the match, watch who is in the room, and launch the game when everyone is ready.
-                        </p>
                     </div>
 
                     <div className="lobby-hero-meta">
