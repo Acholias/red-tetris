@@ -6,9 +6,11 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 07:47:09 by lumugot           #+#    #+#             */
-/*   Updated: 2026/06/16 22:31:39 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/16 23:55:29 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { useLocation, useNavigate } from 'react-router-dom'
 
 type DevCard = {
   avatarSrc: string
@@ -30,6 +32,8 @@ const devCards: DevCard[] = [
 ]
 
 export default function DevCredits() {
+  const navigate = useNavigate();
+  
   return (
     <main className="page devs-page">
       <h1>developers</h1>
@@ -52,6 +56,7 @@ export default function DevCredits() {
           </div>
         </div>
       </section>
+        <button className="button" onClick={() => navigate('../')}>Home page</button>
     </main>
   )
 }

@@ -6,7 +6,7 @@
 /*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 11:31:47 by lumugot           #+#    #+#             */
-/*   Updated: 2026/04/30 13:18:54 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/17 00:10:30 by lumugot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ export default function Profile({ playerName, setPlayerName, avatar, setAvatar, 
           }
         }
       } catch (err) {}
-      const defaults = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png', 'avatar5.png', 'avatar6.png']
+      const defaults = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png', 'avatar5.png']
       setAvatarOptions(defaults.map((n) => `/avatars/${n}`))
     }
     loadAvatars()

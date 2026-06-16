@@ -1,17 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Spectator.tsx                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/16 23:08:42 by lumugot           #+#    #+#             */
-/*   Updated: 2026/06/16 23:35:20 by lumugot          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 import '../Game/Game.css';
 import './Spectator.css';
+
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -81,11 +70,6 @@ export default function Spectator() {
             <div className="game-top">
                 <p className="game-mode">
                     Room: {room.id}
-                </p>
-
-                <p className="game-mode">
-                    Watching{' '}
-                    {centerSpectrum?.playerName ?? 'Unknown'}
                 </p>
 
                 <p className="game-mode">
