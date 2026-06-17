@@ -41,6 +41,9 @@ describe('Spectator page', () => {
       { id: 10, name: 'aderouba' },
       { id: 20, name: 'lumugot' },
     ],
+    spectators: [
+      { id: 42, name: '42' },
+    ],
   };
 
   const defaultSpectrumsState = {
@@ -102,7 +105,7 @@ describe('Spectator page', () => {
         </MemoryRouter>
       );
 
-      const leaveButton = screen.getByText('Leave');
+      const leaveButton = screen.getByText('Go back to room');
       fireEvent.click(leaveButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/');
@@ -244,5 +247,65 @@ describe('Spectator page', () => {
       </MemoryRouter>
     );
     expect(screen.getByTestId('mock-spectrum-50')).toBeDefined();
+  });
+
+  it('leave button', () => {
+    vi.mocked(reactRedux.useSelector).mockImplementation((selector: any) =>
+      selector({
+        game: {
+          isEnd: true,
+          win: undefined,
+          speed: { speed: 10 },
+          grid: { cells: [], width: 10, height: 20 },
+          piece: { cells: [], x: 5, y: 0, width: 4, height: 4 },
+          nextPiece: { cells: [], width: 4, height: 4 },
+        },
+        room: {
+          ...defaultRoomState,
+          isPlaying: false,
+          id: '',
+          yourId: 42,
+          spectators: [{ id: 42, name: '42' }]
+        },
+        theme: defaultThemeState,
+        spectrums: defaultSpectrumsState
+      })
+    );
+
+    render(<MemoryRouter><Spectator /></MemoryRouter>);
+
+    fireEvent.click(screen.getByText('Go back to room'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+
+  it('leave button', () => {
+    vi.mocked(reactRedux.useSelector).mockImplementation((selector: any) =>
+      selector({
+        game: {
+          isEnd: true,
+          win: undefined,
+          speed: { speed: 10 },
+          grid: { cells: [], width: 10, height: 20 },
+          piece: { cells: [], x: 5, y: 0, width: 4, height: 4 },
+          nextPiece: { cells: [], width: 4, height: 4 },
+        },
+        room: {
+          ...defaultRoomState,
+          isPlaying: false,
+          id: 'room-42',
+          yourId: 42,
+          spectators: [{ id: 42, name: '42' }]
+        },
+        theme: defaultThemeState,
+        spectrums: defaultSpectrumsState
+      })
+    );
+
+    render(<MemoryRouter><Spectator /></MemoryRouter>);
+
+    fireEvent.click(screen.getByText('Go back to room'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/room-42/42');
   });
 });

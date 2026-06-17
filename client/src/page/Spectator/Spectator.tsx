@@ -63,6 +63,21 @@ export default function Spectator() {
         room
     );
 
+    // Navigate back to lobby
+    function goToRoom() {
+        if (room.id == '') {
+            navigate('/');
+            return;
+        }
+        for (const player of room.spectators) {
+            if (player.id == room.yourId) {
+                navigate(`/${room.id}/${player.name}`);
+                return;
+            }
+        }
+        navigate('/');
+    }
+
     return (
         <main className="game-page">
             <h1>Spectator</h1>
@@ -77,12 +92,12 @@ export default function Spectator() {
                     {room.players.length > 1 ? 's' : ''}
                 </p>
 
-                <button
+                {!room.isPlaying && <button
                     type="button"
-                    onClick={() => navigate('/')}
+                    onClick={() => goToRoom()}
                 >
-                    Leave
-                </button>
+                    Go back to room
+                </button>}
             </div>
 
             <div className="game-split">
