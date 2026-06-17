@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Game.tsx                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 10:25:02 by lumugot           #+#    #+#             */
-/*   Updated: 2026/06/16 23:26:19 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/17 13:21:58 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,24 +44,6 @@ export default function Game() {
 
     const stageRef = useRef<HTMLDivElement | null>(null);
     const [stageSize, setStageSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
-    const [viewportHeightPx, setViewportHeightPx] = useState<number>(() => {
-        if (typeof window === 'undefined') return 900;
-        return window.visualViewport?.height ?? window.innerHeight;
-    });
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const update = () => {
-            setViewportHeightPx(window.visualViewport?.height ?? window.innerHeight);
-        };
-        update();
-        window.addEventListener('resize', update);
-        window.visualViewport?.addEventListener('resize', update);
-        return () => {
-            window.removeEventListener('resize', update);
-            window.visualViewport?.removeEventListener('resize', update);
-        };
-    }, []);
 
     useEffect(() => {
         const el = stageRef.current;
