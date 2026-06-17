@@ -11,6 +11,14 @@ describe('theme', () => {
                 player_background: 'bg-p',
                 you_background: 'bg-y',
                 player_color: 'c-p',
+            },
+            themeGame: {
+                color_E: 'cE', color_I: 'cI', color_J: 'cJ', color_L: 'cL',
+                color_M: 'cM', color_O: 'cO', color_S: 'cS', color_T: 'cT',
+                color_U: 'cU', color_V: 'cV', color_Z: 'cZ',
+                texture_E: 'tE', texture_I: 'tI', texture_J: 'tJ', texture_L: 'tL',
+                texture_M: 'tM', texture_O: 'tO', texture_S: 'tS', texture_T: 'tT',
+                texture_U: 'tU', texture_V: 'tV', texture_Z: 'tZ',
             }
         } as ThemeData;
 
@@ -22,6 +30,10 @@ describe('theme', () => {
             '--player-background': 'bg-p',
             '--you-background': 'bg-y',
             '--player-color': 'c-p',
+            "--lobby-accent-1": "cI",
+            "--lobby-accent-2": "cJ",
+            "--lobby-accent-3": "cO",
+            "--lobby-accent-strong": "cT",
         });
     });
 
