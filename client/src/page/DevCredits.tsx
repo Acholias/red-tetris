@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   DevCredits.tsx                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 07:47:09 by lumugot           #+#    #+#             */
-/*   Updated: 2026/06/16 23:55:29 by lumugot          ###   ########.fr       */
+/*   Updated: 2026/06/17 12:01:45 by gugus            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ const devCards: DevCard[] = [
 
 export default function DevCredits() {
   const navigate = useNavigate();
-  
+
   return (
     <main className="page devs-page">
       <h1>developers</h1>
@@ -49,7 +49,7 @@ export default function DevCredits() {
 
                 <div className="devs-text">
                   <h2>{item.title}</h2>
-                  {item.description ? <p>{item.description}</p> : null}
+                  {<p>{item.description}</p>}
                 </div>
               </article>
             ))}
