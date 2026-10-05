@@ -1,0 +1,93 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   DevCredits.css                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gugus <gugus@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/05 00:00:00 by gugus             #+#    #+#             */
+/*   Updated: 2026/10/05 00:00:00 by gugus            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+.devs-page {
+  gap: 26px;
+}
+
+.devs-shell {
+  width: min(1200px, 100%);
+  padding: clamp(18px, 3.2vw, 28px);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(5, 6, 10, 0.30);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-md);
+}
+
+.devs-board {
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: clamp(18px, 3vw, 30px);
+  background: rgba(5, 6, 10, 0.22);
+}
+
+.devs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 3vw, 34px);
+  align-items: start;
+}
+
+.devs-card {
+  display: grid;
+  justify-items: center;
+  gap: 30px;
+}
+
+.devs-avatar {
+  width: min(170px, 42vw);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(0, 0, 0, 0.55);
+  background: rgba(255, 255, 255, 0.03);
+  display: grid;
+  place-content: center;
+  color: rgba(238, 242, 255, 0.72);
+  font-weight: 700;
+}
+
+.devs-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.devs-text {
+  width: min(320px, 100%);
+  padding: 16px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.devs-text h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 170, 170, 0.92);
+}
+
+.devs-text p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: rgba(238, 242, 255, 0.72);
+}
+
+@media (max-width: 860px) {
+  .devs-grid {
+    grid-template-columns: 1fr;
+  }
+}

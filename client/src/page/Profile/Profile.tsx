@@ -13,6 +13,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isDevPlayerName, resolveAvatarForPlayer } from '../../components/profileIdentity'
+import './Profile.css';
 
 type ThemeName = 'default' | '1' | '2' | '3' | '4' | '5'
 

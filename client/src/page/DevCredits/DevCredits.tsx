@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 import { useNavigate } from 'react-router-dom'
+import './DevCredits.css';
 
 type DevCard = {
   avatarSrc: string

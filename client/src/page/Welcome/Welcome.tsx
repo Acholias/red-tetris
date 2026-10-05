@@ -15,6 +15,7 @@ import { useMemo, useState } from 'react'
 import { TetrisRain } from '../../components/TetrisRain'
 import { useDispatch } from 'react-redux';
 import { initRoom } from '../../gameRoom/logic/roomSlice';
+import './Welcome.css';
 
 function sanitizeSegment(value: string) {
 	return value.trim().replaceAll('/', '').replaceAll(' ', '-')

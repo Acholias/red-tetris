@@ -1,0 +1,206 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Welcome.css                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lumugot <lumugot@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/05 00:00:00 by lumugot           #+#    #+#             */
+/*   Updated: 2026/10/05 00:00:00 by lumugot          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+.card {
+  width: min(600px, 100%);
+  display: grid;
+  gap: 12px;
+
+  padding: 16px;
+  border-radius: 16px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 1px rgba(65, 105, 225, 0.12) inset;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+@media (max-width: 520px) {
+  .actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tetrisRain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page > *:not(.tetrisRain) {
+  position: relative;
+  z-index: 1;
+}
+
+.tetroWrap {
+  position: absolute;
+  top: -180px;
+  left: var(--x, 50%);
+  transform: translateX(-50%);
+  opacity: 0.26;
+
+  animation: tetro-fall var(--dur, 14s) linear infinite;
+  animation-delay: var(--delay, 0s);
+
+  will-change: transform, opacity;
+}
+
+@keyframes tetro-fall {
+  0% {
+    transform: translateX(-50%) translateY(-220px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.26;
+  }
+  100% {
+    transform: translateX(calc(-50% + var(--drift, 0px)))
+      translateY(calc(100svh + 260px))
+      rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.tetro {
+  display: grid;
+  grid-template-columns: repeat(4, var(--cell, 14px));
+  grid-template-rows: repeat(4, var(--cell, 14px));
+  gap: 2px;
+
+  filter: drop-shadow(0 18px 44px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 20px rgba(65, 105, 225, 0.18));
+}
+
+.cell {
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) inset,
+    0 10px 20px rgba(0, 0, 0, 0.25);
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.04)
+  );
+}
+
+.t-I .cell {
+  background: linear-gradient(135deg, rgba(65, 185, 225, 0.85), rgba(65, 105, 225, 0.35));
+}
+.t-O .cell {
+  background: linear-gradient(135deg, rgba(65, 105, 225, 0.82), rgba(105, 65, 225, 0.35));
+}
+.t-T .cell {
+  background: linear-gradient(135deg, rgba(105, 65, 225, 0.82), rgba(65, 105, 225, 0.35));
+}
+.t-S .cell {
+  background: linear-gradient(135deg, rgba(65, 185, 225, 0.78), rgba(105, 65, 225, 0.3));
+}
+.t-Z .cell {
+  background: linear-gradient(135deg, rgba(65, 105, 225, 0.78), rgba(65, 185, 225, 0.28));
+}
+.t-J .cell {
+  background: linear-gradient(135deg, rgba(105, 65, 225, 0.78), rgba(65, 185, 225, 0.28));
+}
+.t-L .cell {
+  background: linear-gradient(135deg, rgba(65, 105, 225, 0.78), rgba(105, 65, 225, 0.28));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tetroWrap {
+    display: none;
+    animation: none;
+  }
+}
+
+.floating-btn {
+  position: fixed;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  border: 0;
+  background: radial-gradient(circle, var(--c-mid), var(--c-mid), var(--c-dark));
+  color: var(--text);
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(65, 105, 225, 0.18);
+  cursor: pointer;
+  z-index: 3;
+  right: max(clamp(18px, 4vw, 44px), env(safe-area-inset-right));
+}
+
+.dev-button {
+  position: absolute;
+  left: 59vw;
+  top: 64vh;
+}
+
+.profile-button {
+  position: absolute;
+  left: 59vw;
+  top: -14vh;
+}
+
+@media (max-width: 520px) {
+  .floating-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 14px;
+    right: max(12px, env(safe-area-inset-right));
+  }
+
+  .dev-button {
+    top: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .profile-button {
+    bottom: auto;
+    top: max(12px, env(safe-area-inset-top));
+  }
+}
+
+.profile-avatar-button {
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.profile-avatar-button.is-dev-profile {
+  box-shadow:
+    0 0 0 2px rgba(255, 215, 90, 0.35) inset,
+    0 0 0 1px rgba(255, 243, 176, 0.18) inset,
+    0 0 24px rgba(255, 199, 75, 0.35),
+    0 16px 34px rgba(255, 199, 75, 0.20);
+}
+
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
