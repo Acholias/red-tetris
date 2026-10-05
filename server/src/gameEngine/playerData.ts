@@ -51,9 +51,9 @@ export class PlayerData {
         this.nextPieceId = nextPieceId;
 
         if (allPiece) {
-            this.nextPieceIndex = (this.nextPieceIndex + 1) % listLengthPieceBasic;
-        } else {
             this.nextPieceIndex = (this.nextPieceIndex + 1) % listLengthPieceAll;
+        } else {
+            this.nextPieceIndex = (this.nextPieceIndex + 1) % listLengthPieceBasic;
         }
     }
 
