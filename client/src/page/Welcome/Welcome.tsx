@@ -12,9 +12,9 @@
 
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMemo, useState } from 'react'
-import { TetrisRain } from '../components/TetrisRain'
+import { TetrisRain } from '../../components/TetrisRain'
 import { useDispatch } from 'react-redux';
-import { initRoom } from '../gameRoom/logic/roomSlice';
+import { initRoom } from '../../gameRoom/logic/roomSlice';
 
 function sanitizeSegment(value: string) {
 	return value.trim().replaceAll('/', '').replaceAll(' ', '-')

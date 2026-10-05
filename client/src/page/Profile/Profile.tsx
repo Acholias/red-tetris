@@ -12,7 +12,7 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { isDevPlayerName, resolveAvatarForPlayer } from '../components/profileIdentity'
+import { isDevPlayerName, resolveAvatarForPlayer } from '../../components/profileIdentity'
 
 type ThemeName = 'default' | '1' | '2' | '3' | '4' | '5'
 
@@ -177,7 +177,7 @@ export default function Profile({ playerName, setPlayerName, avatar, setAvatar, 
         <section className="profile-theme-block">
           <div className="theme-panel">
             <span className="theme-panel-title">Theme</span>
-        
+
             <div className="theme-list">
               {themes.map((item) => (
                 <button

@@ -13,12 +13,12 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import type { Location as RouterLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import DevCredits from './page/DevCredits';
-import Profile from './page/Profile';
+import DevCredits from './page/DevCredits/DevCredits';
+import Profile from './page/Profile/Profile';
 import Spectator from './page/Spectator/Spectator';
 import Lobby from './page/Lobby/Lobby';
 import Game from './page/Game/Game';
-import Welcome from './page/Welcome';
+import Welcome from './page/Welcome/Welcome';
 import { isDevPlayerName, resolveAvatarForPlayer } from './components/profileIdentity';
 import { useDispatch } from 'react-redux';
 
