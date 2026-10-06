@@ -14,7 +14,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../components/profileIdentity', () => ({
+vi.mock('../../components/profileIdentity', () => ({
   isDevPlayerName: vi.fn(),
   resolveAvatarForPlayer: vi.fn(),
 }));

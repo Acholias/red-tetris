@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import Welcome from './Welcome';
 
 // Mocks
-vi.mock('../components/TetrisRain', () => ({
+vi.mock('../../components/TetrisRain', () => ({
   TetrisRain: () => <div data-testid="tetris-rain">Rain</div>
 }));
 
@@ -13,7 +13,7 @@ vi.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
 }));
 
-vi.mock('../gameRoom/logic/roomSlice', () => ({
+vi.mock('../../gameRoom/logic/roomSlice', () => ({
   initRoom: vi.fn((payload) => ({ type: 'mock/initRoom', payload })),
 }));
 

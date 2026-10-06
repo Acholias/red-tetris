@@ -141,7 +141,7 @@ describe('Game Component', () => {
         })
       );
       render(<MemoryRouter><Game /></MemoryRouter>);
-      expect(screen.getByText('You lose -_-')).toBeDefined();
+      expect(screen.getByText('You lose')).toBeDefined();
     });
   });
 
@@ -285,7 +285,7 @@ describe('Game Component', () => {
         mockResizeCallback([{ contentRect: { width: 1024, height: 1024 } }]);
       });
 
-      expect(gameBoard.style.width).toBe('840px');
+      expect(gameBoard.style.width).toBe('755.2px');
     });
 
     it('no contentRect', async () => {

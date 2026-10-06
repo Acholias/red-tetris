@@ -5,11 +5,11 @@ import * as reactRedux from 'react-redux';
 import App from './App';
 
 // Mock pages
-vi.mock('./page/Welcome', () => ({ default: () => <div data-testid="page-welcome">Welcome</div> }));
-vi.mock('./page/DevCredits', () => ({ default: () => <div data-testid="page-dev">DevCredits</div> }));
+vi.mock('./page/Welcome/Welcome', () => ({ default: () => <div data-testid="page-welcome">Welcome</div> }));
+vi.mock('./page/DevCredits/DevCredits', () => ({ default: () => <div data-testid="page-dev">DevCredits</div> }));
 vi.mock('./page/Spectator/Spectator', () => ({ default: () => <div data-testid="page-spectator">Spectator</div> }));
 vi.mock('./page/Game/Game', () => ({ default: () => <div data-testid="page-game">Game</div> }));
-vi.mock('./page/Profile', () => ({ default: () => <div data-testid="page-profile">Profile</div> }));
+vi.mock('./page/Profile/Profile', () => ({ default: () => <div data-testid="page-profile">Profile</div> }));
 vi.mock('./page/Lobby/Lobby', () => ({ default: () => <div data-testid="page-lobby">Lobby</div> }));
 
 // Mock des functions
