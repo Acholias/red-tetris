@@ -42,19 +42,31 @@ export default function Game() {
     const currentTheme = useSelector((state: RootState) => state.theme);
     const dispatch = useDispatch();
 
-    const panelRef = useRef<HTMLElement | null>(null);
-    const [panelSize, setPanelSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+    const gamePanelRef = useRef<HTMLElement | null>(null);
+    const [gamePanelSize, setgamePanelSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+
+    const spectatorPanelRef = useRef<HTMLDivElement | null>(null);
+    const [spectatorPanelSize, setspectatorPanelSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
     useEffect(() => {
-        const el = panelRef.current;
-        if (!el || typeof ResizeObserver === 'undefined') return;
+        if (typeof ResizeObserver === 'undefined') return;
 
         const ro = new ResizeObserver((entries) => {
-            const rect = entries[0]?.contentRect;
-            if (!rect) return;
-            setPanelSize({ width: rect.width, height: rect.height });
+            for (const entry of entries) {
+                const rect = entry.contentRect;
+
+                if (entry.target === gamePanelRef.current) {
+                    setgamePanelSize({ width: rect.width, height: rect.height });
+                }
+                else if (entry.target === spectatorPanelRef.current) {
+                    setspectatorPanelSize({ width: rect.width, height: rect.height });
+                }
+            }
         });
-        ro.observe(el);
+
+        if (gamePanelRef.current) ro.observe(gamePanelRef.current);
+        if (spectatorPanelRef.current) ro.observe(spectatorPanelRef.current);
+
         return () => ro.disconnect();
     }, []);
 
@@ -205,8 +217,8 @@ export default function Game() {
     const nextPiece = game.nextPiece;
 
     const cellSize = useMemo(() => {
-        const width = panelSize.width;
-        const height = panelSize.height;
+        const width = gamePanelSize.width;
+        const height = gamePanelSize.height;
         if (width <= 0 || height <= 0) return 32;
 
         const safeWidth = Math.max(0, width - 24);
@@ -217,12 +229,22 @@ export default function Game() {
         const cellPx = Math.min(safeWidth / boardCellsX, safeHeight / boardCellsY);
 
         return Math.max(10, Math.min(80, cellPx));
-    }, [grid.height, grid.width, panelSize.height, panelSize.width]);
+    }, [grid.height, grid.width, gamePanelSize.height, gamePanelSize.width]);
 
     const spectrumCellSize = useMemo(() => {
-        const v = cellSize * 0.58;
-        return Math.max(14, Math.min(30, v));
-    }, [cellSize]);
+        const width = spectatorPanelSize.width;
+        const height = spectatorPanelSize.height;
+        if (width <= 0 || height <= 0) return 16;
+
+        const safeWidth = Math.max(0, width - 24);
+        const safeHeight = Math.max(0, height - 80);
+
+        const boardCellsX = grid.width;
+        const boardCellsY = Math.max(grid.height, 5);
+        const cellPx = Math.min(safeWidth / boardCellsX, safeHeight / boardCellsY);
+
+        return Math.max(5, Math.min(40, cellPx));
+    }, [grid.height, grid.width, spectatorPanelSize.height, spectatorPanelSize.width]);
 
     const pieceX = (piece?.x ?? 0) * cellSize;
     const pieceY = (piece?.y ?? 0) * cellSize;
@@ -243,7 +265,7 @@ export default function Game() {
     }
 
     const gameStyle = createGameTheme(currentTheme, cellSize);
-    const spectrumStyle = createSpectrumTheme(currentTheme, cellSize, spectrumCellSize / 2, room);
+    const spectrumStyle = createSpectrumTheme(currentTheme, cellSize, spectrumCellSize, room);
 
     const boardWidthPx = (grid.width + 6) * cellSize;
     const boardHeightPx = Math.max(grid.height, 5) * cellSize;
@@ -269,7 +291,7 @@ export default function Game() {
             <div className="game-split" aria-label="Game layout">
                 <section className="game-panel game-side game-side-left" aria-label="Other players (left)" style={spectrumStyle}>
                     <div className="game-side-stack">
-                        <div className="game-frame">
+                        <div className="game-frame" ref={spectatorPanelRef}>
                             {spectrumList[0] ? renderSpectrum(spectrumList[0]) : <div className="game-frame-empty" />}
                         </div>
                         <div className="game-frame">
@@ -280,7 +302,7 @@ export default function Game() {
 
                 <div className="game-divider" aria-hidden="true" />
 
-                <section className="game-panel game-center" aria-label="Your game" ref={panelRef}>
+                <section className="game-panel game-center" aria-label="Your game" ref={gamePanelRef}>
                     <header className="game-left-head">
                         <h2 className="game-left-title">Tetris</h2>
                         <div className="game-left-badge" aria-hidden="true" />

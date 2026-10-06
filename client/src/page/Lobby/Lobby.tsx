@@ -157,7 +157,7 @@ export default function Lobby() {
     const roomLabel = roomId.length > 0 ? `Lobby ${roomId}` : 'Lobby';
     const playerCount = room.players.length;
     const gameModeLabel = playerCount > 1 ? 'Multi' : 'Solo';
-    const pieceSetLabel = room.allPieces ? 'Basics + bonus' : 'Basics';
+    const pieceSetLabel = room.allPieces ? 'All' : 'Basics';
     const malusLabel = room.malus ? 'ON' : 'OFF';
     const speedLabel = `${room.gameSpeed.speed} ticks / sec`;
     const gridLabel = `${room.size.w} x ${room.size.h}`;
@@ -247,7 +247,7 @@ export default function Lobby() {
                                             className={room.allPieces ? 'is-active' : ''}
                                             onClick={() => updateSettings({ allPieces: true })}
                                         >
-                                            Basics + bonus
+                                            All
                                         </button>
                                     </div>
                                 ) : (

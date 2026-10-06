@@ -177,6 +177,7 @@
 .settings-stack {
     display: grid;
     gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .setting-card {
@@ -206,10 +207,24 @@
 }
 
 .toggle-group {
-    display: inline-grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap; /* Force les boutons à rester sur une seule ligne */
     gap: 8px;
-    width: min(320px, 100%);
+    width: 100%;
+}
+
+.toggle-pill {
+    text-align: center;
+    font-size: 14px;
+    padding: 10px 14px;
+}
+
+.toggle-group button {
+    flex: 1;
+    font-size: 14px;
+    padding: 10px 14px;
+    white-space: nowrap;
 }
 
 .toggle-group button,
@@ -272,12 +287,19 @@
 }
 
 .field--toggle {
-    align-content: end;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .stepper-field {
-    display: grid;
-    gap: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .stepper-field > span {
@@ -286,29 +308,39 @@
 }
 
 .stepper {
-    display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     padding: 6px;
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 6px;
 }
 
 .stepper button {
-    height: 42px;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
     padding: 0;
     border-radius: 12px;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 800;
     line-height: 1;
 }
 
 .stepper strong {
+    flex-grow: 1;
     text-align: center;
-    font-size: 22px;
+    font-size: 18px;
     letter-spacing: -0.03em;
+}
+
+.stepper,
+.toggle-pill {
+    width: 140px;
+    box-sizing: border-box;
 }
 
 .number-input {
@@ -316,10 +348,6 @@
     border-radius: 14px;
     padding: 12px 14px;
     font-size: 18px;
-}
-
-.advanced-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .speed-summary {
@@ -340,17 +368,15 @@
 .player-list {
     min-width: 0;
     text-align: center;
+    display: grid;
+    gap: 10px;
+    align-content: start;
 }
 
 .people-column h3,
 .player-list h3 {
     font-size: 20px;
     margin-bottom: 12px;
-}
-
-.player-list {
-    display: grid;
-    gap: 10px;
 }
 
 .player-list .player-item,
@@ -407,8 +433,7 @@
         text-align: left;
     }
 
-    .settings-summary,
-    .advanced-grid {
+    .settings-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -432,12 +457,9 @@
     .settings-summary,
     .size-grid,
     .advanced-grid,
-    .room-info {
+    .room-info,
+    .settings-stack {
         grid-template-columns: 1fr;
-    }
-
-    .stepper {
-        grid-template-columns: 40px minmax(0, 1fr) 40px;
     }
 
     .toggle-group,
