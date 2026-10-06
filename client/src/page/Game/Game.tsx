@@ -264,7 +264,7 @@ export default function Game() {
                 {!room.isPlaying && <button type="button" onClick={() => goToRoom()}>Go back to room</button>}
             </div>
 
-            {game.win != undefined && <p className="game-result">You {game.win ? 'win !' : 'lose -_-'}</p>}
+            {game.win != undefined && <p className="game-result">You {game.win ? 'win !' : 'lose'}</p>}
 
             <div className="game-split" aria-label="Game layout">
                 <section className="game-panel game-side game-side-left" aria-label="Other players (left)" style={spectrumStyle}>
