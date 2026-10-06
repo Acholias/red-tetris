@@ -110,7 +110,7 @@ describe('Lobby Component', () => {
     describe('Admin', () => {
       it('edit if admin', () => {
         render(<MemoryRouter><Lobby /></MemoryRouter>);
-        expect(screen.getByRole('button', { name: /Basics \+ bonus/i })).toBeDefined();
+        expect(screen.getByRole('button', { name: 'All' })).toBeDefined();
         expect(screen.getByRole('button', { name: 'ON' })).toBeDefined();
         expect(screen.getByLabelText('Increase width')).toBeDefined();
         expect(screen.getByText('Start game')).toBeDefined();
@@ -147,7 +147,7 @@ describe('Lobby Component', () => {
           selector({ room: { ...defaultRoomState, allPieces: true }, theme: defaultThemeState })
         );
         render(<MemoryRouter><Lobby /></MemoryRouter>);
-        expect(screen.getAllByText('Basics + bonus').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('All').length).toBeGreaterThan(0);
       });
 
       it('malus', () => {
@@ -252,7 +252,7 @@ describe('Lobby Component', () => {
     describe('change piece and malus', () => {
       it('change piece', () => {
         render(<MemoryRouter><Lobby /></MemoryRouter>);
-        fireEvent.click(screen.getByRole('button', { name: 'Basics + bonus' }));
+        fireEvent.click(screen.getByRole('button', { name: 'All' }));
         expect(mockDispatch).toHaveBeenCalledWith({ type: 'room/settings', payload: { roomId: '42', allPieces: true } });
 
         fireEvent.click(screen.getByRole('button', { name: 'Basics', exact: true }));

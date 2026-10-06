@@ -1,10 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import * as reactRedux from 'react-redux';
 import Spectator from './Spectator';
 
 // Mock
+let mockResizeCallback: any;
+let mockObservedElements: any[] = [];
+
+global.ResizeObserver = class {
+  constructor(cb: any) {
+    mockResizeCallback = cb;
+  }
+  observe = vi.fn((el: any) => {
+    mockObservedElements.push(el);
+  });
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+} as any;
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
@@ -47,14 +60,15 @@ describe('Spectator page', () => {
   };
 
   const defaultSpectrumsState = {
-    10: { id: 10 },
-    20: { id: 20 },
+    10: { id: 10, grid: { width: 10, height: 20 } },
+    20: { id: 20, grid: { width: 10, height: 20 } },
   };
 
   const defaultThemeState = {};
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockObservedElements = [];
 
     vi.mocked(reactRedux.useSelector).mockImplementation((selector: any) =>
       selector({
@@ -231,11 +245,11 @@ describe('Spectator page', () => {
           ],
         },
         spectrums: {
-          10: { id: 10 },
-          20: { id: 20 },
-          30: { id: 30 },
-          40: { id: 40 },
-          50: { id: 50 },
+          10: { id: 10, grid: { width: 10, height: 20 } },
+          20: { id: 20, grid: { width: 10, height: 20 } },
+          30: { id: 30, grid: { width: 10, height: 20 } },
+          40: { id: 40, grid: { width: 10, height: 20 } },
+          50: { id: 50, grid: { width: 10, height: 20 } },
         },
         theme: {},
       })
@@ -307,5 +321,62 @@ describe('Spectator page', () => {
     fireEvent.click(screen.getByText('Go back to room'));
 
     expect(mockNavigate).toHaveBeenCalledWith('/room-42/42');
+  });
+
+  describe('ResizeObserver', () => {
+    it('observes center and side panels and resizes themes', async () => {
+      const { container } = render(
+        <MemoryRouter>
+          <Spectator />
+        </MemoryRouter>
+      );
+      const { createSpectrumTheme } = await import('../../theme/theme');
+
+      const centerPanel = container.querySelector('.game-center') as HTMLElement;
+      const sideFrame = container.querySelector('.game-side .game-frame') as HTMLElement;
+      expect(mockObservedElements).toContain(centerPanel);
+      expect(mockObservedElements).toContain(sideFrame);
+
+      vi.mocked(createSpectrumTheme).mockClear();
+
+      await act(async () => {
+        mockResizeCallback([{ target: centerPanel, contentRect: { width: 500, height: 800 } }]);
+      });
+      // center 500x800, grid 10x20 -> safe 476x720 -> min(47.6, 36) = 36
+      expect(createSpectrumTheme).toHaveBeenCalledWith(expect.anything(), 0, 36, expect.anything());
+
+      await act(async () => {
+        mockResizeCallback([{ target: sideFrame, contentRect: { width: 500, height: 800 } }]);
+      });
+      // side 500x800, grid 10x20 -> min(47.6, 36) = 36 clamped to max 40
+      expect(createSpectrumTheme).toHaveBeenCalledWith(expect.anything(), 0, 36, expect.anything());
+    });
+
+    it('ignores entries for unknown targets', async () => {
+      const { container } = render(
+        <MemoryRouter>
+          <Spectator />
+        </MemoryRouter>
+      );
+      expect(() => {
+        mockResizeCallback([{ target: document.createElement('div'), contentRect: { width: 500, height: 500 } }]);
+      }).not.toThrow();
+      expect(container.querySelector('.game-center')).toBeDefined();
+    });
+
+    it('does not crash when ResizeObserver is undefined', () => {
+      const originalRO = global.ResizeObserver;
+      (global as any).ResizeObserver = undefined;
+
+      expect(() => {
+        render(
+          <MemoryRouter>
+            <Spectator />
+          </MemoryRouter>
+        );
+      }).not.toThrow();
+
+      global.ResizeObserver = originalRO;
+    });
   });
 });

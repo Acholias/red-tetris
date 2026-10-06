@@ -10,12 +10,15 @@ import React from 'react';
 
 // Mock
 let mockResizeCallback: any;
+let mockObservedElements: any[] = [];
 
 global.ResizeObserver = class {
   constructor(cb: any) {
     mockResizeCallback = cb;
   }
-  observe = vi.fn();
+  observe = vi.fn((el: any) => {
+    mockObservedElements.push(el);
+  });
   unobserve = vi.fn();
   disconnect = vi.fn();
 } as any;
@@ -93,6 +96,7 @@ describe('Game Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockObservedElements = [];
 
     vi.mocked(reactRedux.useSelector).mockImplementation((selector: any) => {
       const state = {
@@ -278,14 +282,33 @@ describe('Game Component', () => {
       const { container } = render(<MemoryRouter><Game /></MemoryRouter>);
 
       const gameBoard = container.querySelector('.game-board') as HTMLElement;
+      const gamePanel = container.querySelector('.game-center') as HTMLElement;
 
       expect(gameBoard.style.width).toBe('512px');
+      expect(mockObservedElements).toContain(gamePanel);
 
       await act(async () => {
-        mockResizeCallback([{ contentRect: { width: 1024, height: 1024 } }]);
+        mockResizeCallback([{ target: gamePanel, contentRect: { width: 1024, height: 1024 } }]);
       });
 
       expect(gameBoard.style.width).toBe('755.2px');
+    });
+
+    it('spectator panel resize updates spectrum theme', async () => {
+      const { container } = render(<MemoryRouter><Game /></MemoryRouter>);
+      const { createSpectrumTheme } = await import('../../theme/theme');
+
+      vi.mocked(createSpectrumTheme).mockClear();
+
+      const spectatorFrame = container.querySelector('.game-side-left .game-frame') as HTMLElement;
+      expect(mockObservedElements).toContain(spectatorFrame);
+
+      await act(async () => {
+        mockResizeCallback([{ target: spectatorFrame, contentRect: { width: 500, height: 800 } }]);
+      });
+
+      // spectatorPanel 500x800, grid 10x20 -> safe 476x720 -> min(47.6, 36) = 36
+      expect(createSpectrumTheme).toHaveBeenLastCalledWith(expect.anything(), expect.anything(), 36, expect.anything());
     });
 
     it('no contentRect', async () => {
@@ -296,7 +319,7 @@ describe('Game Component', () => {
       const initialWidth = gameBoard.style.width;
 
       await act(async () => {
-        mockResizeCallback([{}]);
+        mockResizeCallback([{ target: document.createElement('div'), contentRect: undefined }]);
       });
 
       expect(gameBoard.style.width).toBe(initialWidth);
