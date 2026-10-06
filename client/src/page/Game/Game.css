@@ -101,6 +101,8 @@
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 10px;
+    min-width: 0;
+    min-height: 0;
 }
 
 .game-side {
@@ -158,7 +160,9 @@
 .game-left-stage {
     display: grid;
     place-items: center;
+    min-width: 0;
     min-height: 0;
+    width: 100%;
     height: 100%;
     position: relative;
     z-index: 1;
@@ -270,10 +274,10 @@
     background: rgba(255, 255, 255, 0.01);
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1100px) {
     .game-split {
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1.15fr 0.85fr;
+        grid-template-rows: 1fr auto;
         gap: 12px;
     }
 
@@ -283,10 +287,22 @@
 
     .game-center {
         grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    .game-side-left {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .game-side-right {
+        grid-column: 2;
+        grid-row: 2;
     }
 
     .game-side-stack {
-        gap: 12px;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
     }
 }
 

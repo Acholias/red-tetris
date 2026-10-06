@@ -42,17 +42,17 @@ export default function Game() {
     const currentTheme = useSelector((state: RootState) => state.theme);
     const dispatch = useDispatch();
 
-    const stageRef = useRef<HTMLDivElement | null>(null);
-    const [stageSize, setStageSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+    const panelRef = useRef<HTMLElement | null>(null);
+    const [panelSize, setPanelSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
     useEffect(() => {
-        const el = stageRef.current;
+        const el = panelRef.current;
         if (!el || typeof ResizeObserver === 'undefined') return;
 
         const ro = new ResizeObserver((entries) => {
             const rect = entries[0]?.contentRect;
             if (!rect) return;
-            setStageSize({ width: rect.width, height: rect.height });
+            setPanelSize({ width: rect.width, height: rect.height });
         });
         ro.observe(el);
         return () => ro.disconnect();
@@ -205,19 +205,19 @@ export default function Game() {
     const nextPiece = game.nextPiece;
 
     const cellSize = useMemo(() => {
-        const width = stageSize.width;
-        const height = stageSize.height;
+        const width = panelSize.width;
+        const height = panelSize.height;
         if (width <= 0 || height <= 0) return 32;
 
         const safeWidth = Math.max(0, width - 24);
-        const safeHeight = Math.max(0, height - 24);
+        const safeHeight = Math.max(0, height - 80);
 
         const boardCellsX = grid.width + 6;
         const boardCellsY = Math.max(grid.height, 5);
         const cellPx = Math.min(safeWidth / boardCellsX, safeHeight / boardCellsY);
 
-        return Math.max(24, Math.min(56, cellPx * 1.05));
-    }, [grid.height, grid.width, stageSize.height, stageSize.width]);
+        return Math.max(10, Math.min(80, cellPx));
+    }, [grid.height, grid.width, panelSize.height, panelSize.width]);
 
     const spectrumCellSize = useMemo(() => {
         const v = cellSize * 0.58;
@@ -280,13 +280,13 @@ export default function Game() {
 
                 <div className="game-divider" aria-hidden="true" />
 
-                <section className="game-panel game-center" aria-label="Your game">
+                <section className="game-panel game-center" aria-label="Your game" ref={panelRef}>
                     <header className="game-left-head">
                         <h2 className="game-left-title">Tetris</h2>
                         <div className="game-left-badge" aria-hidden="true" />
                     </header>
 
-                    <div className="game-left-stage" ref={stageRef}>
+                    <div className="game-left-stage">
                         <div className='game-board game-center-board' style={gameBoardStyle}>
                             {renderCells(grid.cells, 0, 0, grid.width, grid.height)}
                             {renderCells(piece.cells, pieceX, pieceY, piece.width, piece.height)}
