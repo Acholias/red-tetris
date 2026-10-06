@@ -51,6 +51,15 @@ Le projet impose une couverture de tests stricte :
 - **Frontend/Backend** : Tests unitaires approfondis pour la logique du jeu, et tests d'intégration pour les endpoints de l'API.
 - **Mocking** : Appels à la base de données et sous-fonctions mockés lors des tests.
 
+## ⚙️ Intégration Continue (CI)
+
+Le projet intègre un pipeline CI configuré avec **GitHub Actions**. Il se déclenche automatiquement lors d'un `push` ou d'une `pull_request` sur la branche `master`.
+
+Le workflow exécute les vérifications suivantes en parallèle sur les modules `client`, `server` et `shared` :
+- Configuration de l'environnement Node.js (v24).
+- Installation des dépendances.
+- Exécution de la suite de tests et vérification de la couverture (`npm run coverage`).
+
 ---
 
 ## 🚀 Installation & Utilisation
