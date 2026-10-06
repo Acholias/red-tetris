@@ -106,5 +106,5 @@ npm run coverage
 
 ## 👥 Auteurs
 
-**Auguste Deroubaix** (agtdbx) 🔗 [GitHub](https://github.com/agtdbx) • 🎓 Étudiant 42</br>
-**Acholias** 🔗 [GitHub](https://github.com/Acholias) • 🎓 Étudiant 42
+**Auguste Deroubaix** (Agtdbx) 🔗 [GitHub](https://github.com/agtdbx) • 🎓 Étudiant 42</br>
+**Lucas Mugot** (Acholias) 🔗 [GitHub](https://github.com/Acholias) • 🎓 Étudiant 42
